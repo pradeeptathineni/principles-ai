@@ -1,2 +1,3 @@
 # principles
-A personal operating manual for how I want to practice in different domains
+
+An AI-maintained, evidence-grounded knowledge system for durable principles, actionable practices, and personal-growth goals across professional and technical domains.
