@@ -1,0 +1,104 @@
+schema_version: 1
+id: full-stack-development
+code: FST
+title: Full-Stack Development
+status: active
+description: Principles for reasoning across frontend, backend, data, integration, deployment, and end-to-end product
+  behavior.
+required_subdomains: []
+subdomains:
+- id: architecture
+  code: ARC
+  title: Architecture
+  status: active
+  origin: research
+- id: product-thinking
+  code: PRD
+  title: Product Thinking
+  status: active
+  origin: research
+- id: end-to-end-design
+  code: E2E
+  title: End-to-End Design
+  status: active
+  origin: research
+- id: frontend-backend-boundaries
+  code: BND
+  title: Frontend/Backend Boundaries
+  status: active
+  origin: research
+- id: api-contracts
+  code: API
+  title: API Contracts
+  status: active
+  origin: research
+- id: data-flow-state
+  code: DAT
+  title: Data Flow & State
+  status: active
+  origin: research
+- id: authentication-authorization
+  code: AUTH
+  title: Authentication & Authorization
+  status: active
+  origin: research
+- id: security
+  code: SEC
+  title: Security
+  status: active
+  origin: research
+- id: integration
+  code: INT
+  title: Integration
+  status: active
+  origin: research
+- id: user-experience
+  code: UXD
+  title: User Experience
+  status: active
+  origin: research
+- id: testing
+  code: TST
+  title: Testing
+  status: active
+  origin: research
+- id: debugging
+  code: DBG
+  title: Debugging
+  status: active
+  origin: research
+- id: error-handling
+  code: ERR
+  title: Error Handling
+  status: active
+  origin: research
+- id: performance
+  code: PER
+  title: Performance
+  status: active
+  origin: research
+- id: observability
+  code: OBS
+  title: Observability
+  status: active
+  origin: research
+- id: environments-configuration
+  code: ENV
+  title: Environments & Configuration
+  status: active
+  origin: research
+- id: deployment-delivery
+  code: DPL
+  title: Deployment & Delivery
+  status: active
+  origin: research
+- id: maintainability
+  code: MAI
+  title: Maintainability
+  status: active
+  origin: research
+- id: documentation
+  code: DOC
+  title: Documentation
+  status: active
+  origin: research

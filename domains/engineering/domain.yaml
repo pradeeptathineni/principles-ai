@@ -1,0 +1,79 @@
+schema_version: 1
+id: engineering
+code: ENG
+title: Engineering
+status: active
+description: Principles for understanding problems, designing systems, making tradeoffs, validating outcomes, and
+  practicing responsible engineering.
+required_subdomains: []
+subdomains:
+- id: requirements
+  code: REQ
+  title: Requirements
+  status: active
+  origin: research
+- id: problem-framing
+  code: PFR
+  title: Problem Framing
+  status: active
+  origin: research
+- id: design
+  code: DES
+  title: Design
+  status: active
+  origin: research
+- id: architecture
+  code: ARC
+  title: Architecture
+  status: active
+  origin: research
+- id: systems-thinking
+  code: SYS
+  title: Systems Thinking
+  status: active
+  origin: research
+- id: tradeoffs-constraints
+  code: TRD
+  title: Tradeoffs & Constraints
+  status: active
+  origin: research
+- id: testing-validation
+  code: TST
+  title: Testing & Validation
+  status: active
+  origin: research
+- id: reliability
+  code: REL
+  title: Reliability
+  status: active
+  origin: research
+- id: security
+  code: SEC
+  title: Security
+  status: active
+  origin: research
+- id: performance-efficiency
+  code: PER
+  title: Performance & Efficiency
+  status: active
+  origin: research
+- id: maintainability
+  code: MAI
+  title: Maintainability
+  status: active
+  origin: research
+- id: documentation
+  code: DOC
+  title: Documentation
+  status: active
+  origin: research
+- id: collaboration
+  code: COL
+  title: Collaboration
+  status: active
+  origin: research
+- id: stakeholders
+  code: STK
+  title: Stakeholders
+  status: active
+  origin: research

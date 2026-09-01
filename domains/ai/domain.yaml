@@ -1,0 +1,108 @@
+schema_version: 1
+id: ai
+code: AI
+title: AI
+status: active
+description: Principles for framing, building, evaluating, operating, securing, and responsibly using AI systems.
+required_subdomains: []
+subdomains:
+- id: problem-framing
+  code: PFR
+  title: Problem Framing
+  status: active
+  origin: research
+- id: data
+  code: DAT
+  title: Data
+  status: active
+  origin: research
+- id: models
+  code: MOD
+  title: Models
+  status: active
+  origin: research
+- id: model-selection
+  code: SEL
+  title: Model Selection
+  status: active
+  origin: research
+- id: training-fine-tuning
+  code: TRN
+  title: Training & Fine-Tuning
+  status: active
+  origin: research
+- id: prompting
+  code: PRM
+  title: Prompting
+  status: active
+  origin: research
+- id: context-rag
+  code: RAG
+  title: Context & RAG
+  status: active
+  origin: research
+- id: agents
+  code: AGT
+  title: Agents
+  status: active
+  origin: research
+- id: evaluation
+  code: EVAL
+  title: Evaluation
+  status: active
+  origin: research
+- id: reliability
+  code: REL
+  title: Reliability
+  status: active
+  origin: research
+- id: safety
+  code: SAF
+  title: Safety
+  status: active
+  origin: research
+- id: security-privacy
+  code: SEC
+  title: Security & Privacy
+  status: active
+  origin: research
+- id: human-in-the-loop
+  code: HITL
+  title: Human in the Loop
+  status: active
+  origin: research
+- id: observability
+  code: OBS
+  title: Observability
+  status: active
+  origin: research
+- id: infrastructure
+  code: INF
+  title: Infrastructure
+  status: active
+  origin: research
+- id: performance
+  code: PER
+  title: Performance
+  status: active
+  origin: research
+- id: cost
+  code: CST
+  title: Cost
+  status: active
+  origin: research
+- id: governance
+  code: GOV
+  title: Governance
+  status: active
+  origin: research
+- id: research-experimentation
+  code: RND
+  title: Research & Experimentation
+  status: active
+  origin: research
+- id: production
+  code: PRD
+  title: Production
+  status: active
+  origin: research

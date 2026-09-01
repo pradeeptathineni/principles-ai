@@ -1,0 +1,89 @@
+schema_version: 1
+id: user-experience
+code: UX
+title: User Experience
+status: active
+description: Principles for understanding users and designing useful, usable, accessible, inclusive, and evidence-informed
+  experiences.
+required_subdomains: []
+subdomains:
+- id: problem-framing
+  code: PFR
+  title: Problem Framing
+  status: active
+  origin: research
+- id: user-research
+  code: USR
+  title: User Research
+  status: active
+  origin: research
+- id: user-needs
+  code: UND
+  title: User Needs
+  status: active
+  origin: research
+- id: information-architecture
+  code: IAR
+  title: Information Architecture
+  status: active
+  origin: research
+- id: interaction-design
+  code: IXD
+  title: Interaction Design
+  status: active
+  origin: research
+- id: visual-design
+  code: VIS
+  title: Visual Design
+  status: active
+  origin: research
+- id: content
+  code: CNT
+  title: Content
+  status: active
+  origin: research
+- id: accessibility
+  code: ACC
+  title: Accessibility
+  status: active
+  origin: research
+- id: usability
+  code: USA
+  title: Usability
+  status: active
+  origin: research
+- id: inclusive-design
+  code: INC
+  title: Inclusive Design
+  status: active
+  origin: research
+- id: prototyping
+  code: PRO
+  title: Prototyping
+  status: active
+  origin: research
+- id: testing-validation
+  code: TST
+  title: Testing & Validation
+  status: active
+  origin: research
+- id: design-systems
+  code: DSY
+  title: Design Systems
+  status: active
+  origin: research
+- id: feedback
+  code: FDB
+  title: Feedback
+  status: active
+  origin: research
+- id: measurement-analytics
+  code: MET
+  title: Measurement & Analytics
+  status: active
+  origin: research
+- id: ethics
+  code: ETH
+  title: Ethics
+  status: active
+  origin: research

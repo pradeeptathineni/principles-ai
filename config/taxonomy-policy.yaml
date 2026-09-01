@@ -1,0 +1,60 @@
+version: 1
+
+manifests:
+  glob: domains/*/domain.yaml
+  aggregate_output: generated/taxonomy.yaml
+  aggregate_is_canonical: false
+
+universal_files:
+  principles:
+    type: principles
+    code: PRI
+  personal-growth:
+    type: personal-growth
+    code: GRO
+
+naming:
+  directory_style: kebab-case
+  file_style: kebab-case
+  domain_id_pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+  subdomain_id_pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+  domain_code_pattern: "^[A-Z]{2,4}$"
+  subdomain_code_pattern: "^[A-Z0-9]{2,5}$"
+
+status_values:
+  - active
+  - deprecated
+
+origin_values:
+  - user
+  - research
+  - mixed
+  - policy
+
+creation:
+  natural_language_input_supported: true
+  research_domain_boundary: true
+  research_candidate_subdomains: true
+  preserve_user_required_subdomains: true
+  require_distinct_scope: true
+  inspect_existing_domain_overlap: true
+  avoid_symmetry_for_its_own_sake: true
+  manifest_before_bulk_content: true
+
+protected_intent:
+  field: required_subdomains
+  autonomous_removal_allowed: false
+  autonomous_rename_allowed: false
+  autonomous_merge_allowed: false
+  explicit_human_approval_required_for_change: true
+
+registration:
+  existing_subdomain_markdown_must_be_registered: true
+  registered_subdomain_markdown_may_be_missing: true
+  universal_files_may_be_missing_during_incremental_build: true
+
+ids:
+  entry_pattern: "<DOMAIN-CODE>-<FILE-CODE>-<NNN>"
+  accepted_codes_are_stable: true
+  retired_entry_ids_reusable: false
+  tooling_should_generate_or_validate_prefixes: true

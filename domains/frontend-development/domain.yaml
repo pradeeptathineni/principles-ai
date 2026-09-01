@@ -1,0 +1,114 @@
+schema_version: 1
+id: frontend-development
+code: FRT
+title: Frontend Development
+status: active
+description: Principles for building accessible, usable, performant, maintainable, and reliable user-facing web
+  experiences.
+required_subdomains: []
+subdomains:
+- id: web-platform
+  code: WEB
+  title: Web Platform
+  status: active
+  origin: research
+- id: html-semantics
+  code: HTM
+  title: HTML Semantics
+  status: active
+  origin: research
+- id: css-layout
+  code: CSS
+  title: CSS & Layout
+  status: active
+  origin: research
+- id: javascript-typescript
+  code: JTS
+  title: JavaScript & TypeScript
+  status: active
+  origin: research
+- id: architecture
+  code: ARC
+  title: Architecture
+  status: active
+  origin: research
+- id: components-state
+  code: STA
+  title: Components & State
+  status: active
+  origin: research
+- id: responsive-design
+  code: RSP
+  title: Responsive Design
+  status: active
+  origin: research
+- id: accessibility
+  code: ACC
+  title: Accessibility
+  status: active
+  origin: research
+- id: user-experience
+  code: UXD
+  title: User Experience
+  status: active
+  origin: research
+- id: design-systems
+  code: DSY
+  title: Design Systems
+  status: active
+  origin: research
+- id: data-api-integration
+  code: API
+  title: Data & API Integration
+  status: active
+  origin: research
+- id: testing
+  code: TST
+  title: Testing
+  status: active
+  origin: research
+- id: debugging
+  code: DBG
+  title: Debugging
+  status: active
+  origin: research
+- id: error-handling
+  code: ERR
+  title: Error Handling
+  status: active
+  origin: research
+- id: security
+  code: SEC
+  title: Security
+  status: active
+  origin: research
+- id: performance
+  code: PER
+  title: Performance
+  status: active
+  origin: research
+- id: compatibility
+  code: CMP
+  title: Compatibility
+  status: active
+  origin: research
+- id: dependencies-tooling
+  code: DEP
+  title: Dependencies & Tooling
+  status: active
+  origin: research
+- id: observability
+  code: OBS
+  title: Observability
+  status: active
+  origin: research
+- id: seo-discoverability
+  code: SEO
+  title: SEO & Discoverability
+  status: active
+  origin: research
+- id: documentation
+  code: DOC
+  title: Documentation
+  status: active
+  origin: research

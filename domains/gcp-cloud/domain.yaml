@@ -1,0 +1,118 @@
+schema_version: 1
+id: gcp-cloud
+code: GCP
+title: GCP Cloud
+status: active
+description: Principles for applying sound cloud architecture and operational practice using Google Cloud.
+required_subdomains: []
+subdomains:
+- id: architecture
+  code: ARC
+  title: Architecture
+  status: active
+  origin: research
+- id: organizations-resource-hierarchy
+  code: ORG
+  title: Organizations & Resource Hierarchy
+  status: active
+  origin: research
+- id: identity-access
+  code: IAM
+  title: Identity & Access
+  status: active
+  origin: research
+- id: networking
+  code: NET
+  title: Networking
+  status: active
+  origin: research
+- id: compute
+  code: CMP
+  title: Compute
+  status: active
+  origin: research
+- id: storage
+  code: STO
+  title: Storage
+  status: active
+  origin: research
+- id: databases
+  code: DBS
+  title: Databases
+  status: active
+  origin: research
+- id: serverless
+  code: SRV
+  title: Serverless
+  status: active
+  origin: research
+- id: containers
+  code: CTR
+  title: Containers
+  status: active
+  origin: research
+- id: data-analytics
+  code: DAT
+  title: Data & Analytics
+  status: active
+  origin: research
+- id: integration-messaging
+  code: MSG
+  title: Integration & Messaging
+  status: active
+  origin: research
+- id: infrastructure-as-code
+  code: IAC
+  title: Infrastructure as Code
+  status: active
+  origin: research
+- id: automation
+  code: AUT
+  title: Automation
+  status: active
+  origin: research
+- id: security
+  code: SEC
+  title: Security
+  status: active
+  origin: research
+- id: observability
+  code: OBS
+  title: Observability
+  status: active
+  origin: research
+- id: reliability-disaster-recovery
+  code: REL
+  title: Reliability & Disaster Recovery
+  status: active
+  origin: research
+- id: performance-optimization
+  code: PER
+  title: Performance Optimization
+  status: active
+  origin: research
+- id: cost-optimization
+  code: CST
+  title: Cost Optimization
+  status: active
+  origin: research
+- id: governance
+  code: GOV
+  title: Governance
+  status: active
+  origin: research
+- id: ai-ml
+  code: AIML
+  title: AI/ML
+  status: active
+  origin: research
+- id: migration-modernization
+  code: MIG
+  title: Migration & Modernization
+  status: active
+  origin: research
+- id: sustainability
+  code: SUS
+  title: Sustainability
+  status: active
+  origin: research

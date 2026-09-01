@@ -1,0 +1,47 @@
+version: 1
+
+file_types:
+  principles:
+    purpose: highest-order domain guidance
+    id_code: PRI
+  personal-growth:
+    purpose: continuous development of capability and judgment
+    id_code: GRO
+  subdomain:
+    purpose: focused guidance for a distinct dimension of practice
+
+claims:
+  principle_statement:
+    citation_required: true
+  why:
+    citation_required: true
+  practice:
+    citation_required: true
+  goal:
+    citation_required: false
+
+selection:
+  no_target_principle_count: true
+  dimensions:
+    - importance
+    - durability
+    - evidence_strength
+    - scope_fit
+    - distinctness
+    - actionability
+
+writing:
+  markdown_source_of_truth: true
+  commonmark_compatible: true
+  github_flavored_markdown: true
+  inline_html_for_structure: false
+  file_tags_location: frontmatter
+  entry_tags_location: markdown_list
+  reference_style: numeric_local
+
+stability:
+  principle: slow
+  rationale: slow-to-moderate
+  practice: moderate
+  goal: evolving
+  reference: actively-maintained

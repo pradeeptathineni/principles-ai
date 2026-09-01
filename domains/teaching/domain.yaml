@@ -1,0 +1,90 @@
+schema_version: 1
+id: teaching
+code: TEA
+title: Teaching
+status: active
+description: Principles for helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment,
+  accessibility, and learner-support contexts.
+required_subdomains:
+- tutoring
+- classroom
+- virtual
+- students
+- teachers
+- parents
+subdomains:
+- id: curriculum
+  code: CUR
+  title: Curriculum
+  status: active
+  origin: research
+- id: lesson-design
+  code: LES
+  title: Lesson Design
+  status: active
+  origin: research
+- id: tutoring
+  code: TUT
+  title: Tutoring
+  status: active
+  origin: mixed
+- id: classroom
+  code: CLS
+  title: Classroom
+  status: active
+  origin: mixed
+- id: virtual
+  code: VIR
+  title: Virtual
+  status: active
+  origin: mixed
+- id: students
+  code: STU
+  title: Students
+  status: active
+  origin: mixed
+- id: teachers
+  code: TCH
+  title: Teachers
+  status: active
+  origin: mixed
+- id: adults
+  code: ADL
+  title: Adults
+  status: active
+  origin: research
+- id: parents
+  code: PAR
+  title: Parents
+  status: active
+  origin: mixed
+- id: differentiation
+  code: DIF
+  title: Differentiation
+  status: active
+  origin: research
+- id: assessment
+  code: ASM
+  title: Assessment
+  status: active
+  origin: research
+- id: engagement
+  code: ENG
+  title: Engagement
+  status: active
+  origin: research
+- id: accessibility
+  code: ACC
+  title: Accessibility
+  status: active
+  origin: research
+- id: feedback
+  code: FDB
+  title: Feedback
+  status: active
+  origin: research
+- id: safety-safeguarding
+  code: SAF
+  title: Safety & Safeguarding
+  status: active
+  origin: research

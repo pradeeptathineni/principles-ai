@@ -1,0 +1,74 @@
+version: 1
+
+authority_classes:
+  A:
+    name: normative-primary
+    examples:
+      - standards-body
+      - formal-specification
+      - government-publication
+      - regulation
+      - original-research
+  B:
+    name: canonical-first-party
+    examples:
+      - official-vendor-documentation
+      - official-framework-documentation
+      - maintainer-documentation
+  C:
+    name: mature-institutional-practice
+    examples:
+      - engineering-practice
+      - professional-body-guidance
+      - foundation-guidance
+  D:
+    name: expert-academic-secondary
+    examples:
+      - established-book
+      - recognized-expert
+      - university-material
+      - review-paper
+  E:
+    name: community-ecosystem
+    examples:
+      - roadmap
+      - community-survey
+      - open-source-repository
+      - practitioner-article
+      - community-discussion
+
+fitness_dimensions:
+  - authority
+  - directness
+  - relevance
+  - normativity
+  - evidence
+  - currency
+  - stability
+  - independence
+  - applicability
+
+requirements:
+  inspect_source_content: true
+  search_snippets_are_evidence: false
+  remembered_model_knowledge_is_evidence: false
+  exact_language_checked_when_needed: true
+  citation_entailment_required: true
+  bulk_source_copying_allowed: false
+
+triangulation:
+  broad_synthesized_principle:
+    independent_strong_sources_preferred: 2
+  canonical_fact_or_requirement:
+    one_canonical_source_may_be_sufficient: true
+
+reject_or_deprioritize:
+  - unverifiable
+  - unclear-ai-provenance
+  - content-farm
+  - repost-of-primary-source
+  - stale-for-high-change-topic
+  - anonymous-opinion-as-fact
+  - topic-only-without-claim-support
+  - marketing-as-universal-truth
+  - search-snippet-only

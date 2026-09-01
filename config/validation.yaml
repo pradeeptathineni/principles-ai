@@ -1,0 +1,45 @@
+version: 1
+
+severity:
+  error:
+    - invalid_yaml
+    - missing_required_frontmatter
+    - invalid_domain_manifest
+    - duplicate_domain_id
+    - duplicate_domain_code
+    - duplicate_subdomain_id
+    - duplicate_subdomain_code
+    - missing_required_subdomain
+    - unregistered_subdomain_file
+    - invalid_file_id
+    - invalid_principle_id
+    - duplicate_principle_id
+    - invalid_heading_hierarchy
+    - missing_required_section
+    - unresolved_reference
+    - duplicate_reference_definition
+    - required_claim_missing_citation
+    - leftover_template_placeholder
+  warning:
+    - registered_subdomain_file_missing
+    - unused_reference
+    - reference_not_in_first_use_order
+    - unusually_long_entry
+    - duplicate_or_near_duplicate_principle
+    - source_may_be_stale
+    - source_authority_may_be_weak
+    - claim_support_partial
+    - goal_appears_to_be_practice
+
+semantic_checks:
+  - citation_entailment
+  - source_fitness
+  - claim_calibration
+  - taxonomy_fit
+  - duplicate_meaning
+  - disagreement_handling
+  - human_readability
+
+ci:
+  deterministic_checks_required: true
+  semantic_checks_required_for_high_impact_changes: true

@@ -1,0 +1,73 @@
+schema_version: 1
+id: coding
+code: COD
+title: Coding
+status: active
+description: Principles for writing, changing, reviewing, testing, debugging, and maintaining software code.
+required_subdomains: []
+subdomains:
+- id: design
+  code: DES
+  title: Design
+  status: active
+  origin: research
+- id: readability
+  code: REA
+  title: Readability
+  status: active
+  origin: research
+- id: maintainability
+  code: MAI
+  title: Maintainability
+  status: active
+  origin: research
+- id: modularity
+  code: MOD
+  title: Modularity
+  status: active
+  origin: research
+- id: testing
+  code: TST
+  title: Testing
+  status: active
+  origin: research
+- id: debugging
+  code: DBG
+  title: Debugging
+  status: active
+  origin: research
+- id: error-handling
+  code: ERR
+  title: Error Handling
+  status: active
+  origin: research
+- id: security
+  code: SEC
+  title: Security
+  status: active
+  origin: research
+- id: performance
+  code: PER
+  title: Performance
+  status: active
+  origin: research
+- id: dependencies
+  code: DEP
+  title: Dependencies
+  status: active
+  origin: research
+- id: version-control
+  code: VCS
+  title: Version Control
+  status: active
+  origin: research
+- id: code-review
+  code: CRV
+  title: Code Review
+  status: active
+  origin: research
+- id: documentation
+  code: DOC
+  title: Documentation
+  status: active
+  origin: research

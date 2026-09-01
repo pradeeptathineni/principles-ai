@@ -1,0 +1,119 @@
+schema_version: 1
+id: devops
+code: DEV
+title: DevOps
+status: active
+description: Principles for improving software delivery, infrastructure, automation, observability, reliability,
+  and collaboration across the delivery lifecycle.
+required_subdomains: []
+subdomains:
+- id: culture-collaboration
+  code: CUL
+  title: Culture & Collaboration
+  status: active
+  origin: research
+- id: infrastructure
+  code: INF
+  title: Infrastructure
+  status: active
+  origin: research
+- id: infrastructure-as-code
+  code: IAC
+  title: Infrastructure as Code
+  status: active
+  origin: research
+- id: configuration
+  code: CFG
+  title: Configuration
+  status: active
+  origin: research
+- id: automation
+  code: AUT
+  title: Automation
+  status: active
+  origin: research
+- id: ci-cd
+  code: CICD
+  title: CI/CD
+  status: active
+  origin: research
+- id: software-delivery
+  code: DLV
+  title: Software Delivery
+  status: active
+  origin: research
+- id: containers
+  code: CTR
+  title: Containers
+  status: active
+  origin: research
+- id: orchestration
+  code: ORC
+  title: Orchestration
+  status: active
+  origin: research
+- id: cloud
+  code: CLD
+  title: Cloud
+  status: active
+  origin: research
+- id: networking
+  code: NET
+  title: Networking
+  status: active
+  origin: research
+- id: security
+  code: SEC
+  title: Security
+  status: active
+  origin: research
+- id: observability
+  code: OBS
+  title: Observability
+  status: active
+  origin: research
+- id: reliability
+  code: REL
+  title: Reliability
+  status: active
+  origin: research
+- id: incident-response
+  code: INC
+  title: Incident Response
+  status: active
+  origin: research
+- id: disaster-recovery
+  code: DR
+  title: Disaster Recovery
+  status: active
+  origin: research
+- id: performance-capacity
+  code: PER
+  title: Performance & Capacity
+  status: active
+  origin: research
+- id: cost
+  code: CST
+  title: Cost
+  status: active
+  origin: research
+- id: environments
+  code: ENV
+  title: Environments
+  status: active
+  origin: research
+- id: change-management
+  code: CHG
+  title: Change Management
+  status: active
+  origin: research
+- id: developer-experience
+  code: DX
+  title: Developer Experience
+  status: active
+  origin: research
+- id: documentation
+  code: DOC
+  title: Documentation
+  status: active
+  origin: research

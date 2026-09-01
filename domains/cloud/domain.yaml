@@ -1,0 +1,114 @@
+schema_version: 1
+id: cloud
+code: CLD
+title: Cloud
+status: active
+description: Vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud
+  systems.
+required_subdomains: []
+subdomains:
+- id: architecture
+  code: ARC
+  title: Architecture
+  status: active
+  origin: research
+- id: service-selection
+  code: SVC
+  title: Service Selection
+  status: active
+  origin: research
+- id: shared-responsibility
+  code: SHR
+  title: Shared Responsibility
+  status: active
+  origin: research
+- id: identity-access
+  code: IAM
+  title: Identity & Access
+  status: active
+  origin: research
+- id: networking
+  code: NET
+  title: Networking
+  status: active
+  origin: research
+- id: compute
+  code: CMP
+  title: Compute
+  status: active
+  origin: research
+- id: storage
+  code: STO
+  title: Storage
+  status: active
+  origin: research
+- id: data
+  code: DAT
+  title: Data
+  status: active
+  origin: research
+- id: infrastructure-as-code
+  code: IAC
+  title: Infrastructure as Code
+  status: active
+  origin: research
+- id: automation
+  code: AUT
+  title: Automation
+  status: active
+  origin: research
+- id: security
+  code: SEC
+  title: Security
+  status: active
+  origin: research
+- id: observability
+  code: OBS
+  title: Observability
+  status: active
+  origin: research
+- id: reliability
+  code: REL
+  title: Reliability
+  status: active
+  origin: research
+- id: disaster-recovery
+  code: DR
+  title: Disaster Recovery
+  status: active
+  origin: research
+- id: performance-scalability
+  code: PER
+  title: Performance & Scalability
+  status: active
+  origin: research
+- id: cost-finops
+  code: CST
+  title: Cost & FinOps
+  status: active
+  origin: research
+- id: governance
+  code: GOV
+  title: Governance
+  status: active
+  origin: research
+- id: migration-modernization
+  code: MIG
+  title: Migration & Modernization
+  status: active
+  origin: research
+- id: hybrid-multicloud
+  code: HYB
+  title: Hybrid & Multicloud
+  status: active
+  origin: research
+- id: sustainability
+  code: SUS
+  title: Sustainability
+  status: active
+  origin: research
+- id: operations
+  code: OPS
+  title: Operations
+  status: active
+  origin: research
