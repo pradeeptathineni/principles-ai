@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000006
+title: Quality Attributes
+publisher: Software Engineering Institute, Carnegie Mellon University
+evidence_kind: academic-evidence
+canonical_url: https://www.sei.cmu.edu/library/quality-attributes/
+url_aliases: []
+published_or_version: CMU/SEI-95-TR-021, December 1995
+first_retrieved: '2026-09-01'
+last_reviewed: '2026-09-01'
+status: active
+superseded_by: null

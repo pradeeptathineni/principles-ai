@@ -1,0 +1,40 @@
+schema_version: 4
+entry_id: PRN-000012
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 4d1c76a5306bc5a3abac7fefa99bacaae96c7cb4c4b908e6195732cb130bfaad
+  sources:
+  - source_id: SRC-000027
+    locators: [Why Write Small CLs, What is Small]
+  - source_id: SRC-000021
+    locators: [Separate Changes]
+  outcome: strong
+- role: why-1
+  claim_sha256: 17848347fdc577aea11aa90f72630941b04189d685716c6f44a6a1543e926366
+  sources:
+  - source_id: SRC-000027
+    locators: [Why Write Small CLs, What is Small]
+  - source_id: SRC-000021
+    locators: [Separate Changes]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 4d06db7f973553fb7b167932379ae803658ee0b7bb38ba5e41c06b08cc10346d
+  sources:
+  - source_id: SRC-000003
+    locators: [Style]
+  - source_id: SRC-000027
+    locators: [What is Small, Splitting CLs]
+  outcome: strong
+- role: practice-2
+  claim_sha256: 0ef5c4187d9238bd39869ebe67c50ab87134c0944b7189708ed16bb3f9c72aa4
+  sources:
+  - source_id: SRC-000021
+    locators: [Separate Changes]
+  outcome: strong

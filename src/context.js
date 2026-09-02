@@ -68,11 +68,9 @@ export function buildContext({ documents, entryById, sourceById, evidenceByEntry
       const evidence = evidenceByEntryId.get(entry.id)
       result.evidence = evidence?.value ?? null
       recordInput(evidence?.path, evidence?.inputSha256)
-      for (const review of evidence?.value?.claims ?? []) {
-        const configurationRef = review.reviewer?.configuration?.configuration_ref
-        const configuration = configurationRef ? evaluatorConfigs.get(configurationRef) : null
-        recordInput(configuration?.path, configuration?.inputSha256)
-      }
+      const configurationRef = evidence?.value?.reviewer?.configuration?.configuration_ref
+      const configuration = configurationRef ? evaluatorConfigs.get(configurationRef) : null
+      recordInput(configuration?.path, configuration?.inputSha256)
     }
     return result
   })

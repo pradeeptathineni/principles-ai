@@ -36,7 +36,7 @@ Before a source appears in canonical corpus bibliography, allocate or reuse its 
 
 Working evidence should track source ID, locator, short exact language when necessary, candidate claims, fitness, date/version, and conflicts. Do not bulk-copy sources.
 
-Claim-review records under `evidence/claims/` retain minimal provenance when required. They are mandatory for the exact three pilot paths in `config/evidence-policy.yaml` and optional elsewhere until pilot review decides the universal policy. When present, a record is complete for the entry under `docs/standards/evidence.md`.
+Claim-review records under `evidence/claims/` retain minimal provenance when required. They are mandatory for configured pilot paths and optional elsewhere, with selective use recommended for high-impact, disputed, novel, or weak-evidence work. When present, a record is complete for the entry under `docs/standards/evidence.md`.
 
 ### 7. Build a coverage map
 
@@ -44,7 +44,7 @@ Identify recurring concepts, evidence strength, independence, disagreement, scop
 
 ### 8. Analyze disagreement
 
-Investigate context, normative versus advisory status, version, intended audience, and evidence quality. Preserve unresolved material disagreement or narrow the claim. Material conditions and exceptions placed in Applicability remain cited and reviewed claims.
+Map the evidence landscape before selecting principles. Distinguish normative authority, official documentation, institutional practice, academic evidence, expert synthesis, community guidance, and individual perspective. Investigate context, normative versus advisory status, version, intended audience, and evidence quality. Preserve unresolved material disagreement or narrow the claim. Material conditions and exceptions placed in Applicability remain cited and reviewed claims.
 
 ### 9. Synthesize
 

@@ -1,8 +1,8 @@
-schema_version: 3
+schema_version: 5
 id: teaching
 code: TEA
 title: Teaching
-taxonomy_status: proposed
+taxonomy_status: accepted
 description: Principles for helping people learn effectively across curriculum, tutoring,
   classroom, virtual, assessment, accessibility, and learner-support contexts.
 human_intent:
@@ -16,10 +16,6 @@ human_intent:
   priorities: []
   exclusions: []
   scope_notes: []
-taxonomy_review:
-  reviewed_at: null
-  source_ids: []
-  review_record: null
 subdomains:
 - id: curriculum
   code: CUR
@@ -34,27 +30,27 @@ subdomains:
 - id: tutoring
   code: TUT
   title: Tutoring
-  status: proposed
+  status: accepted
   origin: mixed
 - id: classroom
   code: CLS
   title: Classroom
-  status: proposed
+  status: accepted
   origin: mixed
 - id: virtual
   code: VIR
   title: Virtual
-  status: proposed
+  status: accepted
   origin: mixed
 - id: students
   code: STU
   title: Students
-  status: proposed
+  status: accepted
   origin: mixed
 - id: teachers
   code: TCH
   title: Teachers
-  status: proposed
+  status: accepted
   origin: mixed
 - id: adults
   code: ADL
@@ -64,7 +60,7 @@ subdomains:
 - id: parents
   code: PAR
   title: Parents
-  status: proposed
+  status: accepted
   origin: mixed
 - id: differentiation
   code: DIF

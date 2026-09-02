@@ -14,6 +14,7 @@ Explicit human priorities are first-class input. Preserve requested domain purpo
 
 Agents may:
 
+- Discover, compose, and resume prerequisite workflows from a natural-language outcome request.
 - Interpret natural-language domain requests.
 - Research and propose domain taxonomies.
 - Map a subdomain.
@@ -97,6 +98,8 @@ When mistakes recur, improve documentation, configuration, validation, eval fixt
 Under the default pull-request model, agents propose, automated checks evaluate, and humans retain final authority over high-impact corpus changes and protected intent. Governance may evolve with eval quality, but automation must not equate semantic confidence with truth.
 
 Policy-changing pull requests must be evaluated against trusted merge-base policy. Identity and source transitions use the same baseline; proposed policy cannot waive its own transition checks. Changes to `AGENTS.md`, governance, executable schemas, validation classes, CI, protected intent, source/evidence policy, or security rules require human review.
+
+The user owns decisions reserved to humans; the agent owns reaching those decisions and continuing afterward. Do not turn an actionable prerequisite into a request that the user initiate another workflow. Conversely, do not treat an outcome request as approval of semantic material the user has not yet seen.
 
 ## Validation boundaries
 

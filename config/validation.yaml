@@ -1,16 +1,16 @@
-version: 4
+version: 6
 
 schema_validation:
   draft: '2020-12'
-  schema_document_id: https://principles.local/config/schema/v3
+  schema_document_id: https://principles.local/config/schema/v5
   format_assertion_required: true
   unsupported_schema_versions: error
   unknown_canonical_fields: error
   supported_record_versions:
-    domain_manifest: 3
-    corpus_frontmatter: 4
-    source_record: 3
-    claim_review_record: 3
+    domain_manifest: 5
+    corpus_frontmatter: 5
+    source_record: 4
+    claim_review_record: 4
     identity_ledger: 2
     evaluator_configuration_record: 2
 
@@ -35,21 +35,22 @@ canonical_text:
 policy_loading:
   unsupported_policy_versions: error
   unknown_policy_fields: error
-  migrations_must_be_explicit_and_lossless: true
+  migrations_must_be_explicit: true
+  data_loss_requires_rationale_and_human_approval: true
   silent_coercion_or_upgrade_allowed: false
   supported_versions:
-    content-policy: 4
-    evidence-policy: 3
+    content-policy: 6
+    evidence-policy: 4
     identity-policy: 2
-    source-policy: 5
-    taxonomy-policy: 4
-    validation: 4
+    source-policy: 6
+    taxonomy-policy: 6
+    validation: 6
 
 trusted_baseline:
   pull_request_source: merge_base_with_trusted_target_branch
   policy_for_policy_change_review: merge_base
-  identity_and_source_transition_state: merge_base
-  proposed_policy_may_add_but_not_remove_trusted_required_checks: true
+  identity_source_taxonomy_and_corpus_transition_state: merge_base
+  deterministic_check_changes_require_versioned_policy_migration: true
   proposed_policy_must_not_select_or_redefine_baseline: true
   unavailable_transition_baseline_result: not_evaluated
   pull_request_ci_must_not_report_full_transition_success_when_unavailable: true
@@ -69,10 +70,13 @@ classes:
       - canonical_text_encoding_normalization_and_newlines
       - manifest_path_and_registration
       - taxonomy_identity_uniqueness_scope
-      - taxonomy_lifecycle_and_review_state
+      - taxonomy_lifecycle_consistency
+      - taxonomy_transition_against_trusted_base
+      - protected_intent_transition_against_trusted_base
       - deprecated_scope_without_corpus
       - protected_subdomain_presence_and_status
       - corpus_path_frontmatter_agreement
+      - corpus_review_hash_and_transition
       - principle_and_source_identity
       - identity_ledger_sequence_and_retirement
       - identity_ledger_transition_against_trusted_base
@@ -93,6 +97,7 @@ classes:
       - claim_block_link_title_policy
       - reference_resolution
       - bibliography_one_to_one_source_mapping
+      - advisory_word_economy
       - internal_link_resolution
       - evidence_filename_and_entry_agreement
       - evaluator_configuration_schema_path_and_i_json_input
@@ -113,6 +118,8 @@ classes:
     blocking_in_ci_until_calibrated: false
     checks:
       - citation_entailment
+      - evidence_landscape_before_synthesis
+      - stronger_available_source_substitution_reason
       - source_fitness
       - source_url_secret_exposure
       - claim_calibration
@@ -127,7 +134,10 @@ classes:
       - protected_intent_change
       - domain_purpose_change
       - taxonomy_acceptance
+      - taxonomy_deprecation_reactivation_or_definition_change
       - principle_add_remove_merge_or_rescope
+      - corpus_activation_or_active_semantic_change
+      - active_corpus_removal
       - policy_or_schema_change
       - governance_or_ci_change
       - evidence_policy_change

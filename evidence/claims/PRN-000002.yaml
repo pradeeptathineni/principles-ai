@@ -1,0 +1,48 @@
+schema_version: 4
+entry_id: PRN-000002
+reviewed_at: '2026-09-01'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 38912901623e83e7f43d5c9dee5be62a82acf7cdbec00f27041d374e1048f7f0
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, section 1.4, page 3-5]
+  - source_id: SRC-000004
+    locators: [The Criteria and Conclusion, pages 1056 and 1058]
+  outcome: strong
+- role: why-1
+  claim_sha256: 8af998739c9ce91042c07327eefdeee591ca6efbfd14f15fd32d18cda229bed9
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, section 1.4, page 3-5]
+  - source_id: SRC-000004
+    locators: [Comparison of the Two Modularizations, pages 1055-1056]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 9f94bc837bbe3b266d4ac31cbed43cc55c4091d7640654d3774507a58ba625fc
+  sources:
+  - source_id: SRC-000004
+    locators: [The Criteria and Conclusion, pages 1056 and 1058]
+  outcome: strong
+- role: practice-2
+  claim_sha256: 69f5cb7eeb1c9f72926033e70482eac835881e586014902f169898e931debe27
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, section 1.4, page 3-5]
+  - source_id: SRC-000004
+    locators: [The Criteria, page 1056]
+  outcome: strong
+- role: applicability-1
+  claim_sha256: 68c651bfab4c48253cebcc407a7ff77812bd7e0b24dac85982070371c6596399
+  sources:
+  - source_id: SRC-000004
+    locators: [Efficiency and Implementation, pages 1056-1057]
+  - source_id: SRC-000006
+    locators: [Abstract, lines 24-26 of publication page]
+  outcome: strong

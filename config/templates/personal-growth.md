@@ -1,11 +1,12 @@
 ---
-schema_version: 4
+schema_version: 5
 id: <domain>.personal-growth
 title: <Domain> Personal Growth
 domain: <domain>
 type: personal-growth
 status: draft
 last_reviewed: null
+reviewed_content_sha256: null
 ---
 
 # <Domain> Personal Growth

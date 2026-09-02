@@ -1,20 +1,20 @@
 export const SUPPORTED = Object.freeze({
-  schemaId: 'https://principles.local/config/schema/v3',
+  schemaId: 'https://principles.local/config/schema/v5',
   records: Object.freeze({
-    domain_manifest: 3,
-    corpus_frontmatter: 4,
-    source_record: 3,
-    claim_review_record: 3,
+    domain_manifest: 5,
+    corpus_frontmatter: 5,
+    source_record: 4,
+    claim_review_record: 4,
     identity_ledger: 2,
     evaluator_configuration_record: 2
   }),
   policies: Object.freeze({
-    'content-policy': 4,
-    'evidence-policy': 3,
+    'content-policy': 6,
+    'evidence-policy': 4,
     'identity-policy': 2,
-    'source-policy': 5,
-    'taxonomy-policy': 4,
-    validation: 4
+    'source-policy': 6,
+    'taxonomy-policy': 6,
+    validation: 6
   })
 })
 

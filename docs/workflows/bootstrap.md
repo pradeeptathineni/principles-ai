@@ -75,16 +75,18 @@ After explicit authorization:
 - Do not expose secrets to untrusted pull-request jobs.
 - Remove obsolete manual inventories and tracked platform metadata.
 
-## Phase 10 — Three-file pilot, separately authorized
+## Phase 10 — Three-file pilot, outcome-authorized
 
-Only after coding taxonomy acceptance and explicit approval, create:
+Only after coding taxonomy acceptance, create the requested pilot files when an explicit natural-language outcome requests them. That request is the content authorization; do not require a second pre-generation confirmation after the taxonomy gate.
 
 - `domains/coding/principles.md`
 - `domains/coding/personal-growth.md`
 - `domains/coding/design.md`
 
-The pilot must include stable source records and claim-review records. Human review then decides whether evidence records become universally mandatory.
+The pilot must include stable source records and claim-review records. Empirical review after the first production file decides whether their value justifies broader adoption; universal adoption is not the default.
 
-## Completion criteria
+## Readiness and completion criteria
 
-Bootstrap is complete when schemas and canonical state validate, parsing and citation contracts are proven, identity is stable, generated output is reproducible, deterministic CI passes, semantic fixtures exist, and the pilot has passed human review. Tooling completion alone does not authorize bulk corpus generation.
+The deterministic harness is ready when schemas and canonical state validate, parsing and citation contracts are proven, identity is stable, generated output is reproducible, deterministic CI passes, and semantic fixtures exist. That readiness permits an explicitly requested pilot to proceed through taxonomy and content gates.
+
+The pilot is complete only after its exact taxonomy and principles pass required human review. Pilot completion does not authorize bulk corpus generation; the post-pilot evidence-policy and bulk-generation decisions remain separate human gates.

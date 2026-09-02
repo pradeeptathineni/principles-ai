@@ -24,6 +24,8 @@ Curated fixtures, AI evaluators, and humans judge entailment, source fitness, ca
 
 Humans approve protected intent, taxonomy acceptance, principle addition/removal/merge/rescoping, policy/schema/governance changes, evidence-policy changes, and unresolved material disagreement.
 
+Human approval is required only for the actual judgment. Research, review preparation, source registration, draft creation under accepted taxonomy, validation, repair, and workflow resumption are agent-owned. An explicit approval of an exact already-presented package satisfies its gate; tooling classifies approval-required transitions but cannot authenticate the human decision.
+
 ## Core measures
 
 - Structural citation presence.
@@ -40,6 +42,8 @@ Humans approve protected intent, taxonomy acceptance, principle addition/removal
 
 Targets such as zero unsupported claims apply to overall semantic support, not to citation count. Multiple individually partial sources may jointly support a claim when the review records that conclusion.
 
+Review source selection as a process as well as claim entailment: confirm that research mapped the relevant evidence kinds before principle selection and that any weaker source substituting for a stronger available fit has an explicit reason. A polished set of citations cannot demonstrate that omitted stronger evidence was considered.
+
 ## Fixtures
 
 Maintain positive and negative fixtures across structural, transition, source, citation, evidence, semantic, security, and protected-intent contracts. The concrete families belong in `tests/` and `evals/` and must include unavailable-baseline reporting, disagreement, prompt injection, policy weakening, optional-section filler, and hidden claims.
@@ -52,7 +56,7 @@ Hosted-model semantic judgments are traceable and repeatable in setup, not guara
 
 ## Pilot evidence records
 
-Claim-review records are required for the three-file coding pilot. Humans decide universal adoption after the pilot; do not encode it earlier. Exact adoption and validation rules are in `config/evidence-policy.yaml` and [Claim-review evidence](evidence.md).
+Claim-review records are required for configured pilot paths and optional elsewhere. The first production run did not justify universal adoption. Exact adoption and validation rules are in `config/evidence-policy.yaml` and [Claim-review evidence](evidence.md).
 
 ## CI
 

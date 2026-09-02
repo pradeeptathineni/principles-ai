@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DiagnosticBag } from '../src/diagnostics.js'
-import { parseCorpusFile } from '../src/markdown.js'
+import { parseCorpusFile, validateCorpusTransition } from '../src/markdown.js'
 
 const fixture = readFileSync(fileURLToPath(new URL('fixtures/corpus/valid.md', import.meta.url)), 'utf8')
 const sources = new Map([
@@ -15,15 +15,22 @@ const sources = new Map([
 const manifests = new Map([['coding', { value: { id: 'coding', taxonomy_status: 'accepted', subdomains: [] } }]])
 const schema = { validate() { return true } }
 
-function parse(text) {
+function parse(text, contentPolicy = null) {
   const root = mkdtempSync(join(tmpdir(), 'principles-markdown-'))
   mkdirSync(join(root, 'domains', 'coding'), { recursive: true })
   writeFileSync(join(root, 'domains', 'coding', 'principles.md'), text)
   const bag = new DiagnosticBag()
-  const document = parseCorpusFile(root, 'domains/coding/principles.md', schema, manifests, sources, bag)
+  const document = parseCorpusFile(root, 'domains/coding/principles.md', schema, manifests, sources, bag, contentPolicy)
   rmSync(root, { recursive: true, force: true })
   return { document, bag }
 }
+
+test('word-economy guidance warns without rejecting useful exceptions', () => {
+  const policy = { word_economy: { preferred_max_words: { introduction: 2, statement: 3, why_paragraph: 3, practice_item: 3, applicability_paragraph: 3, entry: 8, file: 12 } } }
+  const { bag } = parse(fixture, policy)
+  assert.equal(bag.errorCount, 0)
+  assert.ok(bag.items.some((item) => item.code === 'WORD_ECONOMY'))
+})
 
 test('structured GFM fixture normalizes claims, references, and cited goals', () => {
   const { document, bag } = parse(fixture)
@@ -62,4 +69,17 @@ test('canonical heading source markers are exact', () => {
 test('entry tags are unique', () => {
   const { bag } = parse(fixture.replace('- code-review', '- code-review\n- code-review'))
   assert.ok(bag.items.some((item) => item.code === 'ENTRY_TAG_DUPLICATE'))
+})
+
+test('active content is bound to its exact semantic review hash', () => {
+  const draft = parse(fixture).document
+  const activeText = fixture
+    .replace('status: draft', 'status: active')
+    .replace('last_reviewed: null', 'last_reviewed: 2026-09-01')
+    .replace('reviewed_content_sha256: null', `reviewed_content_sha256: ${draft.semanticSha256}`)
+  const active = parse(activeText)
+  assert.equal(active.bag.errorCount, 0, active.bag.items.map((item) => `${item.code}: ${item.message}`).join('\n'))
+  const stale = parse(activeText.replace('Prefer bounded changes', 'Prefer narrowly bounded changes'))
+  assert.ok(stale.bag.items.some((item) => item.code === 'CONTENT_REVIEW_HASH'))
+  assert.ok(validateCorpusTransition([draft], [active.document], new DiagnosticBag()).has('principle-activation'))
 })

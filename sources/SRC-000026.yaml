@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000026
+title: The Standard of Code Review
+publisher: Google
+evidence_kind: institutional-practice
+canonical_url: https://google.github.io/eng-practices/review/reviewer/standard.html
+url_aliases: []
+published_or_version: null
+first_retrieved: '2026-09-02'
+last_reviewed: '2026-09-02'
+status: active
+superseded_by: null

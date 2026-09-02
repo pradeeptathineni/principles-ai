@@ -1,4 +1,4 @@
-version: 4
+version: 6
 
 policy_precedence:
   executable_structure: config
@@ -17,13 +17,25 @@ file_types:
 
 path_frontmatter_mapping:
   corpus_glob: domains/*/*.md
-  excluded_filenames: [README.md, taxonomy-review.md]
+  excluded_filenames: [README.md]
   domain_directory_must_equal_frontmatter_domain: true
   frontmatter_id: <domain>.<id_suffix>
   title_heading_must_equal_frontmatter_title: true
   subdomain_filename_must_equal_frontmatter_subdomain: true
   subdomain_must_be_registered_and_accepted: true
   universal_file_requires_accepted_domain: true
+
+review_state:
+  draft:
+    last_reviewed: null
+    reviewed_content_sha256: null
+  active:
+    last_reviewed: date
+    reviewed_content_sha256: sha256-of-semantic-content-model
+  semantic_hash_excludes: [status, last_reviewed, reviewed_content_sha256, local-citation-labels, source-urls]
+  semantic_hash_uses_source_ids: true
+  activation_or_active_semantic_change_requires_human_approval: true
+  active_removal_requires_human_approval: true
 
 identity:
   principle_id_pattern: '^PRN-[0-9]{6}$'
@@ -169,3 +181,15 @@ title_comparison:
   h1_allowed_source_forms: [plain-text, character-reference, backslash-escape]
   h1_projection: decoded_visible_text
   comparison: exact_codepoint_equality
+
+word_economy:
+  enforcement: warning
+  principle: say_everything_necessary_and_useful_and_nothing_added_only_because_the_format_permits_it
+  preferred_max_words:
+    introduction: 45
+    statement: 35
+    why_paragraph: 90
+    practice_item: 35
+    applicability_paragraph: 70
+    entry: 220
+    file: 1800

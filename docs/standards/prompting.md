@@ -16,6 +16,10 @@ A user should be able to state intent without knowing schema, codes, parser comm
 
 The agent converts intent into repository changes according to canonical standards.
 
+The agent also discovers and composes prerequisite workflows. A content request authorizes prerequisite research, review preparation, source registration, validation, and draft generation after taxonomy acceptance. Users do not need to separately request taxonomy review, acceptance preparation, or workflow resumption.
+
+Authorization is not semantic preapproval. When exact taxonomy or new principle meaning has not yet been presented, the agent prepares a decision-ready package and pauses at the genuine human gate. Once the user approves that exact package, the agent applies the transition and resumes without asking again whether to continue the original outcome.
+
 ## Prompt responsibilities
 
 A task prompt should normally specify:
@@ -39,13 +43,13 @@ It should not restate:
 
 Do not create a conversational input script merely to collect information an agent can interpret reliably from natural language.
 
-Use scripts for deterministic validation, identity/collision handling, aggregation, accepted-scope scaffolding, and parsing. Use agents for fuzzy intent, research, scope judgment, and synthesis.
+Use scripts for deterministic validation, collision detection, aggregation, parsing, and target-state inspection. Until a dedicated transactional mutation command is justified, agents apply accepted-scope scaffolding and ledger/record allocation together in one coherent patch, as late as practical, and validators enforce identity and collision rules. Use agents for fuzzy intent, research, scope judgment, and synthesis.
 
 Later model automation must assemble repository-local standards and manifests rather than duplicate policy in application code. Deterministic bootstrap exclusions are governed by [Bootstrap](../workflows/bootstrap.md).
 
 ## Task decomposition
 
-For complex work, separate intent and scope, research and evidence extraction, synthesis, citation/adversarial review, deterministic and operational checks, semantic evaluation, required human approval, and final reporting.
+For complex work, compose intent and scope, prerequisite discovery, research and evidence extraction, synthesis, citation/adversarial review, deterministic and operational checks, semantic evaluation, required human approval, automatic resumption, and final reporting under [Outcome orchestration](../workflows/orchestrate-outcome.md).
 
 Do not force all stages into one uninterrupted generation when independent verification would improve quality.
 

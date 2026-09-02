@@ -44,13 +44,10 @@ export function loadEvaluatorConfigurations(root, schema, bag) {
     } catch (error) {
       bag.error('EVALUATOR_CANONICALIZATION', error.message, path)
     }
-    const prompt = value.prompt.normalize('NFC').replace(/\r\n?/g, '\n')
     byPath.set(path, {
       path,
       value,
-      inputSha256: sha256(readFileSync(safeResolve(root, path), 'utf8')),
-      promptSha256: sha256(prompt),
-      settingsSha256: settingsCanonical === undefined ? null : sha256(settingsCanonical)
+      inputSha256: sha256(readFileSync(safeResolve(root, path), 'utf8'))
     })
   }
   return byPath
@@ -99,40 +96,30 @@ export function validateEvidence(root, records, entryById, evaluatorConfigs, sou
     const expectedRoles = expectedClaims.map((claim) => claim.role)
     if (!sameArray(roles, expectedRoles)) bag.error('EVIDENCE_COVERAGE', `Evidence roles must exactly equal ${expectedRoles.join(', ')} in document order.`, path)
     const referenceSources = new Map(resolved.document.references.map((reference) => [reference.label, reference.sourceId]))
+    const reviewer = value.reviewer
+    if (reviewer.type !== 'human') {
+      const config = evaluatorConfigs.get(reviewer.configuration.configuration_ref)
+      if (!config) bag.error('EVALUATOR_REFERENCE', 'Evidence evaluator configuration does not resolve.', path)
+      else if (reviewer.configuration.configuration_sha256 !== config.inputSha256) bag.error('EVALUATOR_HASH', 'Evidence evaluator configuration hash does not match the referenced file.', path)
+    }
     for (const [index, review] of value.claims.entries()) {
       const claim = expectedClaims[index]
       if (!claim || review.role !== claim.role) continue
       if (review.claim_sha256 !== claim.claimSha256) bag.error('EVIDENCE_CLAIM_HASH', `${review.role} claim hash does not match current normalized wording.`, path)
       const expectedSources = [...new Set(claim.citationLabels.map((label) => referenceSources.get(label)).filter(Boolean))]
-      if (!sameArray(review.source_ids, expectedSources)) bag.error('EVIDENCE_SOURCE_SEQUENCE', `${review.role} source_ids must exactly equal ${expectedSources.join(', ')}.`, path)
-      const locatorPairs = new Set()
-      const locatedSources = new Set()
-      for (const locator of review.locators) {
-        const key = `${locator.source_id}\0${locator.locator}`
-        if (locatorPairs.has(key)) bag.error('EVIDENCE_LOCATOR_DUPLICATE', `${review.role} repeats locator ${locator.source_id}: ${locator.locator}.`, path)
-        locatorPairs.add(key)
-        if (!review.source_ids.includes(locator.source_id)) bag.error('EVIDENCE_LOCATOR_SOURCE', `${review.role} locator names a source outside source_ids.`, path)
-        locatedSources.add(locator.source_id)
-      }
-      for (const sourceId of review.source_ids) {
+      const reviewedSources = review.sources.map((source) => source.source_id)
+      if (!sameArray(reviewedSources, expectedSources)) bag.error('EVIDENCE_SOURCE_SEQUENCE', `${review.role} sources must exactly equal ${expectedSources.join(', ')}.`, path)
+      if (new Set(reviewedSources).size !== reviewedSources.length) bag.error('EVIDENCE_SOURCE_DUPLICATE', `${review.role} repeats a source.`, path)
+      for (const source of review.sources) {
+        const sourceId = source.source_id
         if (!sourceById.has(sourceId)) bag.error('EVIDENCE_SOURCE_MISSING', `${review.role} source ${sourceId} is not registered.`, path)
-        if (!locatedSources.has(sourceId)) bag.error('EVIDENCE_LOCATOR_MISSING', `${review.role} source ${sourceId} has no locator.`, path)
       }
       if (resolved.document.frontmatter.status === 'active' && !['strong', 'disputed'].includes(review.outcome)) bag.error('EVIDENCE_OUTCOME', `Active ${review.role} cannot publish outcome ${review.outcome}.`, path)
-      const reviewer = review.reviewer
-      if (reviewer.type !== 'human') {
-        const config = evaluatorConfigs.get(reviewer.configuration.configuration_ref)
-        if (!config) bag.error('EVALUATOR_REFERENCE', `${review.role} evaluator configuration does not resolve.`, path)
-        else {
-          if (reviewer.configuration.system !== config.value.system || reviewer.configuration.model !== config.value.model) bag.error('EVALUATOR_IDENTITY', `${review.role} evaluator system/model do not match the referenced configuration.`, path)
-          if (reviewer.configuration.prompt_sha256 !== config.promptSha256 || reviewer.configuration.settings_sha256 !== config.settingsSha256) bag.error('EVALUATOR_HASH', `${review.role} evaluator hashes do not match the referenced configuration.`, path)
-        }
-      }
     }
   }
   for (const requiredPath of ['domains/coding/principles.md', 'domains/coding/personal-growth.md', 'domains/coding/design.md']) {
     for (const [entryId, resolved] of entryById) {
-      if (resolved.document.path === requiredPath && !byEntryId.has(entryId)) bag.error('EVIDENCE_PILOT_REQUIRED', `${requiredPath} requires complete evidence for ${entryId}.`, requiredPath)
+      if (resolved.document.path === requiredPath && !byEntryId.has(entryId)) bag.error('EVIDENCE_REQUIRED', `${requiredPath} requires complete evidence for ${entryId}.`, requiredPath)
     }
   }
   return byEntryId
@@ -147,7 +134,7 @@ export function validateEvidenceTransition(baselineRecords, proposedRecords, bas
     const nextClaims = new Map(next.claims.map((claim) => [claim.role, claim]))
     for (const oldClaim of oldRecord.claims) {
       const claim = nextClaims.get(oldClaim.role)
-      if (claim && JSON.stringify(oldClaim.locators) !== JSON.stringify(claim.locators)) bag.info('SEMANTIC_REREVIEW_LOCATOR', `${entryId} ${claim.role} locator transition requires semantic re-review.`, `evidence/claims/${entryId}.yaml`)
+      if (claim && JSON.stringify(oldClaim.sources) !== JSON.stringify(claim.sources)) bag.info('SEMANTIC_REREVIEW_LOCATOR', `${entryId} ${claim.role} source or locator transition requires semantic re-review.`, `evidence/claims/${entryId}.yaml`)
     }
   }
   const beforeSource = new Map(baselineSources.map((source) => [source.value.id, source.value]))

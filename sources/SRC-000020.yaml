@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000020
+title: SPDX Specification 3.0.1 — Scope
+publisher: Linux Foundation
+evidence_kind: normative-authority
+canonical_url: https://spdx.github.io/spdx-spec/v3.0.1/scope/
+url_aliases: []
+published_or_version: Version 3.0.1
+first_retrieved: '2026-09-02'
+last_reviewed: '2026-09-02'
+status: active
+superseded_by: null

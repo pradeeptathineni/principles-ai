@@ -21,16 +21,15 @@ function state(record) {
 
 function validRecord() {
   return {
-    schema_version: 3,
+    schema_version: 4,
     entry_id: 'PRN-000001',
+    reviewed_at: '2026-09-01',
+    reviewer: { type: 'human', identity: 'Reviewer', configuration: null },
     claims: [{
       role: 'statement',
       claim_sha256: 'a'.repeat(64),
-      source_ids: ['SRC-000001'],
-      locators: [{ source_id: 'SRC-000001', locator: 'Section 1' }],
-      outcome: 'strong',
-      reviewed_at: '2026-09-01',
-      reviewer: { type: 'human', identity: 'Reviewer', configuration: null }
+      sources: [{ source_id: 'SRC-000001', locators: ['Section 1'] }],
+      outcome: 'strong'
     }]
   }
 }
@@ -43,15 +42,28 @@ test('complete evidence validates exact role, hash, source order, and locators',
   assert.equal(bag.errorCount, 0)
 })
 
-test('evidence rejects stale hashes, source disagreement, and missing locators', () => {
+test('evidence rejects stale hashes and source disagreement', () => {
   const record = validRecord()
   record.claims[0].claim_sha256 = 'b'.repeat(64)
-  record.claims[0].source_ids = ['SRC-000002']
-  record.claims[0].locators = []
+  record.claims[0].sources = [{ source_id: 'SRC-000002', locators: ['Section 2'] }]
   const { records, entries } = state(record)
   const bag = new DiagnosticBag()
   validateEvidence('/', records, entries, new Map(), new Map(), bag)
-  for (const code of ['EVIDENCE_CLAIM_HASH', 'EVIDENCE_SOURCE_SEQUENCE', 'EVIDENCE_LOCATOR_MISSING']) assert.ok(bag.items.some((item) => item.code === code), code)
+  for (const code of ['EVIDENCE_CLAIM_HASH', 'EVIDENCE_SOURCE_SEQUENCE', 'EVIDENCE_SOURCE_MISSING']) assert.ok(bag.items.some((item) => item.code === code), code)
+})
+
+test('one entry-level evaluator hash binds every claim review', () => {
+  const record = validRecord()
+  record.reviewer = {
+    type: 'ai',
+    identity: 'Evaluator',
+    configuration: { configuration_ref: 'evals/configurations/test.yaml', configuration_sha256: 'b'.repeat(64) }
+  }
+  const { records, entries } = state(record)
+  const bag = new DiagnosticBag()
+  const configs = new Map([['evals/configurations/test.yaml', { inputSha256: 'a'.repeat(64) }]])
+  validateEvidence('/', records, entries, configs, new Map([['SRC-000001', { value: { id: 'SRC-000001' } }]]), bag)
+  assert.ok(bag.items.some((item) => item.code === 'EVALUATOR_HASH'))
 })
 
 test('invalid evidence shape is contained as a diagnostic', () => {

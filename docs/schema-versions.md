@@ -7,7 +7,7 @@ Schema and policy versions are compatibility boundaries. Tooling supports only v
 A version change requires:
 
 1. A documented reason and compatibility impact.
-2. An explicit deterministic migration for every affected canonical record.
+2. An explicit deterministic migration for every affected canonical record, with rationale and human approval for any intentional information loss.
 3. Updated templates, fixtures, policies, and workflows.
 4. Validation of the fully migrated repository before the old version is removed from support.
 5. Human approval as a policy/schema change.
@@ -43,6 +43,31 @@ Because no affected corpus, source, claim-review, or evaluator records existed, 
 
 The deterministic tooling adversarial review then identified that operational `review_due_report` had no executable threshold and source-content observations had no explicit snapshot contract. Source policy version 5 adds a 365-day review-due threshold and a SHA-256, hash-only operational observation contract requiring an explicit baseline. No source records or corpus files existed, so this is another lossless no-data migration; it creates no review result or source provenance.
 
+## Process-orchestration migration
+
+The process-architecture correction advances the schema document ID from version 3 to 4 and separates review progress from human lifecycle decisions before corpus generation:
+
+- Domain manifests: version 3 to 4. All 15 proposed manifests migrate mechanically to `taxonomy_review.state: not-started` with a null review hash; their taxonomy meaning is unchanged.
+- Taxonomy review records begin at version 1. None existed at migration time.
+- Corpus frontmatter: version 4 to 5. No canonical corpus files existed. Version 5 binds active content to `reviewed_content_sha256`; drafts store null.
+- Content policy: version 4 to 5.
+- Taxonomy policy: version 4 to 5.
+- Validation policy: version 4 to 5.
+
+The migration permits complete taxonomy research to remain proposed while awaiting acceptance, adds trusted-baseline taxonomy/protected-intent/corpus transition classification, and makes natural-language outcome orchestration canonical. It does not accept taxonomy, create corpus content, allocate identities, register sources, fabricate reviews, or record human approval.
+
 ## Format assertion
 
 Repository validation treats JSON Schema Draft 2020-12 `format` as an assertion. Implementations must enable validation for formats used by the canonical schema, including `date` and `uri`; annotation-only handling is nonconforming.
+
+## First-production-run simplification
+
+The 2026-09-01 `coding/design.md` run exposed process and storage costs that the pre-production design could not validate empirically:
+
+- Schema document ID advances from version 4 to 5.
+- All 15 domain manifests advance from version 4 to 5 and remove `taxonomy_review`. Coding keeps its accepted lifecycle; every other domain keeps its proposed lifecycle. The coding review sidecar is removed because its useful decision history belongs in version control or a pull request, not mirrored canonical state.
+- Source records advance from version 3 to 4. Five retained records replace free-text `source_type` plus misleading scalar `authority_class` with a single explicit `evidence_kind`; the unused sixth record, created only for the removed taxonomy review, is deleted and its allocation is permanently retired. Superseded metadata remains recoverable from version history.
+- Claim-review records advance from version 3 to 4. Four records move review metadata to entry scope, bind the exact evaluator configuration file once, and combine each source with its locators. Claim hashes and outcomes are preserved or recomputed against compressed wording.
+- Content policy advances to version 6 with advisory word-economy warnings. Source and taxonomy policies advance to version 6; evidence policy advances to version 4; validation advances to version 6.
+
+The migration deliberately retires deterministic checks for the removed taxonomy-review machinery. Versioned policy migrations may add, replace, or retire checks; same-version weakening remains invalid. No principle or source identity is retired or reused.

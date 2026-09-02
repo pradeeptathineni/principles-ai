@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000018
+title: ISO/IEC 25010:2023 — Product quality model
+publisher: International Organization for Standardization
+evidence_kind: normative-authority
+canonical_url: https://www.iso.org/standard/78176.html
+url_aliases: []
+published_or_version: Edition 2, 2023-11
+first_retrieved: '2026-09-02'
+last_reviewed: '2026-09-02'
+status: active
+superseded_by: null

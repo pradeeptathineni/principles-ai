@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000031
+title: ERR03-J. Restore prior object state on method failure
+publisher: Software Engineering Institute, Carnegie Mellon University
+evidence_kind: normative-authority
+canonical_url: https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/exceptional-behavior-err/err03-j/
+url_aliases: []
+published_or_version: Updated August 6, 2025
+first_retrieved: '2026-09-02'
+last_reviewed: '2026-09-02'
+status: active
+superseded_by: null

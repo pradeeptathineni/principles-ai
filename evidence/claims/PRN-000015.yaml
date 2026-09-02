@@ -1,0 +1,40 @@
+schema_version: 4
+entry_id: PRN-000015
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: f8185c18cb2a279f482fcc3386323148b2bd4d3b1e8b290f5375d5bf54ad3552
+  sources:
+  - source_id: SRC-000028
+    locators: [Explain Why, Giving Guidance]
+  - source_id: SRC-000001
+    locators: ['Software Engineering Professional Practice KA, sections 2.2 and 2.3, pages 14-10 to 14-11']
+  outcome: strong
+- role: why-1
+  claim_sha256: fdd073666ba037126bb6ce40a26bf9bb921beb0d3c64399297f7289d3fbae49b
+  sources:
+  - source_id: SRC-000028
+    locators: [Explain Why, Giving Guidance]
+  - source_id: SRC-000001
+    locators: ['Software Engineering Professional Practice KA, section 2.3, pages 14-10 to 14-11']
+  outcome: strong
+- role: practice-1
+  claim_sha256: 9dd126120f7a72394a6ba21d00c229220aeeae9de07c70ee833bb5e5a7430e97
+  sources:
+  - source_id: SRC-000028
+    locators: [Explain Why, Giving Guidance]
+  outcome: strong
+- role: practice-2
+  claim_sha256: d6fb236c220573857ec31b7db7a9cfb12fdca24fe88cef8c2fc6022294cee763
+  sources:
+  - source_id: SRC-000028
+    locators: [Giving Guidance]
+  - source_id: SRC-000001
+    locators: ['Software Engineering Professional Practice KA, sections 2.2 to 2.4, pages 14-10 to 14-11']
+  outcome: strong

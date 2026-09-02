@@ -1,5 +1,5 @@
 ---
-schema_version: 4
+schema_version: 5
 id: <domain>.<subdomain>
 title: <Domain> <Subdomain>
 domain: <domain>
@@ -7,6 +7,7 @@ type: subdomain
 subdomain: <subdomain>
 status: draft
 last_reviewed: null
+reviewed_content_sha256: null
 ---
 
 # <Domain> <Subdomain>

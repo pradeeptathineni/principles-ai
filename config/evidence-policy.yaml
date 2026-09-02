@@ -1,4 +1,4 @@
-version: 3
+version: 4
 
 records:
   directory: evidence/claims
@@ -7,7 +7,7 @@ records:
   filename_id_must_equal_entry_id: true
   entry_id_must_resolve_to_one_allocated_nonretired_corpus_entry: true
   schema: config/schema.yaml#/$defs/claim_review_record
-  record_granularity: one_complete_record_per_entry
+  record_granularity: one_compact_record_per_entry
   claim_hash: sha256
   claim_hash_encoding: utf-8
   claim_hash_normalization:
@@ -47,13 +47,12 @@ coverage:
   role_ordinals_follow_document_order: true
   claim_record_order: [statement, why, practice, applicability, cited-goal]
   duplicate_roles_allowed: false
-  source_ids_must_equal_unique_resolved_claim_citations_in_first_use_order: true
-  every_source_id_requires_at_least_one_locator: true
-  locator_source_id_must_be_in_source_ids: true
-  duplicate_locator_pairs_allowed: false
+  sources_must_equal_unique_resolved_claim_citations_in_first_use_order: true
+  every_source_requires_at_least_one_locator: true
+  duplicate_sources_or_locators_allowed: false
 
 adoption:
-  required_for_three_file_pilot: true
+  required_for_named_pilot_paths: true
   required_paths:
     - domains/coding/principles.md
     - domains/coding/personal-growth.md
@@ -61,7 +60,9 @@ adoption:
   required_for_all_future_corpus: false
   required_path_rule_applies_only_when_corpus_path_exists: true
   required_path_absence_before_authorized_pilot_is_valid: true
-  universal_policy_decision: pending_post_pilot_review
+  universal_policy_decision: not_adopted
+  future_default: optional
+  recommended_for: [high-impact, disputed, novel, weak-source-landscape]
 
 outcomes:
   values: [strong, partial, unsupported, disputed]
@@ -70,12 +71,8 @@ outcomes:
 
 reviewer_configuration:
   human_configuration: null
-  ai_or_hybrid_required_fields:
-    - system
-    - model
-    - configuration_ref
-    - prompt_sha256
-    - settings_sha256
+  review_metadata_granularity: once_per_entry_record
+  ai_or_hybrid_required_fields: [configuration_ref, configuration_sha256]
   configuration_ref_must_resolve_within_repository: true
   configuration_ref_must_be_under: evals/configurations
   configuration_record:
@@ -83,19 +80,9 @@ reviewer_configuration:
     filename: <configuration-id>.yaml
     schema: config/schema.yaml#/$defs/evaluator_configuration_record
     filename_id_must_equal_record_id: true
-    claim_system_and_model_must_equal_record: true
-    prompt_hash:
+    configuration_hash:
       algorithm: sha256
-      input: parsed_prompt_string_normalized_to_utf8_nfc_lf
-    settings_hash:
-      algorithm: sha256
-      input: rfc8785_json_canonicalization_of_parsed_settings
-      input_domain: i-json
-      numeric_scalar_parsing: ieee754_binary64_using_json_number_semantics
-      numeric_overflow_or_nonfinite_result: error
-      integer_range_inclusive: [-9007199254740991, 9007199254740991]
-      integer_outside_range: error_use_string
-      decimal_and_exponent_values_hash_the_parsed_binary64_value: true
+      input: exact_canonical_configuration_file_bytes
     nonfinite_numbers_allowed: false
     credentials_or_secrets_allowed: false
 

@@ -18,7 +18,7 @@ The project should help a reader answer:
 
 ## Primary outputs
 
-Canonical corpus content is Markdown under `domains/`. Each domain owns a manifest describing taxonomy lifecycle and protected human intent. Stable source records live under `sources/`. Minimal claim-review records may live under `evidence/`; they are required for the initial three-file pilot but are not yet universally mandatory.
+Canonical corpus content is Markdown under `domains/`. Each domain owns a manifest describing taxonomy lifecycle and protected human intent. Stable source records live under `sources/`. Compact claim-review records may live under `evidence/`; they are required only for configured pilot paths and are optional elsewhere.
 
 A domain may register proposed or accepted scopes before corresponding Markdown exists. Taxonomy acceptance and content coverage are separate concepts.
 
@@ -87,6 +87,8 @@ The repository optimizes for:
 ## Human and agent roles
 
 Humans define purpose, personal priorities, acceptable judgment, taxonomy acceptance, and final governance. Agents may interpret intent, research, synthesize, challenge assumptions, validate, implement approved tooling, and propose changes.
+
+Users describe desired outcomes rather than internal workflow sequences. Agents own prerequisite discovery and orchestration, including resuming the requested outcome after a human gate. A request authorizes ordinary prerequisite and draft work, but not unseen high-impact judgments. Humans own the decision; agents may apply the resulting state transition mechanically.
 
 Code enforces deterministic invariants. Operational checks observe changing external state. AI and humans evaluate semantics. Humans approve protected and high-impact decisions.
 

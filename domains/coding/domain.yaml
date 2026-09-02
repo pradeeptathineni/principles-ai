@@ -1,8 +1,8 @@
-schema_version: 3
+schema_version: 5
 id: coding
 code: COD
 title: Coding
-taxonomy_status: proposed
+taxonomy_status: accepted
 description: Principles for writing, changing, reviewing, testing, debugging, and
   maintaining software code.
 human_intent:
@@ -10,25 +10,21 @@ human_intent:
   priorities: []
   exclusions: []
   scope_notes: []
-taxonomy_review:
-  reviewed_at: null
-  source_ids: []
-  review_record: null
 subdomains:
 - id: design
   code: DES
   title: Design
-  status: proposed
+  status: accepted
   origin: research
 - id: readability
   code: REA
   title: Readability
-  status: proposed
+  status: accepted
   origin: research
 - id: maintainability
   code: MAI
   title: Maintainability
-  status: proposed
+  status: accepted
   origin: research
 - id: modularity
   code: MOD
@@ -38,45 +34,45 @@ subdomains:
 - id: testing
   code: TST
   title: Testing
-  status: proposed
+  status: accepted
   origin: research
 - id: debugging
   code: DBG
   title: Debugging
-  status: proposed
+  status: accepted
   origin: research
 - id: error-handling
   code: ERR
   title: Error Handling
-  status: proposed
+  status: accepted
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: proposed
+  status: accepted
   origin: research
 - id: performance
   code: PER
   title: Performance
-  status: proposed
+  status: accepted
   origin: research
 - id: dependencies
   code: DEP
   title: Dependencies
-  status: proposed
+  status: accepted
   origin: research
 - id: version-control
   code: VCS
   title: Version Control
-  status: proposed
+  status: accepted
   origin: research
 - id: code-review
   code: CRV
   title: Code Review
-  status: proposed
+  status: accepted
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: proposed
+  status: accepted
   origin: research

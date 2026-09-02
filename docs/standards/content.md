@@ -78,7 +78,9 @@ Each document has one title, one editorial introduction, one `## Principles` sec
 
 Corpus Markdown lives directly under `domains/<domain>/`. Universal filenames and IDs use the domain `principles` and `personal-growth` presets; subdomain filenames, IDs, type, and registered subdomain agree. Directory, path, frontmatter, and decoded title agreement is exact under `config/content-policy.yaml`. Corpus content requires an accepted domain, and subdomain content requires that subdomain to be accepted.
 
-Corpus status is `draft` or `active`; taxonomy and principle retirement provide historical lifecycle, so a third deprecated-file state is intentionally absent. `last_reviewed` is null while status is `draft`. An `active` file carries the date of its last complete semantic content review against then-current citations and required human review. Any substantive draft revision resets it to null. Formatting or link reachability alone does not advance it.
+Corpus status is `draft` or `active`; absence is the pre-creation state, and taxonomy and principle retirement provide historical lifecycle, so a third deprecated-file state is intentionally absent. `draft` is agent-owned working content under accepted taxonomy; `last_reviewed` and `reviewed_content_sha256` are null. An `active` file carries the date and exact semantic hash of its last complete review against then-current source identities and required human judgment.
+
+Activation readiness is derived, not a third stored status. Deterministic validity and publishable evidence outcomes are necessary but do not prove semantic adequacy or human approval. Activating new or materially changed principles requires human approval of the exact reviewed content. On a proposed substantive update, work returns to draft until review and approval complete. Formatting-only changes and source URL moves that preserve source identity do not alter the semantic hash.
 
 ## Introductions
 

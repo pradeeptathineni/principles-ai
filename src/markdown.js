@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { basename } from 'node:path'
+import canonicalize from 'canonicalize'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
@@ -25,6 +26,30 @@ function visibleText(node) {
   if (!node) return ''
   if (node.type === 'text' || node.type === 'inlineCode') return node.value
   return (node.children ?? []).map(visibleText).join('')
+}
+
+function wordCount(value) {
+  return value.match(/[\p{L}\p{N}]+(?:['’.-][\p{L}\p{N}]+)*/gu)?.length ?? 0
+}
+
+function validateWordEconomy(document, policy, bag) {
+  const limits = policy?.word_economy?.preferred_max_words
+  if (!limits) return
+  function check(label, text, limit, location = null) {
+    const count = wordCount(text)
+    if (count > limit) bag.warning('WORD_ECONOMY', `${label} has ${count} words; the preferred maximum is ${limit}. Compress it or document why the extra length earns its place.`, document.path, location)
+  }
+  check('Introduction', document.introduction, limits.introduction)
+  for (const entry of document.entries) {
+    check(`${entry.id} statement`, entry.statement?.text ?? '', limits.statement, entry.statement?.location)
+    for (const claim of entry.why) check(`${entry.id} ${claim.role}`, claim.text, limits.why_paragraph, claim.location)
+    for (const claim of entry.practices) check(`${entry.id} ${claim.role}`, claim.text, limits.practice_item, claim.location)
+    for (const claim of entry.applicability) check(`${entry.id} ${claim.role}`, claim.text, limits.applicability_paragraph, claim.location)
+    const entryText = [entry.title, entry.statement?.text ?? '', ...entry.why.map((claim) => claim.text), ...entry.practices.map((claim) => claim.text), ...entry.applicability.map((claim) => claim.text), ...entry.goals.map((claim) => claim.text)].join(' ')
+    check(`${entry.id} entry`, entryText, limits.entry, entry.heading ? nodeLocation(entry.heading) : null)
+  }
+  const fileText = [document.title, document.introduction, ...document.entries.flatMap((entry) => [entry.title, entry.statement?.text ?? '', ...entry.why.map((claim) => claim.text), ...entry.practices.map((claim) => claim.text), ...entry.applicability.map((claim) => claim.text), ...entry.goals.map((claim) => claim.text)])].join(' ')
+  check('File', fileText, limits.file)
 }
 
 function rawNode(body, node) {
@@ -298,7 +323,32 @@ function validatePathMapping(document, manifestsById, path, bag) {
   }
 }
 
-export function parseCorpusFile(root, path, schema, manifestsById, sourceById, bag) {
+function semanticClaim(claim, sourceByLabel) {
+  if (!claim) return null
+  return { role: claim.role, text: claim.text, source_ids: [...new Set(claim.citationLabels.map((label) => sourceByLabel.get(label)).filter(Boolean))] }
+}
+
+export function contentSemanticHash(document) {
+  const sourceByLabel = new Map(document.references.map((reference) => [reference.label, reference.sourceId]))
+  const model = {
+    frontmatter: Object.fromEntries(Object.entries(document.frontmatter).filter(([key]) => !['status', 'last_reviewed', 'reviewed_content_sha256'].includes(key))),
+    title: document.title,
+    introduction: document.introduction,
+    entries: document.entries.map((entry) => ({
+      id: entry.id,
+      title: entry.title,
+      statement: semanticClaim(entry.statement, sourceByLabel),
+      why: entry.why.map((claim) => semanticClaim(claim, sourceByLabel)),
+      practices: entry.practices.map((claim) => semanticClaim(claim, sourceByLabel)),
+      applicability: entry.applicability.map((claim) => semanticClaim(claim, sourceByLabel)),
+      goals: entry.goals.map((claim) => semanticClaim(claim, sourceByLabel)),
+      tags: entry.tags
+    }))
+  }
+  return createHash('sha256').update(canonicalize(model), 'utf8').digest('hex')
+}
+
+export function parseCorpusFile(root, path, schema, manifestsById, sourceById, bag, contentPolicy = null) {
   const text = readCanonicalText(root, path, bag, { maxBytes: LIMITS.markdownBytes })
   if (text === null) return null
   const split = splitFrontmatter(text, path, bag)
@@ -372,8 +422,33 @@ export function parseCorpusFile(root, path, schema, manifestsById, sourceById, b
     references,
     inputSha256: createHash('sha256').update(text, 'utf8').digest('hex')
   }
+  document.semanticSha256 = contentSemanticHash(document)
+  if (!schema.historical && frontmatter.status === 'active' && frontmatter.reviewed_content_sha256 !== document.semanticSha256) {
+    bag.error('CONTENT_REVIEW_HASH', 'Active content reviewed_content_sha256 does not match the current semantic content model.', path)
+  }
   validatePathMapping(document, manifestsById, path, bag)
+  validateWordEconomy(document, contentPolicy, bag)
   return document
+}
+
+export function validateCorpusTransition(baselineDocuments, proposedDocuments, bag) {
+  const gates = new Set()
+  const before = new Map(baselineDocuments.map((document) => [document.path, document]))
+  const after = new Map(proposedDocuments.map((document) => [document.path, document]))
+  for (const [path, oldDocument] of before) {
+    const next = after.get(path)
+    if (!next) {
+      if (oldDocument.frontmatter.status === 'active') gates.add('principle-removal')
+      continue
+    }
+    if (next.frontmatter.status === 'active' && (oldDocument.frontmatter.status !== 'active' || oldDocument.semanticSha256 !== next.semanticSha256)) {
+      gates.add(oldDocument.frontmatter.status === 'active' ? 'principle-semantic-change' : 'principle-activation')
+    }
+  }
+  for (const [path, document] of after) {
+    if (!before.has(path) && document.frontmatter.status === 'active') gates.add('principle-activation')
+  }
+  return gates
 }
 
 export function discoverCorpusPaths(root, bag = { error() {} }) {
@@ -381,14 +456,14 @@ export function discoverCorpusPaths(root, bag = { error() {} }) {
     .map((path) => toRepoPath(root, path))
     .sort()
   for (const path of discovered) {
-    if (/^domains\/.*\.md$/.test(path) && !/(?:README|taxonomy-review)\.md$/.test(path) && !/^domains\/[^/]+\/[^/]+\.md$/.test(path)) bag.error('CORPUS_PATH', 'Corpus Markdown must match domains/<domain>/<file>.md.', path)
+    if (/^domains\/.*\.md$/.test(path) && !/README\.md$/.test(path) && !/^domains\/[^/]+\/[^/]+\.md$/.test(path)) bag.error('CORPUS_PATH', 'Corpus Markdown must match domains/<domain>/<file>.md.', path)
   }
-  return discovered.filter((path) => /^domains\/[^/]+\/[^/]+\.md$/.test(path) && !/(?:README|taxonomy-review)\.md$/.test(path))
+  return discovered.filter((path) => /^domains\/[^/]+\/[^/]+\.md$/.test(path) && !/README\.md$/.test(path))
 }
 
-export function parseCorpus(root, schema, manifests, sourceById, ledger, bag) {
+export function parseCorpus(root, schema, manifests, sourceById, ledger, bag, contentPolicy = null) {
   const manifestsById = new Map(manifests.map((manifest) => [manifest.value.id, manifest]))
-  const documents = discoverCorpusPaths(root, bag).map((path) => parseCorpusFile(root, path, schema, manifestsById, sourceById, bag)).filter(Boolean)
+  const documents = discoverCorpusPaths(root, bag).map((path) => parseCorpusFile(root, path, schema, manifestsById, sourceById, bag, contentPolicy)).filter(Boolean)
   const entryById = new Map()
   const allocated = new Set(ledger?.principles?.allocated ?? [])
   const retired = new Set(ledger?.principles?.retired ?? [])

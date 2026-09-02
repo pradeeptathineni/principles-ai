@@ -1,4 +1,4 @@
-version: 5
+version: 6
 
 registry:
   directory: sources
@@ -99,3 +99,9 @@ operational_observation:
 
 claim_reviews:
   policy: config/evidence-policy.yaml
+
+evidence_kinds:
+  values: [normative-authority, official-documentation, institutional-practice, academic-evidence, expert-synthesis, community-guidance, individual-perspective]
+  ranking_implied: false
+  claim_specific_fitness_required: true
+  weaker_kind_may_replace_available_stronger_fit_only_with_recorded_reason: true

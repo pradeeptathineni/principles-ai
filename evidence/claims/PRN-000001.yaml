@@ -1,0 +1,40 @@
+schema_version: 4
+entry_id: PRN-000001
+reviewed_at: '2026-09-01'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: bd7bcd0f218667124a4f6a8d6cb1e41c27f5c5e6b36d089295208c809648c71e
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, section 1.4, pages 3-4 to 3-5]
+  - source_id: SRC-000005
+    locators: [Archive transcription, paragraphs 14-19]
+  outcome: strong
+- role: why-1
+  claim_sha256: b75f66231426ecfe0ed887eca2a4d94255a89eb0426c4536f9a893655d0b5f57
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, sections 1.3-1.4, pages 3-3 to 3-5]
+  - source_id: SRC-000005
+    locators: [Archive transcription, paragraphs 14-19]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 5d1534bacfab7cee40346847d8633162576f7e1eea9fa0dca9e16cef3525d3cb
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, section 1.4, pages 3-4 to 3-5]
+  outcome: strong
+- role: practice-2
+  claim_sha256: db87b296c878d339aaea0cb42c81c3cba5d6e825aed2bee3c03fcc416672650d
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, sections 1.3-1.4, pages 3-3 to 3-5]
+  - source_id: SRC-000003
+    locators: [Complexity section]
+  outcome: strong

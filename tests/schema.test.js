@@ -9,12 +9,11 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 
 function source(overrides = {}) {
   return {
-    schema_version: 3,
+    schema_version: 4,
     id: 'SRC-000001',
     title: 'Source',
     publisher: 'Publisher',
-    source_type: 'standard',
-    authority_class: 'A',
+    evidence_kind: 'normative-authority',
     canonical_url: 'https://example.com/',
     url_aliases: [],
     published_or_version: null,
@@ -39,4 +38,26 @@ test('schema lifecycle conditionals reject moved sources without aliases', () =>
   const schema = new SchemaValidator(root, bag)
   schema.validate('source_record', source({ status: 'moved' }), 'source.yaml')
   assert.ok(bag.items.some((item) => item.code === 'SCHEMA_INVALID' && item.details?.keyword === 'minItems'))
+})
+
+test('source records use explicit evidence kinds instead of scalar authority ranks', () => {
+  const bag = new DiagnosticBag()
+  const schema = new SchemaValidator(root, bag)
+  schema.validate('source_record', source({ evidence_kind: 'A' }), 'source.yaml')
+  assert.ok(bag.items.some((item) => item.code === 'SCHEMA_INVALID' && item.details?.keyword === 'enum'))
+})
+
+test('domain lifecycle is independent from review sidecars', () => {
+  const bag = new DiagnosticBag()
+  const schema = new SchemaValidator(root, bag)
+  const value = {
+    schema_version: 5,
+    id: 'coding', code: 'COD', title: 'Coding', taxonomy_status: 'proposed', description: 'Coding guidance.',
+    human_intent: { required_subdomains: [], priorities: [], exclusions: [], scope_notes: [] },
+    subdomains: [{ id: 'design', code: 'DES', title: 'Design', status: 'proposed', origin: 'research' }]
+  }
+  assert.equal(schema.validate('domain_manifest', value, 'domain.yaml'), true)
+  value.taxonomy_status = 'accepted'
+  value.subdomains[0].status = 'accepted'
+  assert.equal(schema.validate('domain_manifest', value, 'domain.yaml'), true)
 })

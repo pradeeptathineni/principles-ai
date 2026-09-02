@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000016
+title: Rec. 12. Error Handling (ERR)
+publisher: Software Engineering Institute, Carnegie Mellon University
+evidence_kind: normative-authority
+canonical_url: https://cmu-sei.github.io/secure-coding-standards/sei-cert-c-coding-standard/recommendations/error-handling-err/
+url_aliases: []
+published_or_version: Updated 2025-08-06
+first_retrieved: '2026-09-02'
+last_reviewed: '2026-09-02'
+status: active
+superseded_by: null

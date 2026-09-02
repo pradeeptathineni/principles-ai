@@ -6,6 +6,7 @@ import { validateRepository } from './validator.js'
 import { materializeGitTree } from './baseline.js'
 import { buildContext } from './context.js'
 import { runOperationalChecks } from './operational.js'
+import { formatWorkflowStatus, inspectDomainFurnishingWorkflow, inspectOutcomeWorkflow } from './workflow.js'
 
 function option(args, name, fallback = null) {
   const index = args.indexOf(name)
@@ -20,7 +21,8 @@ function options(args, name) {
 }
 
 function outputDiagnostics(result, json) {
-  process.stdout.write(json ? formatJson(result.bag, { transition_status: result.transitionStatus }) : formatHuman(result.bag))
+  process.stdout.write(json ? formatJson(result.bag, { transition_status: result.transitionStatus, human_gates: result.humanGates }) : formatHuman(result.bag))
+  if (!json && result.humanGates?.length) process.stdout.write(`Human approval required: ${result.humanGates.join(', ')}\n`)
 }
 
 function claimModel({ role, text, citationLabels, claimSha256 }) {
@@ -37,7 +39,7 @@ function writeOutput(root, destination, content) {
 }
 
 function usage() {
-  return `principles commands:\n  validate [--json] [--baseline-ref REF]\n  taxonomy [--output PATH] [--check PATH]\n  parse [--output PATH]\n  context --profile PROFILE (--file ID|PATH | --principle PRN-......) --revision REV [--generated-at ISO] [--output PATH]\n  links external [--baseline PATH] [--as-of YYYY-MM-DD] [--snapshot-output PATH] [--json]\n`
+  return `principles commands:\n  validate [--json] [--baseline-ref REF]\n  workflow (--target domains/<domain>/<file>.md | --domain <domain>) [--json]\n  taxonomy [--output PATH] [--check PATH]\n  parse [--output PATH]\n  context --profile PROFILE (--file ID|PATH | --principle PRN-......) --revision REV [--generated-at ISO] [--output PATH]\n  links external [--baseline PATH] [--as-of YYYY-MM-DD] [--snapshot-output PATH] [--json]\n`
 }
 
 export async function main(args) {
@@ -45,7 +47,7 @@ export async function main(args) {
     process.stdout.write(usage())
     return 0
   }
-  const knownOptions = new Set(['--root', '--offline', '--json', '--baseline-ref', '--output', '--check', '--profile', '--file', '--principle', '--revision', '--generated-at', '--baseline', '--as-of', '--snapshot-output'])
+  const knownOptions = new Set(['--root', '--offline', '--json', '--baseline-ref', '--output', '--check', '--profile', '--file', '--principle', '--revision', '--generated-at', '--baseline', '--as-of', '--snapshot-output', '--target', '--domain'])
   const unknown = args.find((argument) => argument.startsWith('--') && !knownOptions.has(argument))
   if (unknown) {
     process.stderr.write(`Unknown option ${unknown}\n`)
@@ -69,6 +71,19 @@ export async function main(args) {
     if (result.bag.errorCount > 0) {
       outputDiagnostics(result, args.includes('--json'))
       return 1
+    }
+    if (command === 'workflow') {
+      try {
+        const target = option(args, '--target')
+        const domain = option(args, '--domain')
+        if (Boolean(target) === Boolean(domain)) throw new Error('Workflow requires exactly one of --target or --domain')
+        const status = domain ? inspectDomainFurnishingWorkflow(result.state, domain) : inspectOutcomeWorkflow(result.state, target)
+        process.stdout.write(args.includes('--json') ? `${JSON.stringify(status, null, 2)}\n` : formatWorkflowStatus(status))
+        return 0
+      } catch (error) {
+        process.stderr.write(`${error.message}\n`)
+        return 2
+      }
     }
     if (command === 'taxonomy') {
       const check = option(args, '--check')

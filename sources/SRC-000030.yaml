@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000030
+title: SubmittingPatches
+publisher: Git project
+evidence_kind: official-documentation
+canonical_url: https://git-scm.com/docs/SubmittingPatches
+url_aliases: []
+published_or_version: null
+first_retrieved: '2026-09-02'
+last_reviewed: '2026-09-02'
+status: active
+superseded_by: null

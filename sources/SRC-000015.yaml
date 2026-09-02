@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000015
+title: Handle all Errors and Exceptions
+publisher: OWASP Foundation
+evidence_kind: community-guidance
+canonical_url: https://devguide.owasp.org/en/04-design/02-web-app-checklist/10-handle-errors-exceptions/
+url_aliases: []
+published_or_version: null
+first_retrieved: '2026-09-02'
+last_reviewed: '2026-09-02'
+status: active
+superseded_by: null

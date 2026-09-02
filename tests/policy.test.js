@@ -20,12 +20,13 @@ test('policy values are exact and same-version trusted policy changes are reject
   assert.ok(bag.items.some((item) => item.code === 'POLICY_CHANGE_WITHOUT_VERSION'))
 })
 
-test('versioned policy migrations cannot remove trusted deterministic checks', () => {
+test('versioned policy migrations may retire checks when the contract changes', () => {
   const bag = new DiagnosticBag()
   validatePolicyTransition(
     { validation: { version: 4, classes: { deterministic: { checks: ['identity_transition'] } } } },
     { validation: { version: 5, classes: { deterministic: { checks: [] } } } },
     bag
   )
-  assert.ok(bag.items.some((item) => item.code === 'TRUSTED_CHECK_REMOVED'))
+  assert.equal(bag.errorCount, 0)
+  assert.ok(bag.items.some((item) => item.code === 'POLICY_MIGRATION'))
 })

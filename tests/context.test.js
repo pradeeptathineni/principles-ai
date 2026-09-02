@@ -54,7 +54,7 @@ test('verification context hashes source, evidence, and evaluator configuration 
   const evidence = {
     path: 'evidence/claims/PRN-000001.yaml',
     inputSha256: 'e'.repeat(64),
-    value: { claims: [{ reviewer: { configuration: { configuration_ref: 'evals/configurations/test.yaml' } } }] }
+    value: { reviewer: { configuration: { configuration_ref: 'evals/configurations/test.yaml' } }, claims: [] }
   }
   const context = buildContext({
     documents: [document],

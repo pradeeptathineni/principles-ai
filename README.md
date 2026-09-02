@@ -4,7 +4,7 @@ An AI-assisted, evidence-grounded knowledge system for durable principles, actio
 
 It is a human learning resource, a curated source of considered guidance, structured context for AI-assisted work, and a maintainable corpus improved through research and review.
 
-> The deterministic harness is implemented. Do not generate corpus content until the coding taxonomy is independently accepted and the pilot is explicitly authorized.
+> The deterministic harness is implemented. Natural-language outcomes such as `Create domains/coding/design.md` and `Fully furnish the coding domain.` are sufficient; the repository owns prerequisite orchestration and stops only for genuine judgment.
 
 ## Deterministic tooling
 
@@ -17,9 +17,9 @@ npm test
 npm run validate
 ```
 
-Use `node bin/principles.js --help` for taxonomy generation, normalized parsing, explicit-selection context generation, trusted-merge-base validation, JSON diagnostics, and isolated operational link checks. External network checks never run as part of ordinary validation.
+Use `node bin/principles.js --help` for taxonomy generation, normalized parsing, optional explicit-selection context export, trusted-merge-base validation, JSON diagnostics, and isolated operational link checks. External network checks never run as part of ordinary validation.
 
-Tooling completion does not accept taxonomy or authorize the three-file pilot. Corpus creation remains a separate human-governed phase.
+Tooling does not accept principles or prove semantic quality. Users request outcomes; agents orchestrate prerequisites. An unchanged registered target named by the user needs no separate taxonomy ceremony; new or materially changed taxonomy and exact principle activation remain human-governed.
 
 ## Repository model
 
@@ -28,7 +28,7 @@ principles/
 ├── AGENTS.md                  # repository router and universal invariants
 ├── domains/                   # canonical taxonomy state and corpus
 ├── sources/                   # canonical source identity and lifecycle records
-├── evidence/                  # optional claim-review provenance; required for pilot
+├── evidence/                  # optional compact provenance; required only for configured paths
 ├── docs/                      # semantic policy, architecture, standards, workflows, reviews
 ├── config/                    # executable schemas and deterministic configuration
 ├── prompts/                   # lean reusable task prompts, when justified
@@ -49,8 +49,11 @@ See [Architecture](docs/architecture.md), [Taxonomy](docs/standards/taxonomy.md)
 
 - [Project](docs/project.md)
 - [Architecture](docs/architecture.md)
+- [Routine content workflow](docs/workflows/create-content.md)
+- [Domain furnishing workflow](docs/workflows/furnish-domain.md)
 - [Schema and policy versions](docs/schema-versions.md)
 - [Bootstrap workflow](docs/workflows/bootstrap.md)
+- [Outcome orchestration workflow](docs/workflows/orchestrate-outcome.md)
 - [Historical architecture review](docs/reviews/2026-09-01-architecture-audit.md)
 
 The review is historical input, not canonical policy. Accepted decisions are authoritative only where encoded in current `docs/`, `config/`, manifests, templates, and workflows.

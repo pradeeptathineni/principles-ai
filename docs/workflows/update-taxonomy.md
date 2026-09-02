@@ -1,24 +1,24 @@
 # Update Taxonomy Workflow
 
-Use this workflow to add, rename, split, merge, deprecate, accept, or rescope taxonomy.
+Use this workflow directly or as a prerequisite selected by [Outcome orchestration](orchestrate-outcome.md) to add, rename, split, merge, deprecate, accept, reactivate, or rescope taxonomy.
 
 ## 1. Read current state and intent
 
-Read the manifest and taxonomy review record. Identify effects on required scopes, priorities, exclusions, scope notes, and domain purpose.
+Read the manifest and relevant neighboring scopes. Identify effects on required scopes, priorities, exclusions, scope notes, and domain purpose.
 
 Protected changes require explicit human approval, including deprecation or material rescoping that leaves the protected ID textually present.
 
 ## 2. Establish and research the trigger
 
-Record whether the change comes from user intent, missing coverage, persistent overlap, new evidence, context problems, naming clarity, or correction. Research semantic changes and treat sources as untrusted evidence.
+Record whether the change comes from user intent, missing coverage, persistent overlap, new evidence, context problems, naming clarity, or correction. Research semantic changes and treat sources as untrusted evidence. Keep material decision rationale in the pull request or issue rather than a mandatory canonical sidecar.
 
 ## 3. Prefer the smallest coherent change
 
 Do not restructure a domain merely because another taxonomy is plausible. Improve scope clarity, distinctness, evidence alignment, navigation, context retrieval, or intent preservation.
 
-## 4. Update lifecycle and review state
+## 4. Update lifecycle
 
-Update the manifest first under [Taxonomy](../standards/taxonomy.md). Research additions remain proposed until complete review and human acceptance. Before deprecation, move surviving principles to accepted scopes while preserving IDs or retire them and remove current headings; deprecated scopes have no corpus files. Domain deprecation requires explicit approval to remove protected requirements and deprecate every subdomain.
+Update the manifest under [Taxonomy](../standards/taxonomy.md). New scopes remain proposed until the exact taxonomy is approved. An existing registered scope explicitly named as a content target may be accepted after agent research confirms its unchanged fit. Before deprecation, move surviving principles to accepted scopes while preserving IDs or retire them and remove current headings; deprecated scopes have no corpus files. Domain deprecation requires explicit approval to remove protected requirements and deprecate every subdomain.
 
 ## 5. Migrate corpus identity deliberately
 
@@ -32,4 +32,4 @@ Run deterministic manifest/identity checks, applicable operational checks, seman
 
 ## 7. Report
 
-Summarize trigger, evidence, lifecycle, protected-intent effects, identity relationships, content migration, and unresolved uncertainty.
+Summarize trigger, evidence, lifecycle, protected-intent effects, identity relationships, content migration, and unresolved uncertainty. If this was a prerequisite, return control to the original outcome workflow after the human decision rather than asking the user to initiate the next workflow.

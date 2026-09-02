@@ -1,5 +1,6 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { basename, join } from 'node:path'
+import canonicalize from 'canonicalize'
 import { stringify } from 'yaml'
 import { safeResolve, toRepoPath, walkCanonicalRepository } from './repository.js'
 import { loadYaml } from './yaml.js'
@@ -29,7 +30,7 @@ export function loadManifests(root, schema, bag) {
   return manifests
 }
 
-export function validateTaxonomy(root, manifests, sourceById, corpusPaths, bag) {
+export function validateTaxonomy(root, manifests, corpusPaths, bag) {
   const ids = new Map()
   const codes = new Map()
   for (const manifest of manifests) {
@@ -56,12 +57,6 @@ export function validateTaxonomy(root, manifests, sourceById, corpusPaths, bag) 
       else if (subdomain.status === 'deprecated') bag.error('REQUIRED_SUBDOMAIN_DEPRECATED', `Protected required subdomain ${required} cannot be deprecated.`, path)
       else if (value.taxonomy_status === 'accepted' && subdomain.status !== 'accepted') bag.error('REQUIRED_SUBDOMAIN_NOT_ACCEPTED', `Required subdomain ${required} must be accepted with its domain.`, path)
     }
-    const review = value.taxonomy_review
-    if (review?.review_record) {
-      const reviewPath = `domains/${value.id}/${review.review_record}`
-      if (!existsSync(safeResolve(root, reviewPath, { mustExist: false }))) bag.error('TAXONOMY_REVIEW_MISSING', `Taxonomy review record ${reviewPath} does not exist.`, path)
-      for (const sourceId of review.source_ids) if (!sourceById.has(sourceId)) bag.error('TAXONOMY_SOURCE_MISSING', `Taxonomy source ${sourceId} is not registered.`, path)
-    }
     for (const subdomain of value.subdomains ?? []) {
       const corpusPath = `domains/${value.id}/${subdomain.id}.md`
       if (subdomain.status === 'deprecated' && corpusPaths.has(corpusPath)) bag.error('DEPRECATED_SCOPE_CONTENT', `Deprecated scope ${value.id}/${subdomain.id} has a corpus file.`, corpusPath)
@@ -75,15 +70,55 @@ export function validateTaxonomy(root, manifests, sourceById, corpusPaths, bag) 
   }
 }
 
+function equal(left, right) {
+  return canonicalize(left) === canonicalize(right)
+}
+
+export function validateTaxonomyTransition(baselineManifests, proposedManifests, bag) {
+  const gates = new Set()
+  const before = new Map(baselineManifests.map((item) => [item.value.id, item.value]))
+  const after = new Map(proposedManifests.map((item) => [item.value.id, item.value]))
+  for (const [id, oldDomain] of before) {
+    const next = after.get(id)
+    if (!next) {
+      bag.error('TAXONOMY_DOMAIN_REMOVED', `Domain ${id} was removed; retain it as deprecated.`, `domains/${id}/domain.yaml`)
+      continue
+    }
+    if (oldDomain.taxonomy_status === 'accepted' && next.taxonomy_status === 'proposed') bag.error('TAXONOMY_STATUS_REGRESSION', `Accepted domain ${id} cannot regress to proposed.`, `domains/${id}/domain.yaml`)
+    if (oldDomain.taxonomy_status !== next.taxonomy_status) gates.add('taxonomy-lifecycle')
+    if (!equal(oldDomain.description, next.description) || !equal(oldDomain.human_intent, next.human_intent)) gates.add('protected-intent-change')
+    if (!equal({ code: oldDomain.code, title: oldDomain.title }, { code: next.code, title: next.title })) gates.add('taxonomy-definition-change')
+    const oldSubs = new Map((oldDomain.subdomains ?? []).map((item) => [item.id, item]))
+    const nextSubs = new Map((next.subdomains ?? []).map((item) => [item.id, item]))
+    for (const [subId, oldSub] of oldSubs) {
+      const nextSub = nextSubs.get(subId)
+      if (!nextSub) {
+        bag.error('TAXONOMY_SUBDOMAIN_REMOVED', `Subdomain ${id}/${subId} was removed; retain it as deprecated.`, `domains/${id}/domain.yaml`)
+        continue
+      }
+      if (oldSub.status === 'accepted' && nextSub.status === 'proposed') bag.error('TAXONOMY_STATUS_REGRESSION', `Accepted subdomain ${id}/${subId} cannot regress to proposed.`, `domains/${id}/domain.yaml`)
+      if (oldSub.status !== nextSub.status) gates.add('taxonomy-lifecycle')
+      if (!equal({ code: oldSub.code, title: oldSub.title, origin: oldSub.origin }, { code: nextSub.code, title: nextSub.title, origin: nextSub.origin })) gates.add('taxonomy-definition-change')
+    }
+    for (const [subId, nextSub] of nextSubs) {
+      if (!oldSubs.has(subId) && nextSub.status !== 'proposed') bag.error('TAXONOMY_NEW_SCOPE_STATUS', `New subdomain ${id}/${subId} must begin proposed.`, `domains/${id}/domain.yaml`)
+    }
+  }
+  for (const [id, next] of after) {
+    if (!before.has(id) && next.taxonomy_status !== 'proposed') bag.error('TAXONOMY_NEW_DOMAIN_STATUS', `New domain ${id} must begin proposed.`, `domains/${id}/domain.yaml`)
+  }
+  return gates
+}
+
 export function taxonomyAggregate(manifests, corpusDocuments = []) {
   const coverage = new Map()
   for (const document of corpusDocuments) {
     const domain = document.frontmatter.domain
     if (!coverage.has(domain)) coverage.set(domain, [])
-    coverage.get(domain).push(document.path)
+    coverage.get(domain).push({ path: document.path, status: document.frontmatter.status, semantic_sha256: document.semanticSha256 })
   }
   return {
-    schema_version: 1,
+    schema_version: 2,
     derived_from: ['domains/*/domain.yaml', 'domains/*/*.md'],
     domains: [...manifests]
       .sort((a, b) => a.value.id.localeCompare(b.value.id))
@@ -94,9 +129,8 @@ export function taxonomyAggregate(manifests, corpusDocuments = []) {
         status: value.taxonomy_status,
         description: value.description,
         human_intent: value.human_intent,
-        taxonomy_review: value.taxonomy_review,
         subdomains: [...value.subdomains].sort((a, b) => a.id.localeCompare(b.id)),
-        content_files: [...(coverage.get(value.id) ?? [])].sort()
+        content: [...(coverage.get(value.id) ?? [])].sort((a, b) => a.path.localeCompare(b.path))
       }))
   }
 }

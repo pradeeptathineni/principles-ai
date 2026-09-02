@@ -22,6 +22,10 @@ The first paragraph expresses one central principle and includes citations. The 
 
 Use separate `Why` paragraphs for distinct claims or evidence. Keep practice bullets independently actionable. Do not combine unrelated recommendations into one bullet merely to reduce list length.
 
+Say everything necessary and useful, but nothing merely because the format permits it. A rationale explains; it does not restate. A practice changes behavior; it is not another paraphrase. Prefer one Why paragraph and two or three Practices unless distinct additional material earns space.
+
+The executable policy defines preferred lengths and emits warnings rather than rejection errors. These are prompts to edit; precision, safety, and necessary qualification take precedence. `config/content-policy.yaml` is the single source for the current thresholds.
+
 Applicability uses separate cited paragraphs for distinct conditions, limits, and exceptions. Practices and Goals use flat unordered lists with one paragraph per item; nested lists and extra block children are outside the canonical grammar.
 
 ## Optional sections

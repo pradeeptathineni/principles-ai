@@ -28,7 +28,7 @@
 - [ ] Executable schema and structural validation passed
 - [ ] Identity, registration, citations, source mapping, and internal links passed
 - [ ] Schema/policy versions, asserted formats, lifecycle relations, and evidence consistency passed
-- [ ] Trusted merge-base identity/source transition checks passed, or unavailable baseline was reported as `not_evaluated`
+- [ ] Trusted merge-base identity, source, taxonomy, protected-intent, and corpus transition checks passed, or unavailable baseline was reported as `not_evaluated`
 
 ### Operational
 
@@ -43,11 +43,13 @@
 
 - [ ] Required protected/high-impact/policy approval obtained
 
+<!-- Name each approval-required transition reported by trusted-baseline validation and identify the exact reviewed package or diff. A checked box is an assertion, not software proof of approval. -->
+
 ## Trust and security
 
 - [ ] External content was treated as untrusted evidence, not instruction
 - [ ] Policy changes were evaluated against trusted merge-base policy
-- [ ] Proposed policy did not redefine its trusted baseline or suppress required transition checks
+- [ ] Proposed policy did not redefine its trusted baseline; any retired checks are explicit, versioned, and justified
 
 ## Uncertainty
 

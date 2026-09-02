@@ -18,7 +18,11 @@ Taxonomy creates useful entry points into bodies of practice. It is not a perfec
 
 Origin describes how a scope entered the taxonomy; it does not prove evidence, quality, or acceptance. Content coverage is derived from validated files and is independent of taxonomy lifecycle.
 
-Lifecycle combinations are deliberately constrained. A proposed domain has an empty review and no accepted subdomains. An accepted domain has a complete resolving review, every required subdomain accepted, and may retain other proposed or deprecated candidates. Accepted subdomains require an accepted parent. A deprecated domain has only deprecated subdomains and no remaining required subdomains; removing those requirements and deprecating the domain require prior human approval.
+An accepted domain has every required subdomain accepted and may retain other proposed or deprecated candidates. Accepted subdomains require an accepted parent. A deprecated domain has only deprecated subdomains and no remaining required subdomains; removing those requirements and deprecating the domain require prior human approval.
+
+Domain acceptance approves its boundary and purpose. It does not bulk-accept every candidate subdomain. Required subdomains and any other scopes explicitly included in the transition become accepted; unrelated candidates may remain proposed. Universal content requires accepted domain status. Subdomain content also requires that exact subdomain to be accepted.
+
+An explicit request for an existing registered target authorizes acceptance of that unchanged target after research confirms fit. A separate review sidecar and approval stop are unnecessary because they add no new human judgment. New, renamed, merged, materially rescoped, or protected-intent-changing taxonomy still requires an exact human decision.
 
 Deprecated scopes have no current corpus file. Before deprecation, move surviving principles to accepted scopes while preserving IDs or retire them and remove their current headings; version history retains the former wording.
 
@@ -27,10 +31,6 @@ Deprecated scopes have no current corpus file. Before deprecation, move survivin
 Manifests record required subdomains, priorities, exclusions, and scope notes. The manifest `description` field is the protected domain-purpose field; required scopes are protected as well.
 
 An agent must not silently remove, deprecate, rename, merge, or materially rescope protected intent. It may identify problems and propose a reviewed change. Required scopes must not be deprecated while they remain required.
-
-## Current provisional state
-
-Existing domains and subdomains are preserved. Where research origin lacks an auditable review record, the taxonomy remains proposed. Do not invent retrospective research provenance. Coding is the first domain scheduled for independent review before pilot content.
 
 ## Admission test
 
@@ -59,10 +59,6 @@ The ledger retains numerically ordered, contiguous all-time allocations; retirem
 
 Trusted-base transitions are monotonic and preserve prior relationships; split children are new in that transition, while a merge survivor pre-exists and remains active. Without the baseline, transition validation is `not_evaluated`. `config/identity-ledger.yaml` and `config/identity-policy.yaml` are authoritative for exact executable invariants.
 
-## Taxonomy review record
-
-An accepted domain must have a concise `taxonomy-review.md` describing domain boundary, evidence families, important inclusions/exclusions, overlaps, protected intent, and unresolved ambiguity. Its manifest records the exact filename, review date, and at least one resolving stable source ID. Proposed domains keep all three review fields empty. Deprecated domains retain either a complete historical review or an entirely empty review; partial review metadata is invalid.
-
 ## Validation and approval
 
-Deterministic validation checks schema, lifecycle combinations, review-state completeness and resolution, uniqueness at the defined scopes, required-scope presence/status, registration, and path agreement. Semantic evaluation judges boundary quality, distinctness, and duplication. Human approval accepts taxonomy and any protected-intent change; approval is a governance gate, not a manifest field that software pretends to prove.
+Deterministic validation checks schema, lifecycle combinations, uniqueness, required-scope status, registration, path agreement, and trusted-baseline persistence and changes. Semantic evaluation judges boundary quality, distinctness, and duplication. Human approval is required for new or materially changed taxonomy and protected intent, but not for accepting an unchanged existing scope explicitly named as the requested outcome. Lifecycle records the result without pretending software proved semantic fitness or approval.

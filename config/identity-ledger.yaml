@@ -1,11 +1,95 @@
 schema_version: 2
 principles:
-  next_sequence: 1
-  allocated: []
+  next_sequence: 53
+  allocated:
+  - PRN-000001
+  - PRN-000002
+  - PRN-000003
+  - PRN-000004
+  - PRN-000005
+  - PRN-000006
+  - PRN-000007
+  - PRN-000008
+  - PRN-000009
+  - PRN-000010
+  - PRN-000011
+  - PRN-000012
+  - PRN-000013
+  - PRN-000014
+  - PRN-000015
+  - PRN-000016
+  - PRN-000017
+  - PRN-000018
+  - PRN-000019
+  - PRN-000020
+  - PRN-000021
+  - PRN-000022
+  - PRN-000023
+  - PRN-000024
+  - PRN-000025
+  - PRN-000026
+  - PRN-000027
+  - PRN-000028
+  - PRN-000029
+  - PRN-000030
+  - PRN-000031
+  - PRN-000032
+  - PRN-000033
+  - PRN-000034
+  - PRN-000035
+  - PRN-000036
+  - PRN-000037
+  - PRN-000038
+  - PRN-000039
+  - PRN-000040
+  - PRN-000041
+  - PRN-000042
+  - PRN-000043
+  - PRN-000044
+  - PRN-000045
+  - PRN-000046
+  - PRN-000047
+  - PRN-000048
+  - PRN-000049
+  - PRN-000050
+  - PRN-000051
+  - PRN-000052
   retired: []
 sources:
-  next_sequence: 1
-  allocated: []
-  retired: []
+  next_sequence: 33
+  allocated:
+  - SRC-000001
+  - SRC-000002
+  - SRC-000003
+  - SRC-000004
+  - SRC-000005
+  - SRC-000006
+  - SRC-000007
+  - SRC-000008
+  - SRC-000009
+  - SRC-000010
+  - SRC-000011
+  - SRC-000012
+  - SRC-000013
+  - SRC-000014
+  - SRC-000015
+  - SRC-000016
+  - SRC-000017
+  - SRC-000018
+  - SRC-000019
+  - SRC-000020
+  - SRC-000021
+  - SRC-000022
+  - SRC-000023
+  - SRC-000024
+  - SRC-000025
+  - SRC-000026
+  - SRC-000027
+  - SRC-000028
+  - SRC-000029
+  - SRC-000030
+  - SRC-000031
+  - SRC-000032
+  retired:
+  - SRC-000002
 principle_relationships: []
-

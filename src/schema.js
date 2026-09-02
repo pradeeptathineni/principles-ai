@@ -4,12 +4,14 @@ import { SUPPORTED } from './constants.js'
 import { loadYaml } from './yaml.js'
 
 export class SchemaValidator {
-  constructor(root, bag) {
+  constructor(root, bag, { historical = false } = {}) {
     this.root = root
     this.bag = bag
     this.schema = loadYaml(root, 'config/schema.yaml', bag, { metadata: false })
     if (!this.schema) return
-    if (this.schema.$id !== SUPPORTED.schemaId) {
+    this.historical = historical
+    this.schemaId = this.schema.$id
+    if (!historical && this.schema.$id !== SUPPORTED.schemaId) {
       bag.error('SCHEMA_VERSION', `Unsupported schema document ID ${this.schema.$id ?? '<missing>'}.`, 'config/schema.yaml')
       return
     }
@@ -26,12 +28,12 @@ export class SchemaValidator {
     if (!this.ajv) return false
     const supportedVersion = SUPPORTED.records[definition]
     if (supportedVersion === undefined) throw new Error(`Unknown schema definition ${definition}`)
-    if (value?.schema_version !== supportedVersion) {
+    if (!this.historical && value?.schema_version !== supportedVersion) {
       this.bag.error('RECORD_VERSION', `Unsupported ${definition} schema_version ${String(value?.schema_version)}; expected ${supportedVersion}.`, path)
     }
     let validate
     try {
-      validate = this.ajv.getSchema(`${SUPPORTED.schemaId}#/$defs/${definition}`)
+      validate = this.ajv.getSchema(`${this.schemaId}#/$defs/${definition}`)
     } catch (error) {
       this.bag.error('SCHEMA_COMPILE', error.message, 'config/schema.yaml')
       return false

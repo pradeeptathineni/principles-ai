@@ -1,11 +1,12 @@
 ---
-schema_version: 4
+schema_version: 5
 id: coding.principles
 title: Coding Principles
 domain: coding
 type: principles
 status: draft
 last_reviewed: null
+reviewed_content_sha256: null
 ---
 
 # Coding Principles

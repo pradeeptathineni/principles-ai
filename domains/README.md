@@ -1,20 +1,17 @@
 # Domains
 
-Canonical taxonomy state and corpus Markdown live under one directory per domain.
+Each domain directory contains one human-readable manifest and any corpus files created for accepted scopes.
 
 ```text
 domains/<domain>/
-├── domain.yaml          # lifecycle, protected intent, taxonomy state
-├── taxonomy-review.md   # created only after a real independent review
-├── principles.md        # optional until content is authorized
-├── personal-growth.md   # optional until content is authorized
-└── <subdomain>.md       # registered accepted scope, created incrementally
+├── domain.yaml          # purpose, protected intent, scopes, and lifecycle
+├── principles.md        # optional domain-wide principles
+├── personal-growth.md   # optional personal-growth guidance
+└── <subdomain>.md       # one accepted subdomain, created incrementally
 ```
 
-Current undocumented research-origin taxonomy is preserved as `proposed`. Do not change it to `accepted` without a real taxonomy review record and human approval. Coding is the first planned independent review before pilot content.
+The manifest is the navigation map: proposed scopes are preserved candidates, accepted scopes may contain corpus, and deprecated scopes retain history without a current corpus file. Content coverage is derived from files rather than duplicated in the manifest.
 
-Taxonomy acceptance does not imply content exists. Content coverage is derived from validated Markdown files.
+Corpus files remain the human-readable view: their titles, principle headings, rationales, practices, and references should be browsable without machine state. Do not maintain a second manual catalog; when volume warrants one, generate it reproducibly from manifests and validated corpus files.
 
-An accepted domain has a complete `taxonomy-review.md` state with a date and at least one resolving stable source ID. Required subdomains of an accepted domain are accepted; other candidates may remain proposed. Corpus files require accepted scope and exact path/frontmatter/title agreement under `config/content-policy.yaml`.
-
-Do not add unregistered corpus files, silently alter protected human intent, or derive principle identity from domain/subdomain codes.
+Do not add unregistered corpus files, silently alter protected human intent, or derive principle identity from taxonomy codes.

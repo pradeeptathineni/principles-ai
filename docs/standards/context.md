@@ -7,9 +7,9 @@ Give an AI the smallest complete context needed to make the current decision cor
 ## Layers
 
 1. `AGENTS.md` router and universal invariants.
-2. Applicable standards and workflow.
+2. One applicable outcome workflow; load detailed standards only for relevant ambiguity or uncommon cases.
 3. Relevant executable configuration.
-4. Target domain manifest and taxonomy review state.
+4. Target domain manifest and lifecycle state.
 5. Target corpus and neighboring content needed for scope.
 6. Referenced source records and claim-review records where relevant.
 7. Task evidence, diffs, diagnostics, tests, or eval results.
@@ -18,7 +18,7 @@ Do not automatically load the entire corpus or all standards.
 
 ## Interactive and programmatic use
 
-Interactive agents read repository-local context directly. Future automation must assemble the same canonical sources rather than maintain a divergent policy copy.
+Interactive agents read repository-local context directly. The deterministic context exporter is optional downstream tooling and is not required for authoring. Future automation must assemble the same canonical sources rather than maintain a divergent policy copy.
 
 ## Context selection
 

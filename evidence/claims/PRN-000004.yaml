@@ -1,0 +1,48 @@
+schema_version: 4
+entry_id: PRN-000004
+reviewed_at: '2026-09-01'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 57a2ba719236a13199fca1b0359d7f2028e6ca14726faac76bbda1a9db6290d1
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, sections 4 and 6, pages 3-8 to 3-15]
+  - source_id: SRC-000006
+    locators: [Abstract, lines 24-26 of publication page]
+  outcome: strong
+- role: why-1
+  claim_sha256: b276a4c3a8d8e1dd7d127e9a971adf7ba7cae34698732e56b8ab8f87ba785fae
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, sections 4.6 and 6.2-6.3, pages 3-11 and 3-13 to 3-14]
+  - source_id: SRC-000006
+    locators: [Abstract, lines 24-26 of publication page]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 4ebe75bb572298b2ee7acba4ba22efde124163bacc6c68050c791c0b4a715b5a
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, sections 6.1-6.3, pages 3-13 to 3-14]
+  - source_id: SRC-000006
+    locators: [Abstract, lines 24-26 of publication page]
+  outcome: strong
+- role: practice-2
+  claim_sha256: e19635f4d4439817c6f108dd5fd7c4eb883ab557d961f365f16f6beb9352042f
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, sections 4.6 and 6.1-6.5, pages 3-11 to 3-15]
+  - source_id: SRC-000006
+    locators: [Abstract, lines 24-26 of publication page]
+  outcome: strong
+- role: applicability-1
+  claim_sha256: 449d1354aa3f573fd772879d00b7a951ef368cca87676d0ae3a6dcd0726e2826
+  sources:
+  - source_id: SRC-000001
+    locators: [Software Design KA, sections 4 and 4.6, pages 3-8 to 3-11]
+  outcome: strong

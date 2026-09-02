@@ -1,0 +1,42 @@
+schema_version: 4
+entry_id: PRN-000011
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: d678389adacda15171ea8306c923b8b09ac528f5065e67f8457b8b6b86c9596c
+  sources:
+  - source_id: SRC-000001
+    locators: ['Software Construction KA, sections 1.3, 3.4, and 3.6, pages 4-4 to 4-10']
+  - source_id: SRC-000013
+    locators: ['Sections 1.1 and 1.3, pages 15 to 18']
+  outcome: strong
+- role: why-1
+  claim_sha256: 78601e825fc8f65cf9ebc9990c6d5c62d0a2257a66b5a15da34016fda18d685b
+  sources:
+  - source_id: SRC-000001
+    locators: ['Software Construction KA, sections 1.3 and 3.6, pages 4-4 and 4-9 to 4-10']
+  - source_id: SRC-000013
+    locators: ['Sections 1.1, 1.3, and 1.5.3, pages 15 to 18 and 22 to 23']
+  outcome: strong
+- role: practice-1
+  claim_sha256: d970548f7af3a015576e68b14e4a70dddfa6134a9cd981f0caf65b09391cc386
+  sources:
+  - source_id: SRC-000001
+    locators: ['Software Testing KA, sections 1.2 and 2, pages 5-5 to 5-14']
+  - source_id: SRC-000013
+    locators: ['Sections 1.1.1, 1.3, and 4, pages 15 to 18 and 43 to 50']
+  outcome: strong
+- role: practice-2
+  claim_sha256: 1095c32fac9be9a87c466e279f748d09f030c1ed9165a28d3edd420f72035abc
+  sources:
+  - source_id: SRC-000003
+    locators: [Tests]
+  - source_id: SRC-000013
+    locators: ['Sections 1.4.3 and 5.4, pages 20 and 56']
+  outcome: strong

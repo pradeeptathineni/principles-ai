@@ -1,4 +1,4 @@
-version: 4
+version: 6
 
 manifests:
   glob: domains/*/domain.yaml
@@ -33,29 +33,30 @@ lifecycle:
   undocumented_research_origin_is_provisional: true
   proposed_domain:
     allowed_subdomain_statuses: [proposed, deprecated]
-    taxonomy_review_state: empty
   accepted_domain:
     allowed_subdomain_statuses: [proposed, accepted, deprecated]
-    taxonomy_review_state: complete
     required_subdomain_status: accepted
   deprecated_domain:
     allowed_subdomain_statuses: [deprecated]
     required_subdomains_must_be_empty: true
-    taxonomy_review_state: empty-or-complete
   accepted_subdomain_requires_accepted_domain: true
 
-taxonomy_review:
-  filename: taxonomy-review.md
-  empty:
-    reviewed_at: null
-    source_ids: []
-    review_record: null
-  complete:
-    reviewed_at: date
-    minimum_source_ids: 1
-    review_record: taxonomy-review.md
-    source_ids_must_resolve: true
-    review_record_must_resolve_within_domain: true
+explicit_target_request:
+  existing_registered_scope_with_unchanged_definition: authorizes_acceptance_after_agent_research_confirms_fit
+  new_renamed_merged_or_materially_rescoped_scope: requires_human_approval
+  protected_intent_change: requires_human_approval
+  canonical_review_sidecar_required: false
+  decision_rationale_location_when_material: pull_request_or_issue_record
+
+transition_validation:
+  baseline: trusted_merge_base
+  domain_and_subdomain_removal_allowed: false
+  accepted_to_proposed_allowed: false
+  protected_intent_change_requires_human_approval: true
+  taxonomy_acceptance_deprecation_reactivation_requires_human_approval: true
+  existing_domain_or_subdomain_definition_change_requires_human_approval: true
+  new_scope_must_start_proposed: true
+  unavailable_baseline_result: not_evaluated
 
 human_intent:
   field: human_intent

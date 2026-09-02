@@ -8,9 +8,9 @@ Executable adoption, coverage, hashing, outcome, and invalidation rules are in `
 
 ## Adoption boundary
 
-Records are mandatory for the three exact coding pilot paths named in `config/evidence-policy.yaml` when those corpus files exist. Their absence before the separately authorized pilot is valid. Records remain optional elsewhere until a post-pilot human decision changes the policy.
+Records are mandatory for the exact pilot paths named in `config/evidence-policy.yaml` when those files exist. Records are optional elsewhere and recommended for high-impact, disputed, novel, or weak-evidence work. The production pilot showed that universal sidecars would grow faster than their demonstrated value.
 
-The storage design is one complete evidence record per principle entry. When present, it contains exactly one claim record for:
+The storage design is one compact evidence record per principle entry. Review date, reviewer identity, and evaluator configuration are stored once per record. The record then contains exactly one claim item for:
 
 - The statement.
 - Every Why paragraph.
@@ -38,9 +38,9 @@ Formatting-only emphasis changes and local citation renumbering therefore do not
 
 ## Sources and locators
 
-`source_ids` exactly equals the claim's unique resolved citation IDs in first-use order. A citation addition, removal, replacement, or order change invalidates the record even when claim wording is unchanged.
+The ordered `sources` list exactly equals the claim's unique resolved citation IDs in first-use order. A citation addition, removal, replacement, or order change invalidates the record even when claim wording is unchanged.
 
-Every source ID has at least one locator. Every locator names a source in `source_ids`; exact duplicate source/locator pairs are invalid. A locator is a concise source-specific pointer such as a section heading, page, numbered clause, fragment, or stable passage identifier. Locator changes require re-review.
+Every source has at least one locator. Duplicate sources or locators are invalid. A locator is a concise source-specific pointer such as a section heading, page, numbered clause, fragment, or stable passage identifier. Locator changes require re-review.
 
 ## Outcomes
 
@@ -55,9 +55,9 @@ The publishable-outcome restriction applies to `active` content. Draft work may 
 
 ## Reviewer identity and configuration
 
-Human reviews use a non-empty reviewer identity and null configuration. AI and hybrid reviews use a non-empty identity and the schema's closed system, model, resolving repository-relative `.yaml` configuration, prompt-hash, and settings-hash fields. Claim and referenced configuration system/model values agree.
+Human reviews use a non-empty reviewer identity and null configuration. AI and hybrid reviews use a non-empty identity, a resolving repository-relative `.yaml` configuration, and the SHA-256 of that exact configuration file.
 
-The versioned artifact stores the prompt and I-JSON-compatible settings. Prompt hashing normalizes the parsed string to UTF-8, NFC, and LF; settings hashing uses RFC 8785 after IEEE-754 binary64 JSON-number parsing. Non-finite, overflowing, or non-interoperable integers are strings. This preserves setup without copying arbitrary configuration into every claim record.
+The versioned artifact stores system, model, prompt, and I-JSON-compatible settings. Hashing the exact file binds all of them without copying five fields into every claim item. Non-finite, overflowing, or non-interoperable integers remain invalid or must be stored as strings.
 
 Do not place credentials, source text, hidden reasoning, or personal secrets in reviewer identity or configuration.
 

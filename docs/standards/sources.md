@@ -16,15 +16,17 @@ Canonical URLs and aliases use only the bounded normalization in `config/source-
 
 When a canonical URL changes, preserve the source ID, filename, old URL, and prior aliases; make the current destination canonical and set status to `moved`. Removing an alias or repairing identity requires an explicit versioned migration and human approval.
 
-## Authority classes
+## Evidence kinds
 
-- A — normative or primary authority.
-- B — canonical first-party guidance.
-- C — mature institutional practice.
-- D — established expert or academic secondary source.
-- E — community or ecosystem evidence.
+- `normative-authority` — a body empowered to define a requirement or standard for the claim's scope.
+- `official-documentation` — canonical first-party description of a product, API, process, or maintained behavior.
+- `institutional-practice` — documented practice from an organization with relevant operational experience.
+- `academic-evidence` — original research, technical report, or scholarly analysis with inspectable method or argument.
+- `expert-synthesis` — mature synthesis whose authoring process and domain standing earn its role.
+- `community-guidance` — ecosystem convention or collective practice without stronger authority.
+- `individual-perspective` — an identifiable person's argument or experience.
 
-These classes describe source role; they are not an automatic total ranking. A definitive product behavior may be best supported by Class B, while a broad empirical claim may require original research.
+Kinds describe evidentiary role, not prestige and not a scalar ranking. Hosting by a university, authorship by a professor, professional presentation, or agreement with a draft does not change the kind. A standards body is not required for every durable software-design principle: expert synthesis or an individual foundational argument may be fit when its role is explicit and the claim is calibrated.
 
 ## Fitness dimensions
 
@@ -32,7 +34,7 @@ Evaluate authority, directness, relevance, normativity, evidence, currency, stab
 
 ## Selection
 
-Prefer appropriate primary or canonical sources, then institutional, expert, and ecosystem evidence. Do not add weaker citations solely to increase count. One canonical source can be sufficient for an explicit requirement; broad synthesized principles often benefit from independent support.
+Discover the available kinds before drafting. Prefer the strongest direct fit for the claim, and record a reason when weaker evidence substitutes for stronger available evidence. Do not add weaker citations solely to increase count. One canonical source can be sufficient for an explicit requirement; broad synthesized principles often benefit from independent support.
 
 ## Rejection and caution
 
@@ -68,4 +70,4 @@ The exact catalog grammar is in `config/content-policy.yaml`. It requires agreem
 
 ## Claim review
 
-Source metadata does not establish claim support. Retained claim reviews follow [Claim-review evidence](evidence.md). Pilot content must use them; universal adoption remains an explicit post-pilot decision.
+Source metadata does not establish claim support. Retained claim reviews follow [Claim-review evidence](evidence.md). They remain required for configured pilot paths and optional elsewhere; the first production run did not justify universal sidecar growth.

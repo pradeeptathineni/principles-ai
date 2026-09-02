@@ -1,4 +1,4 @@
-schema_version: 3
+schema_version: 5
 id: backend-development
 code: BCK
 title: Backend Development
@@ -10,10 +10,6 @@ human_intent:
   priorities: []
   exclusions: []
   scope_notes: []
-taxonomy_review:
-  reviewed_at: null
-  source_ids: []
-  review_record: null
 subdomains:
 - id: architecture
   code: ARC
