@@ -1,118 +1,127 @@
-schema_version: 1
+schema_version: 3
 id: azure-cloud
 code: AZR
 title: Azure Cloud
-status: active
-description: Principles for applying sound cloud architecture and operational practice using Microsoft Azure.
-required_subdomains: []
+taxonomy_status: proposed
+description: Principles for applying sound cloud architecture and operational practice
+  using Microsoft Azure.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: architecture
   code: ARC
   title: Architecture
-  status: active
+  status: proposed
   origin: research
 - id: tenants-subscriptions-resources
   code: ORG
   title: Tenants, Subscriptions & Resources
-  status: active
+  status: proposed
   origin: research
 - id: identity-access
   code: IAM
   title: Identity & Access
-  status: active
+  status: proposed
   origin: research
 - id: networking
   code: NET
   title: Networking
-  status: active
+  status: proposed
   origin: research
 - id: compute
   code: CMP
   title: Compute
-  status: active
+  status: proposed
   origin: research
 - id: storage
   code: STO
   title: Storage
-  status: active
+  status: proposed
   origin: research
 - id: databases
   code: DBS
   title: Databases
-  status: active
+  status: proposed
   origin: research
 - id: serverless
   code: SRV
   title: Serverless
-  status: active
+  status: proposed
   origin: research
 - id: containers
   code: CTR
   title: Containers
-  status: active
+  status: proposed
   origin: research
 - id: data-analytics
   code: DAT
   title: Data & Analytics
-  status: active
+  status: proposed
   origin: research
 - id: integration-messaging
   code: MSG
   title: Integration & Messaging
-  status: active
+  status: proposed
   origin: research
 - id: infrastructure-as-code
   code: IAC
   title: Infrastructure as Code
-  status: active
+  status: proposed
   origin: research
 - id: automation
   code: AUT
   title: Automation
-  status: active
+  status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: active
+  status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
-  status: active
+  status: proposed
   origin: research
 - id: reliability-disaster-recovery
   code: REL
   title: Reliability & Disaster Recovery
-  status: active
+  status: proposed
   origin: research
 - id: performance-efficiency
   code: PER
   title: Performance & Efficiency
-  status: active
+  status: proposed
   origin: research
 - id: cost-optimization
   code: CST
   title: Cost Optimization
-  status: active
+  status: proposed
   origin: research
 - id: governance
   code: GOV
   title: Governance
-  status: active
+  status: proposed
   origin: research
 - id: ai-ml
   code: AIML
   title: AI/ML
-  status: active
+  status: proposed
   origin: research
 - id: migration-modernization
   code: MIG
   title: Migration & Modernization
-  status: active
+  status: proposed
   origin: research
 - id: sustainability
   code: SUS
   title: Sustainability
-  status: active
+  status: proposed
   origin: research

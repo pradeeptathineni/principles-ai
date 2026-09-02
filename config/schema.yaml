@@ -1,99 +1,623 @@
-version: 1
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://principles.local/config/schema/v3
+title: Principles repository canonical record schemas
+description: >-
+  Executable structural schemas. Validation selects the applicable definition by
+  its JSON Pointer. Cross-file invariants remain deterministic repository rules.
+oneOf:
+  - $ref: '#/$defs/domain_manifest'
+  - $ref: '#/$defs/corpus_frontmatter'
+  - $ref: '#/$defs/source_record'
+  - $ref: '#/$defs/claim_review_record'
+  - $ref: '#/$defs/identity_ledger'
+  - $ref: '#/$defs/evaluator_configuration_record'
 
-domain_manifest:
-  required:
-    - schema_version
-    - id
-    - code
-    - title
-    - status
-    - description
-    - required_subdomains
-    - subdomains
-  constraints:
-    schema_version: 1
-    id_pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-    code_pattern: "^[A-Z]{2,4}$"
-    status_values:
-      - active
-      - deprecated
-    required_subdomains_type: list
-    subdomains_type: list
+$defs:
+  json_value:
+    oneOf:
+      - type: 'null'
+      - type: boolean
+      - type: number
+      - type: string
+      - type: array
+        items:
+          $ref: '#/$defs/json_value'
+      - type: object
+        additionalProperties:
+          $ref: '#/$defs/json_value'
+
+  domain_id:
+    type: string
+    pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+
+  domain_code:
+    type: string
+    pattern: '^[A-Z]{2,4}$'
+
+  subdomain_code:
+    type: string
+    pattern: '^[A-Z0-9]{2,5}$'
+
+  principle_id:
+    type: string
+    pattern: '^PRN-[0-9]{6}$'
+
+  source_id:
+    type: string
+    pattern: '^SRC-[0-9]{6}$'
+
+  taxonomy_status:
+    type: string
+    enum: [proposed, accepted, deprecated]
+
+  origin:
+    type: string
+    enum: [user, research, mixed, policy]
+
+  date_or_null:
+    oneOf:
+      - type: string
+        format: date
+      - type: 'null'
+
+  human_intent:
+    type: object
+    additionalProperties: false
+    required: [required_subdomains, priorities, exclusions, scope_notes]
+    properties:
+      required_subdomains:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/$defs/domain_id'
+      priorities:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: '\S'
+      exclusions:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: '\S'
+      scope_notes:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+          pattern: '\S'
+
+  taxonomy_review:
+    oneOf:
+      - $ref: '#/$defs/taxonomy_review_empty'
+      - $ref: '#/$defs/taxonomy_review_complete'
+
+  taxonomy_review_empty:
+    type: object
+    additionalProperties: false
+    required: [reviewed_at, source_ids, review_record]
+    properties:
+      reviewed_at:
+        type: 'null'
+      source_ids:
+        type: array
+        maxItems: 0
+      review_record:
+        type: 'null'
+
+  taxonomy_review_complete:
+    type: object
+    additionalProperties: false
+    required: [reviewed_at, source_ids, review_record]
+    properties:
+      reviewed_at:
+        type: string
+        format: date
+      source_ids:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          $ref: '#/$defs/source_id'
+      review_record:
+        const: taxonomy-review.md
+
   subdomain:
+    type: object
+    additionalProperties: false
+    required: [id, code, title, status, origin]
+    properties:
+      id:
+        $ref: '#/$defs/domain_id'
+      code:
+        $ref: '#/$defs/subdomain_code'
+      title:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      status:
+        $ref: '#/$defs/taxonomy_status'
+      origin:
+        $ref: '#/$defs/origin'
+
+  domain_manifest:
+    type: object
+    additionalProperties: false
     required:
+      - schema_version
       - id
       - code
       - title
-      - status
-      - origin
-    constraints:
-      id_pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-      code_pattern: "^[A-Z0-9]{2,5}$"
-      status_values:
-        - active
-        - deprecated
-      origin_values:
-        - user
-        - research
-        - mixed
-        - policy
+      - taxonomy_status
+      - description
+      - human_intent
+      - taxonomy_review
+      - subdomains
+    properties:
+      schema_version:
+        const: 3
+      id:
+        $ref: '#/$defs/domain_id'
+      code:
+        $ref: '#/$defs/domain_code'
+      title:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      taxonomy_status:
+        $ref: '#/$defs/taxonomy_status'
+      description:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      human_intent:
+        $ref: '#/$defs/human_intent'
+      taxonomy_review:
+        $ref: '#/$defs/taxonomy_review'
+      subdomains:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/$defs/subdomain'
+    allOf:
+      - if:
+          properties:
+            taxonomy_status:
+              const: proposed
+          required: [taxonomy_status]
+        then:
+          properties:
+            taxonomy_review:
+              $ref: '#/$defs/taxonomy_review_empty'
+            subdomains:
+              items:
+                allOf:
+                  - $ref: '#/$defs/subdomain'
+                  - properties:
+                      status:
+                        enum: [proposed, deprecated]
+      - if:
+          properties:
+            taxonomy_status:
+              const: accepted
+          required: [taxonomy_status]
+        then:
+          properties:
+            taxonomy_review:
+              $ref: '#/$defs/taxonomy_review_complete'
+      - if:
+          properties:
+            taxonomy_status:
+              const: deprecated
+          required: [taxonomy_status]
+        then:
+          properties:
+            human_intent:
+              properties:
+                required_subdomains:
+                  maxItems: 0
+            subdomains:
+              items:
+                allOf:
+                  - $ref: '#/$defs/subdomain'
+                  - properties:
+                      status:
+                        const: deprecated
+      - if:
+          properties:
+            subdomains:
+              contains:
+                properties:
+                  status:
+                    const: accepted
+                required: [status]
+          required: [subdomains]
+        then:
+          properties:
+            taxonomy_status:
+              const: accepted
 
-file:
-  frontmatter:
+  corpus_frontmatter:
+    type: object
+    additionalProperties: false
+    required: [schema_version, id, title, domain, type, status, last_reviewed]
+    properties:
+      schema_version:
+        const: 4
+      id:
+        type: string
+        pattern: '^[a-z0-9-]+\.(?:principles|personal-growth|[a-z0-9-]+)$'
+      title:
+        type: string
+        minLength: 1
+        pattern: '\S'
+        not:
+          pattern: '[\u0000-\u001F\u007F\u2028\u2029]'
+      domain:
+        $ref: '#/$defs/domain_id'
+      type:
+        type: string
+        enum: [principles, personal-growth, subdomain]
+      subdomain:
+        $ref: '#/$defs/domain_id'
+      status:
+        type: string
+        enum: [active, draft]
+      last_reviewed:
+        $ref: '#/$defs/date_or_null'
+      tags:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    allOf:
+      - if:
+          properties:
+            type:
+              const: subdomain
+          required: [type]
+        then:
+          required: [subdomain]
+        else:
+          not:
+            required: [subdomain]
+      - if:
+          properties:
+            status:
+              const: active
+          required: [status]
+        then:
+          properties:
+            last_reviewed:
+              type: string
+              format: date
+      - if:
+          properties:
+            status:
+              const: draft
+          required: [status]
+        then:
+          properties:
+            last_reviewed:
+              type: 'null'
+
+  source_record:
+    type: object
+    additionalProperties: false
     required:
       - schema_version
       - id
       - title
-      - domain
-      - type
-      - status
+      - publisher
+      - source_type
+      - authority_class
+      - canonical_url
+      - url_aliases
+      - published_or_version
+      - first_retrieved
       - last_reviewed
-      - tags
-    optional:
-      - subdomain
-    constraints:
-      schema_version: 1
-      id_pattern: "^[a-z0-9-]+\\.(principles|personal-growth|[a-z0-9-]+)$"
-      type_values:
-        - principles
-        - personal-growth
-        - subdomain
-      status_values:
-        - active
-        - draft
-        - deprecated
-      date_format: "YYYY-MM-DD"
-      tags_type: list
-      subdomain_required_when_type: subdomain
+      - status
+      - superseded_by
+    properties:
+      schema_version:
+        const: 3
+      id:
+        $ref: '#/$defs/source_id'
+      title:
+        type: string
+        minLength: 1
+        pattern: '\S'
+        not:
+          pattern: '[\u0000-\u001F\u007F\u2028\u2029]'
+      publisher:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      source_type:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      authority_class:
+        type: string
+        enum: [A, B, C, D, E]
+      canonical_url:
+        type: string
+        format: uri
+        pattern: '^https?://'
+      url_aliases:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          format: uri
+          pattern: '^https?://'
+      published_or_version:
+        oneOf:
+          - type: string
+            minLength: 1
+            pattern: '\S'
+          - type: 'null'
+      first_retrieved:
+        type: string
+        format: date
+      last_reviewed:
+        type: string
+        format: date
+      status:
+        type: string
+        enum: [active, moved, superseded, withdrawn, unavailable]
+      superseded_by:
+        oneOf:
+          - $ref: '#/$defs/source_id'
+          - type: 'null'
+    allOf:
+      - if:
+          properties:
+            status:
+              const: moved
+          required: [status]
+        then:
+          properties:
+            url_aliases:
+              minItems: 1
+            superseded_by:
+              type: 'null'
+      - if:
+          properties:
+            status:
+              const: superseded
+          required: [status]
+        then:
+          properties:
+            superseded_by:
+              $ref: '#/$defs/source_id'
+      - if:
+          properties:
+            status:
+              enum: [active, withdrawn, unavailable]
+          required: [status]
+        then:
+          properties:
+            superseded_by:
+              type: 'null'
 
-  headings:
-    title_level: 1
-    principles_level: 2
-    entry_level: 3
-    subsection_level: 4
-    references_level: 2
+  claim_locator:
+    type: object
+    additionalProperties: false
+    required: [source_id, locator]
+    properties:
+      source_id:
+        $ref: '#/$defs/source_id'
+      locator:
+        type: string
+        minLength: 1
+        pattern: '\S'
 
-entry:
-  heading:
-    pattern: "^[A-Z]{2,4}-[A-Z0-9]{2,5}-[0-9]{3} — .+$"
-  required_parts:
-    - principle_statement
-    - why
-    - practices
-    - goals
-    - tags
-  section_order:
-    - why
-    - practices
-    - goals
-    - tags
-  lists:
-    practices: bullet
-    goals: bullet
-    tags: bullet
+  reviewer:
+    type: object
+    additionalProperties: false
+    required: [type, identity, configuration]
+    properties:
+      type:
+        type: string
+        enum: [human, ai, hybrid]
+      identity:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      configuration:
+        description: Human reviews use null; AI and hybrid reviews use a closed, hash-addressed configuration.
+        oneOf:
+          - $ref: '#/$defs/evaluator_configuration'
+          - type: 'null'
+    allOf:
+      - if:
+          properties:
+            type:
+              const: human
+          required: [type]
+        then:
+          properties:
+            configuration:
+              type: 'null'
+        else:
+          properties:
+            configuration:
+              $ref: '#/$defs/evaluator_configuration'
 
-references:
-  label_pattern: "^[1-9][0-9]*$"
-  local_to_file: true
-  visible_references_section_required: true
-  definitions_required: true
+  evaluator_configuration:
+    type: object
+    additionalProperties: false
+    required: [system, model, configuration_ref, prompt_sha256, settings_sha256]
+    properties:
+      system:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      model:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      configuration_ref:
+        type: string
+        pattern: '^evals/configurations/[a-z0-9][a-z0-9-]*\.yaml$'
+      prompt_sha256:
+        type: string
+        pattern: '^[a-f0-9]{64}$'
+      settings_sha256:
+        type: string
+        pattern: '^[a-f0-9]{64}$'
+
+  evaluator_configuration_record:
+    type: object
+    additionalProperties: false
+    required: [schema_version, id, system, model, prompt, settings]
+    properties:
+      schema_version:
+        const: 2
+      id:
+        type: string
+        pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+      system:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      model:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      prompt:
+        type: string
+        minLength: 1
+        pattern: '\S'
+      settings:
+        type: object
+        description: Values must also satisfy the RFC 8785 I-JSON input contract in config/evidence-policy.yaml.
+        additionalProperties:
+          $ref: '#/$defs/json_value'
+
+  claim_review:
+    type: object
+    additionalProperties: false
+    required:
+      - role
+      - claim_sha256
+      - source_ids
+      - locators
+      - outcome
+      - reviewed_at
+      - reviewer
+    properties:
+      role:
+        type: string
+        pattern: '^(?:statement|why-[1-9][0-9]*|practice-[1-9][0-9]*|applicability-[1-9][0-9]*|goal-[1-9][0-9]*)$'
+      claim_sha256:
+        type: string
+        pattern: '^[a-f0-9]{64}$'
+      source_ids:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          $ref: '#/$defs/source_id'
+      locators:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          $ref: '#/$defs/claim_locator'
+      outcome:
+        type: string
+        enum: [strong, partial, unsupported, disputed]
+      reviewed_at:
+        type: string
+        format: date
+      reviewer:
+        $ref: '#/$defs/reviewer'
+
+  claim_review_record:
+    type: object
+    additionalProperties: false
+    required: [schema_version, entry_id, claims]
+    properties:
+      schema_version:
+        const: 3
+      entry_id:
+        $ref: '#/$defs/principle_id'
+      claims:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          $ref: '#/$defs/claim_review'
+
+  identity_relationship:
+    type: object
+    additionalProperties: false
+    required: [type, from, to]
+    properties:
+      type:
+        type: string
+        enum: [derived_from, replaced_by]
+      from:
+        $ref: '#/$defs/principle_id'
+      to:
+        $ref: '#/$defs/principle_id'
+
+  identity_set:
+    type: object
+    additionalProperties: false
+    required: [next_sequence, allocated, retired]
+    properties:
+      next_sequence:
+        type: integer
+        minimum: 1
+      allocated:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+      retired:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+
+  identity_ledger:
+    type: object
+    additionalProperties: false
+    required: [schema_version, principles, sources, principle_relationships]
+    properties:
+      schema_version:
+        const: 2
+      principles:
+        allOf:
+          - $ref: '#/$defs/identity_set'
+          - properties:
+              allocated:
+                items:
+                  $ref: '#/$defs/principle_id'
+              retired:
+                items:
+                  $ref: '#/$defs/principle_id'
+      sources:
+        allOf:
+          - $ref: '#/$defs/identity_set'
+          - properties:
+              allocated:
+                items:
+                  $ref: '#/$defs/source_id'
+              retired:
+                items:
+                  $ref: '#/$defs/source_id'
+      principle_relationships:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/$defs/identity_relationship'

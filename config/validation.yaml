@@ -1,45 +1,178 @@
-version: 1
+version: 4
+
+schema_validation:
+  draft: '2020-12'
+  schema_document_id: https://principles.local/config/schema/v3
+  format_assertion_required: true
+  unsupported_schema_versions: error
+  unknown_canonical_fields: error
+  supported_record_versions:
+    domain_manifest: 3
+    corpus_frontmatter: 4
+    source_record: 3
+    claim_review_record: 3
+    identity_ledger: 2
+    evaluator_configuration_record: 2
+
+yaml_loading:
+  version: '1.2'
+  schema: core
+  preserve_date_and_uri_scalars_as_strings: true
+  utf8_byte_order_mark_allowed: false
+  anchors_aliases_merge_keys_and_custom_tags_allowed: false
+  input_byte_and_node_limits_required: true
+
+canonical_text:
+  applies_to: canonical_and_executable_repository_files
+  excluded_globs: [docs/reviews/**]
+  encoding: utf-8
+  unicode_normalization: NFC
+  line_endings: LF
+  final_newline_required: true
+  trailing_whitespace_allowed: false
+  canonical_metadata_strings_must_be_trimmed_and_nonempty: true
+
+policy_loading:
+  unsupported_policy_versions: error
+  unknown_policy_fields: error
+  migrations_must_be_explicit_and_lossless: true
+  silent_coercion_or_upgrade_allowed: false
+  supported_versions:
+    content-policy: 4
+    evidence-policy: 3
+    identity-policy: 2
+    source-policy: 5
+    taxonomy-policy: 4
+    validation: 4
+
+trusted_baseline:
+  pull_request_source: merge_base_with_trusted_target_branch
+  policy_for_policy_change_review: merge_base
+  identity_and_source_transition_state: merge_base
+  proposed_policy_may_add_but_not_remove_trusted_required_checks: true
+  proposed_policy_must_not_select_or_redefine_baseline: true
+  unavailable_transition_baseline_result: not_evaluated
+  pull_request_ci_must_not_report_full_transition_success_when_unavailable: true
+
+classes:
+  deterministic:
+    blocking_in_ci: true
+    checks:
+      - yaml_and_frontmatter_parse
+      - duplicate_yaml_key
+      - safe_yaml_construction
+      - forbidden_yaml_anchor_alias_merge_or_custom_tag
+      - bounded_input_bytes_and_yaml_nodes
+      - executable_schema_with_format_assertion
+      - unknown_canonical_field
+      - supported_schema_and_policy_version
+      - canonical_text_encoding_normalization_and_newlines
+      - manifest_path_and_registration
+      - taxonomy_identity_uniqueness_scope
+      - taxonomy_lifecycle_and_review_state
+      - deprecated_scope_without_corpus
+      - protected_subdomain_presence_and_status
+      - corpus_path_frontmatter_agreement
+      - principle_and_source_identity
+      - identity_ledger_sequence_and_retirement
+      - identity_ledger_transition_against_trusted_base
+      - principle_relationship_direction_and_acyclicity
+      - principle_relationship_transition_against_trusted_base
+      - source_filename_and_ledger_agreement
+      - source_record_persistence_against_trusted_base
+      - source_url_registry_uniqueness
+      - source_url_normalized_storage
+      - source_url_transition_against_trusted_base
+      - source_url_userinfo_and_fragment_policy
+      - source_lifecycle_consistency
+      - source_supersession_acyclicity
+      - heading_and_section_grammar
+      - title_projection_and_exact_equality
+      - structural_citation_presence
+      - citation_run_grammar
+      - claim_block_link_title_policy
+      - reference_resolution
+      - bibliography_one_to_one_source_mapping
+      - internal_link_resolution
+      - evidence_filename_and_entry_agreement
+      - evaluator_configuration_schema_path_and_i_json_input
+      - claim_review_coverage_and_unique_roles
+      - claim_review_source_and_locator_agreement
+      - evaluator_configuration_reference_and_hash_agreement
+      - claim_review_hash_match
+      - claim_review_publishable_outcome
+      - generated_output_reproducibility
+  operational:
+    blocking_in_pull_request_ci: false
+    checks:
+      - external_url_reachability
+      - redirect_behavior
+      - source_content_change
+      - review_due_report
+  semantic:
+    blocking_in_ci_until_calibrated: false
+    checks:
+      - citation_entailment
+      - source_fitness
+      - source_url_secret_exposure
+      - claim_calibration
+      - hidden_external_claim
+      - taxonomy_fit
+      - duplicate_meaning
+      - disagreement_handling
+      - durability
+      - human_readability
+  human_approval:
+    required_for:
+      - protected_intent_change
+      - domain_purpose_change
+      - taxonomy_acceptance
+      - principle_add_remove_merge_or_rescope
+      - policy_or_schema_change
+      - governance_or_ci_change
+      - evidence_policy_change
+      - unresolved_material_disagreement
 
 severity:
-  error:
-    - invalid_yaml
-    - missing_required_frontmatter
-    - invalid_domain_manifest
-    - duplicate_domain_id
-    - duplicate_domain_code
-    - duplicate_subdomain_id
-    - duplicate_subdomain_code
-    - missing_required_subdomain
-    - unregistered_subdomain_file
-    - invalid_file_id
-    - invalid_principle_id
-    - duplicate_principle_id
-    - invalid_heading_hierarchy
-    - missing_required_section
-    - unresolved_reference
-    - duplicate_reference_definition
-    - required_claim_missing_citation
-    - leftover_template_placeholder
-  warning:
-    - registered_subdomain_file_missing
-    - unused_reference
-    - reference_not_in_first_use_order
-    - unusually_long_entry
-    - duplicate_or_near_duplicate_principle
-    - source_may_be_stale
-    - source_authority_may_be_weak
-    - claim_support_partial
-    - goal_appears_to_be_practice
+  first_use_citation_numbering: warning
+  insecure_http_source_url: warning
+  unused_bibliography_entry_or_definition: error
+  indeterminate_network_result: informational
+  unsupported_schema_or_policy_version: error
 
-semantic_checks:
-  - citation_entailment
-  - source_fitness
-  - claim_calibration
-  - taxonomy_fit
-  - duplicate_meaning
-  - disagreement_handling
-  - human_readability
+diagnostic_language:
+  citation_presence_proves_entailment: false
+  source_review_due_means_semantically_stale: false
+  schema_validity_proves_cross_file_validity: false
+  evaluator_completion_proves_semantic_correctness: false
+  snapshot_validation_proves_all_time_identity_transition: false
 
-ci:
-  deterministic_checks_required: true
-  semantic_checks_required_for_high_impact_changes: true
+internal_links:
+  scope: current_nonhistorical_repository_markdown
+  glob_semantics: gitignore_style_repo_relative_with_double_star_matching_zero_or_more_directories
+  included_globs:
+    - AGENTS.md
+    - README.md
+    - .github/**/*.md
+    - config/templates/*.md
+    - docs/**/*.md
+    - domains/**/*.md
+    - evidence/**/*.md
+    - evals/**/*.md
+    - generated/**/*.md
+    - prompts/**/*.md
+    - scripts/**/*.md
+    - sources/**/*.md
+    - tests/**/*.md
+  excluded_globs: [docs/reviews/**]
+  repository_relative_paths_must_not_escape_repository: true
+  symlink_targets_must_remain_within_repository: true
+  internal_destination: gfm_parsed_destination_without_uri_scheme
+  allowed_destination_form: relative_repository_path
+  query_allowed: false
+  percent_encoded_path_octets_allowed: false
+  validate_existing_path_component: true
+  fragments:
+    current_internal_fragment_links_present: false
+    validation: deferred_until_first_use_and_explicit_slug_contract
+    path_validation_still_required_when_fragment_present: true

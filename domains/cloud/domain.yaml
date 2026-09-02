@@ -1,114 +1,122 @@
-schema_version: 1
+schema_version: 3
 id: cloud
 code: CLD
 title: Cloud
-status: active
-description: Vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud
-  systems.
-required_subdomains: []
+taxonomy_status: proposed
+description: Vendor-neutral principles for designing, securing, operating, governing,
+  scaling, and optimizing cloud systems.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: architecture
   code: ARC
   title: Architecture
-  status: active
+  status: proposed
   origin: research
 - id: service-selection
   code: SVC
   title: Service Selection
-  status: active
+  status: proposed
   origin: research
 - id: shared-responsibility
   code: SHR
   title: Shared Responsibility
-  status: active
+  status: proposed
   origin: research
 - id: identity-access
   code: IAM
   title: Identity & Access
-  status: active
+  status: proposed
   origin: research
 - id: networking
   code: NET
   title: Networking
-  status: active
+  status: proposed
   origin: research
 - id: compute
   code: CMP
   title: Compute
-  status: active
+  status: proposed
   origin: research
 - id: storage
   code: STO
   title: Storage
-  status: active
+  status: proposed
   origin: research
 - id: data
   code: DAT
   title: Data
-  status: active
+  status: proposed
   origin: research
 - id: infrastructure-as-code
   code: IAC
   title: Infrastructure as Code
-  status: active
+  status: proposed
   origin: research
 - id: automation
   code: AUT
   title: Automation
-  status: active
+  status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: active
+  status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
-  status: active
+  status: proposed
   origin: research
 - id: reliability
   code: REL
   title: Reliability
-  status: active
+  status: proposed
   origin: research
 - id: disaster-recovery
   code: DR
   title: Disaster Recovery
-  status: active
+  status: proposed
   origin: research
 - id: performance-scalability
   code: PER
   title: Performance & Scalability
-  status: active
+  status: proposed
   origin: research
 - id: cost-finops
   code: CST
   title: Cost & FinOps
-  status: active
+  status: proposed
   origin: research
 - id: governance
   code: GOV
   title: Governance
-  status: active
+  status: proposed
   origin: research
 - id: migration-modernization
   code: MIG
   title: Migration & Modernization
-  status: active
+  status: proposed
   origin: research
 - id: hybrid-multicloud
   code: HYB
   title: Hybrid & Multicloud
-  status: active
+  status: proposed
   origin: research
 - id: sustainability
   code: SUS
   title: Sustainability
-  status: active
+  status: proposed
   origin: research
 - id: operations
   code: OPS
   title: Operations
-  status: active
+  status: proposed
   origin: research

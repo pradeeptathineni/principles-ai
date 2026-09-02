@@ -1,24 +1,16 @@
 # Update Content Workflow
 
-Use this workflow when changing existing corpus content.
+Use this workflow for source maintenance, changed evidence, clearer synthesis, contradiction correction, stale practices, or personal-growth changes.
 
-1. Read the target domain's `domain.yaml` and confirm the file remains correctly registered/scoped.
-2. Determine whether the trigger is:
-   - broken/moved source,
-   - superseded source,
-   - new evidence,
-   - changed standard or product behavior,
-   - clearer synthesis,
-   - taxonomy correction,
-   - discovered contradiction,
-   - stale practice,
-   - personal-growth update.
-3. If the desired change requires a taxonomy change, update the manifest first through `docs/workflows/update-taxonomy.md`.
-4. Determine impact level from `docs/standards/ai-contributions.md`.
-5. Re-read existing cited sources before changing semantic meaning.
-6. Research new evidence using the same standard required for new content.
-7. Prefer the smallest change that accurately reflects the evidence.
-8. Preserve stable principle IDs when semantic identity remains.
-9. Revalidate all changed claims and neighboring claims affected by the new interpretation.
-10. Run deterministic checks and semantic evals.
-11. Explain why the change improves truthfulness, authority, usefulness, currency, or taxonomy fit.
+1. Confirm target taxonomy remains accepted and correctly scoped.
+2. Classify the trigger and semantic impact.
+3. If taxonomy changes, follow `update-taxonomy.md` first.
+4. Preserve the `PRN-......` ID when semantic identity remains, including file moves.
+5. For splits or merges, follow [Update taxonomy](update-taxonomy.md) and the identity policy.
+6. Re-read existing cited sources before changing meaning.
+7. Reuse source identity across URL changes and apply the trusted-base move rules in [Sources](../standards/sources.md); do not allocate duplicates.
+8. Prefer the smallest evidence-accurate change.
+9. Recompute and review affected claim records under [Claim-review evidence](../standards/evidence.md).
+10. Revalidate affected neighboring claims and disagreements.
+11. Run all four applicable validation/review gates.
+12. Explain why the change improves truthfulness, authority, usefulness, currency, scope, or maintainability.

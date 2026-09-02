@@ -1,79 +1,87 @@
-schema_version: 1
+schema_version: 3
 id: engineering
 code: ENG
 title: Engineering
-status: active
-description: Principles for understanding problems, designing systems, making tradeoffs, validating outcomes, and
-  practicing responsible engineering.
-required_subdomains: []
+taxonomy_status: proposed
+description: Principles for understanding problems, designing systems, making tradeoffs,
+  validating outcomes, and practicing responsible engineering.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: requirements
   code: REQ
   title: Requirements
-  status: active
+  status: proposed
   origin: research
 - id: problem-framing
   code: PFR
   title: Problem Framing
-  status: active
+  status: proposed
   origin: research
 - id: design
   code: DES
   title: Design
-  status: active
+  status: proposed
   origin: research
 - id: architecture
   code: ARC
   title: Architecture
-  status: active
+  status: proposed
   origin: research
 - id: systems-thinking
   code: SYS
   title: Systems Thinking
-  status: active
+  status: proposed
   origin: research
 - id: tradeoffs-constraints
   code: TRD
   title: Tradeoffs & Constraints
-  status: active
+  status: proposed
   origin: research
 - id: testing-validation
   code: TST
   title: Testing & Validation
-  status: active
+  status: proposed
   origin: research
 - id: reliability
   code: REL
   title: Reliability
-  status: active
+  status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: active
+  status: proposed
   origin: research
 - id: performance-efficiency
   code: PER
   title: Performance & Efficiency
-  status: active
+  status: proposed
   origin: research
 - id: maintainability
   code: MAI
   title: Maintainability
-  status: active
+  status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: active
+  status: proposed
   origin: research
 - id: collaboration
   code: COL
   title: Collaboration
-  status: active
+  status: proposed
   origin: research
 - id: stakeholders
   code: STK
   title: Stakeholders
-  status: active
+  status: proposed
   origin: research

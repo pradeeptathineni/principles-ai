@@ -2,181 +2,97 @@
 
 ## Purpose
 
-Citations provide claim-level provenance.
+Citations provide claim-level provenance. A citation is evidence, not decoration, and citation presence is not proof of support.
 
-A citation is evidence, not decoration.
+## Structural claim units
 
-## Required citation scope
+Citations are deterministically required for:
 
-Every externally grounded:
+- The single principle statement paragraph.
+- Every non-empty top-level paragraph under `Why`.
+- Every top-level list item under `Practices`.
+- Every top-level paragraph under `Applicability`.
+- Any goal that makes an externally grounded claim.
 
-- Principle statement.
-- Substantive rationale claim.
-- Recommended practice.
+Introductions are editorial scope statements and must not be used to evade these requirements.
 
-must include one or more citations that substantively support that claim.
+## Syntax
 
-Goals may remain uncited when they represent developmental objectives reasonably derived from the surrounding evidence.
+Use document-local numeric CommonMark reference links.
 
-## Claim-level placement
-
-Place the citation at the end of the sentence or bullet it supports.
-
-Preferred:
-
-```markdown
-Small, focused changes are generally easier to review thoroughly. [1]
-```
-
-Preferred:
-
-```markdown
-- Keep unrelated refactoring separate when doing so improves reviewability. [1][2]
-```
-
-Avoid a pile of references under a principle with no indication of which source supports which claim.
-
-## Local numeric reference labels
-
-Use document-local numeric CommonMark reference links:
+One citation:
 
 ```markdown
 A supported claim. [1]
-
-Another supported claim. [1][2]
-
-[1]: https://example.com/source-one
-[2]: https://example.com/source-two
 ```
 
-Reference numbers are local to the file and normally assigned in first-use order.
+Multiple citations:
 
-Do not synchronize numbers across files.
+```markdown
+A claim synthesized from two sources. [1], [2]
+```
 
-CommonMark defines reference-style links separately from their link definitions, allowing the same reference to be reused without repeating the URL. [1]
+Three or more citations repeat the same comma-and-space separator: `[1], [2], [3]`. Labels are positive decimal integers without leading zeroes and appear in ascending order within a run. A citation run cannot repeat a label and must be the final inline sequence in its claim block. Adjacent labels, other separators, and a citation run followed by uncited claim text are invalid.
 
-## Visible reference section
+Never use adjacent `[1][2]`. CommonMark/GFM parses adjacent labels as one full reference link rather than two citations.
 
-Every corpus file ends with a human-readable `## References` section followed by the link definitions.
+Each cited structural claim block contains exactly one citation run, as its final inline sequence, covering the whole block. Numeric citation links elsewhere in the block are invalid. If a paragraph would need different citations for distinct claims or sentences, split it into separate claim-block paragraphs; split an over-broad Practice or Goal item into separate items.
 
-Example:
+Ordinary inline links remain available, but link titles are forbidden inside claim blocks. Link destinations are included in normalized claim text, so changing a destination invalidates retained claim review.
+
+## Visible bibliography and stable source identity
+
+Every cited local label must appear in a human-readable `## References` list and map to one canonical source ID:
 
 ```markdown
 ## References
 
-1. [Google Engineering Practices — Code Review][1]
-2. [OWASP Developer Guide — Security Principles][2]
+1. [Google Engineering Practices — Code Review][1] — `SRC-000001`
+2. [OWASP Developer Guide — Security Principles][2] — `SRC-000002`
 
 [1]: https://google.github.io/eng-practices/review/
 [2]: https://devguide.owasp.org/
 ```
 
-Optional one-sentence annotations may be added when they materially help a learner understand why a source matters.
+Reference numbers are local to the file and normally follow first use. Source IDs are repository-wide and stable. Updating a URL or registering an alias does not change the source ID.
 
-Do not turn the reference section into another essay.
+The bibliography is an exact mapping, not merely a presentation convention:
+
+- `## References` is the final level-two section.
+- It contains exactly one ordered list followed by the numeric reference definitions.
+- Every used citation label has exactly one visible entry and one definition, and no unused entry or definition is allowed.
+- Labels are contiguous from one; visible entries and definitions are ordered by label.
+- The ordered-list number, full-reference-link label, and definition label agree.
+- Each source ID appears at most once in a file and resolves to one allocated, non-retired source record.
+- The bibliography link permits only text, character references, and backslash escapes; its decoded visible title exactly matches the single-line, control-free NFC source-record title by code point.
+- The definition URL exactly matches that source's stored normalized canonical URL or one stored normalized alias.
+- Definitions use the unbracketed destination form shown above and have no optional reference title.
+- Duplicate definitions, duplicate entries, nonnumeric definitions, and ordinary reference definitions outside this catalog are invalid in corpus files. Inline links remain allowed.
+
+Numbering by first use is recommended and produces a warning when violated, but it is not a validity requirement.
+
+Source records are governed by `docs/standards/sources.md` and `config/schema.yaml#/$defs/source_record`.
 
 ## Entailment
 
-A reference must support the claim's:
+A source must support the claim's meaning, scope, normative strength, and relevant conditions. A source about the general topic is insufficient.
 
-- Meaning.
-- Scope.
-- Normative strength.
-- Relevant conditions.
-
-A source about a general topic is not sufficient if it does not support the actual sentence.
-
-Bad:
-
-```markdown
-Microservices always reduce operational complexity. [1]
-```
-
-when `[1]` merely discusses microservices.
-
-## Multiple sources
-
-Use multiple citations when:
-
-- A principle is synthesized across independent authorities.
-- Different parts of the claim come from different evidence.
-- A second source adds material independent support.
-- The first source is credible but not sufficient by itself.
-
-Do not add citations merely to create the appearance of consensus.
-
-## Source descriptions
-
-The visible source title should identify the source clearly enough for a human reader.
-
-Prefer:
-
-```markdown
-1. [Google Engineering Practices — Code Review][1]
-```
-
-over:
-
-```markdown
-1. [Source][1]
-```
+When sources are individually partial but jointly sufficient, the claim-level review must record the combined judgment. Unsupported claims must be narrowed, re-sourced, or removed.
 
 ## Quotations
 
-Use direct quotations sparingly.
+Quote sparingly, exactly, and briefly within a claim block whose terminal citation run supports the quotation. Never present reconstructed wording as a quotation.
 
-When quoting:
+## Validation boundary
 
-- Copy the wording exactly.
-- Keep the quotation short.
-- Cite the source immediately.
-- Do not reconstruct remembered wording and present it as a quotation.
-- Prefer paraphrase when exact wording is not essential.
+Deterministic validation can establish citation presence, terminal-run grammar, label resolution, exact bibliography/source mapping, URL syntax, evidence coverage, and claim-review hash/source agreement.
 
-## Citation validation
+Semantic evaluation determines entailment, authority, fitness, calibration, independence, currency, and whether unsupported claims were hidden outside structural claim blocks.
 
-Tooling should validate:
-
-### Deterministically
-
-- Every numeric citation label resolves.
-- Every link definition is used or intentionally retained.
-- No duplicate label definitions exist.
-- Required claim types contain citations.
-- Reference URLs are syntactically valid.
-- References section and link definitions agree.
-
-### Semantically
-
-- Source supports the claim.
-- Claim is not stronger than the evidence.
-- Source is fit for the claim.
-- Source is not obviously superseded when currency matters.
-
-Semantic validation may require an AI evaluator or human review and should not be represented as deterministic proof.
-
-## Machine representation
-
-A parser should be able to emit:
-
-```json
-{
-  "claim": "Small, focused changes are generally easier to review thoroughly.",
-  "references": [
-    {
-      "label": 1,
-      "url": "https://example.com/source"
-    }
-  ]
-}
-```
-
-The Markdown remains canonical.
+Human review remains required for high-impact semantic changes and evidence-policy changes.
 
 ## References
 
-1. [CommonMark Specification][1]
-2. [GitHub Flavored Markdown Specification][2]
+1. [GitHub Flavored Markdown Specification — Reference links][1]
 
-[1]: https://spec.commonmark.org/
-[2]: https://github.github.com/gfm/
+[1]: https://github.github.com/gfm/#reference-link

@@ -2,271 +2,67 @@
 
 ## Purpose
 
-The taxonomy creates useful entry points into bodies of practice. It is not intended to model a perfect ontology of human knowledge or freeze a forever-complete list of domains.
-
-Taxonomy is expected to evolve through human intent, AI-assisted research, validation, and review.
+Taxonomy creates useful entry points into bodies of practice. It is not a perfect ontology or a mandate to create a file for every topic.
 
 ## Canonical model
 
-Taxonomy policy and taxonomy state are separate.
+- `config/taxonomy-policy.yaml` defines executable universal rules.
+- `domains/<domain>/domain.yaml` records canonical local taxonomy state and protected intent.
+- An optional repository-wide aggregate is derived, disposable, and not committed by default.
 
-### Policy
+## Lifecycle
 
-`config/taxonomy-policy.yaml` defines universal rules such as:
+- `proposed`: preserved candidate taxonomy not yet independently accepted.
+- `accepted`: reviewed and human-approved for use.
+- `deprecated`: retained historical taxonomy no longer active.
 
-- Required files shared by every domain.
-- Naming conventions.
-- Stable-code constraints.
-- Allowed manifest fields and origins.
-- Protection of explicit human requirements.
-- Aggregation rules.
+Origin describes how a scope entered the taxonomy; it does not prove evidence, quality, or acceptance. Content coverage is derived from validated files and is independent of taxonomy lifecycle.
 
-It must not enumerate every domain and subdomain.
+Lifecycle combinations are deliberately constrained. A proposed domain has an empty review and no accepted subdomains. An accepted domain has a complete resolving review, every required subdomain accepted, and may retain other proposed or deprecated candidates. Accepted subdomains require an accepted parent. A deprecated domain has only deprecated subdomains and no remaining required subdomains; removing those requirements and deprecating the domain require prior human approval.
 
-### Accepted domain taxonomy
+Deprecated scopes have no current corpus file. Before deprecation, move surviving principles to accepted scopes while preserving IDs or retire them and remove their current headings; version history retains the former wording.
 
-Each domain owns:
+## Human intent
 
-```text
-domains/<domain>/domain.yaml
-```
+Manifests record required subdomains, priorities, exclusions, and scope notes. The manifest `description` field is the protected domain-purpose field; required scopes are protected as well.
 
-This manifest is the canonical accepted taxonomy for that domain.
+An agent must not silently remove, deprecate, rename, merge, or materially rescope protected intent. It may identify problems and propose a reviewed change. Required scopes must not be deprecated while they remain required.
 
-### Repository-wide taxonomy
+## Current provisional state
 
-A repository-wide aggregate may be generated from all domain manifests:
+Existing domains and subdomains are preserved. Where research origin lacks an auditable review record, the taxonomy remains proposed. Do not invent retrospective research provenance. Coding is the first domain scheduled for independent review before pilot content.
 
-```text
-generated/taxonomy.yaml
-```
+## Admission test
 
-The aggregate is derived and disposable. Do not hand-edit it.
-
-## Root
-
-All corpus domains live under:
-
-```text
-domains/
-```
-
-This keeps the knowledge corpus and its taxonomy state separate from repository machinery.
-
-## Universal files
-
-Every domain supports:
-
-```text
-principles.md
-personal-growth.md
-```
-
-Their stable file codes are defined in `config/taxonomy-policy.yaml`.
-
-### `principles.md`
-
-The domain's highest-order guidance.
-
-### `personal-growth.md`
-
-How to continuously improve within that domain.
-
-## Domain manifests
-
-A domain manifest records:
-
-- Domain ID, title, stable code, status, and scope description.
-- Explicitly required subdomains supplied by a human, when any.
-- Accepted subdomains.
-- Stable subdomain codes.
-- Provenance of each subdomain's inclusion.
-
-A manifest may register a subdomain before its Markdown file is created. Incremental corpus generation is expected.
-
-## Human-required subdomains
-
-A user may explicitly identify subdomains that matter to them.
-
-Example:
-
-> Build a teaching domain. Tutoring, students, teachers, parents, classroom, and virtual teaching are especially important to me.
-
-Those scopes belong in `required_subdomains` and must also appear in `subdomains`.
-
-`required_subdomains` represents protected human intent:
-
-- An agent must not silently remove, merge, rename, or deprecate one.
-- An agent may identify overlap or recommend a better structure.
-- Applying a change that alters protected intent requires explicit human approval.
-
-User-required does not mean exempt from quality standards. The agent still researches how the requested scope should be defined and what evidence belongs within it.
-
-## AI-discovered subdomains
-
-When creating or expanding a domain, the agent should research the discipline rather than treating the user's initial list as exhaustive.
-
-The agent should:
-
-1. Define the domain boundary.
-2. Inspect neighboring domain manifests for overlap.
-3. Identify authoritative frameworks, standards, roadmaps, curricula, bodies of knowledge, and mature practice that reveal major dimensions of the domain.
-4. Build a coverage map of candidate subdomains.
-5. Preserve all user-required subdomains.
-6. Add only materially distinct, durable, useful scopes.
-7. Avoid files created merely for symmetry.
-8. Record the accepted result in `domain.yaml` before bulk content generation.
-
-## Subdomain admission test
-
-Create a subdomain only when the topic represents a materially distinct dimension of excellent practice.
-
-A useful subdomain usually has:
-
-- Distinct decisions or behaviors.
-- Distinct authoritative references or evidence emphasis.
-- Enough durable content to justify separate navigation.
-- A clear boundary from neighboring files.
-- Meaningful value for human learning or AI context retrieval.
-
-A topic should remain within another file when separation would create thin, duplicative, or artificial structure.
+A subdomain should have distinct decisions or behaviors, distinct evidence emphasis, enough durable content, a clear boundary, and meaningful value for humans or context retrieval. Do not create scopes for symmetry.
 
 ## Overlap
 
-Overlap across domains is allowed when context materially changes:
+Overlap is permitted when context materially changes meaning, practices, goals, evidence, scope, or importance. Flat sibling domains remain acceptable. A centralized ontology is not required.
 
-- Meaning.
-- Practices.
-- Goals.
-- Evidence.
-- Scope.
+## Naming and codes
 
-For example:
+Directories and files use lowercase kebab-case. Domain and subdomain codes are stable taxonomy metadata. They do not determine principle identity.
 
-```text
-engineering/security.md
-coding/security.md
-devops/security.md
-cloud/security.md
-ai/security-privacy.md
-```
+Domain IDs and domain codes are unique repository-wide. Subdomain IDs and subdomain codes are unique within their containing domain; reuse across domains is allowed because the manifest provides the namespace.
 
-can all be useful without violating the repository model.
+Principles use repository-wide location-independent IDs governed by `config/content-policy.yaml`, `config/identity-policy.yaml`, and `config/identity-ledger.yaml`.
 
-Avoid duplication that adds no contextual value.
+## Moving, splitting, and merging principles
 
-## Flat domain navigation
+- Moves preserve the principle ID.
+- Splits allocate new IDs and record `derived_from` relationships.
+- Merges preserve one surviving ID and record replaced IDs with `replaced_by` relationships.
+- Retired IDs are never reused.
 
-Domains remain siblings even when one can theoretically be nested under another.
+The ledger retains numerically ordered, contiguous all-time allocations; retirement never removes an allocation. Splits retire the original and relate at least two new children to it with `derived_from`; merges retire non-survivors and relate each to the survivor with `replaced_by`; moves create no relationship. Relationships use allocated endpoints and reject duplicates, self-relations, and cycles.
 
-For example, keep:
+Trusted-base transitions are monotonic and preserve prior relationships; split children are new in that transition, while a merge survivor pre-exists and remains active. Without the baseline, transition validation is `not_evaluated`. `config/identity-ledger.yaml` and `config/identity-policy.yaml` are authoritative for exact executable invariants.
 
-```text
-domains/cloud/
-domains/aws-cloud/
-domains/gcp-cloud/
-domains/azure-cloud/
-```
+## Taxonomy review record
 
-rather than nesting vendor domains beneath `cloud/`.
+An accepted domain must have a concise `taxonomy-review.md` describing domain boundary, evidence families, important inclusions/exclusions, overlaps, protected intent, and unresolved ambiguity. Its manifest records the exact filename, review date, and at least one resolving stable source ID. Proposed domains keep all three review fields empty. Deprecated domains retain either a complete historical review or an entirely empty review; partial review metadata is invalid.
 
-The goal is discoverability and task-oriented context retrieval, not taxonomic purity.
+## Validation and approval
 
-## Naming
-
-### Directories and files
-
-Use lowercase kebab-case.
-
-### Stable file IDs
-
-Corpus frontmatter file IDs use dot notation:
-
-```text
-coding.principles
-coding.personal-growth
-coding.design
-```
-
-### Codes
-
-Each domain manifest registers a stable domain code and a stable code for each subdomain.
-
-Universal file codes are defined by policy.
-
-Entry IDs use:
-
-```text
-<DOMAIN-CODE>-<FILE-CODE>-<NNN>
-```
-
-Examples:
-
-```text
-COD-PRI-001
-COD-GRO-002
-COD-DES-003
-DEV-IAC-004
-AWS-IAM-001
-TEA-TUT-002
-```
-
-Codes and IDs are stable identities. Do not renumber existing entries merely because display order changes. Do not reuse retired IDs for unrelated principles.
-
-Tooling should generate or validate IDs from registered codes rather than asking an agent to improvise identifiers repeatedly.
-
-## Subdomain provenance
-
-Manifest entries may record:
-
-- `user`: explicitly requested by a human.
-- `research`: introduced through domain research.
-- `mixed`: explicitly requested and independently supported during research.
-- `policy`: introduced by repository-wide policy.
-
-Provenance does not rank quality. It records why the scope exists and helps protect human intent.
-
-## Adding a domain
-
-Follow `docs/workflows/create-domain.md`.
-
-A new domain request may be natural language and may include zero or more explicit subdomains.
-
-The agent should not force the user to supply YAML, IDs, or a complete taxonomy.
-
-## Updating a domain taxonomy
-
-Follow `docs/workflows/update-taxonomy.md` for:
-
-- Adding a subdomain.
-- Renaming or merging subdomains.
-- Deprecating or removing subdomains.
-- Revising domain scope.
-- Revising stable codes.
-- Revising protected human requirements.
-
-Taxonomy changes are high-impact and should be reviewed before bulk content moves or generation.
-
-## Moving content
-
-When moving an existing principle to a more appropriate file:
-
-- Preserve semantic identity when practical.
-- Update cross-references.
-- Record intentional ID changes when codes must change.
-- Avoid duplicate active copies unless contexts genuinely differ.
-
-## Validation
-
-At minimum, tooling should verify:
-
-- One manifest per accepted domain directory.
-- Unique domain IDs and codes.
-- Unique subdomain IDs and codes within a domain.
-- All `required_subdomains` exist in `subdomains`.
-- Existing Markdown subdomain files are registered in the manifest.
-- Existing Markdown files use IDs/codes consistent with the manifest.
-- Universal files use policy-defined codes.
-- Manifest naming and status values are valid.
-
-The validator need not require every registered subdomain file to exist during incremental corpus construction.
+Deterministic validation checks schema, lifecycle combinations, review-state completeness and resolution, uniqueness at the defined scopes, required-scope presence/status, registration, and path agreement. Semantic evaluation judges boundary quality, distinctness, and duplication. Human approval accepts taxonomy and any protected-intent change; approval is a governance gate, not a manifest field that software pretends to prove.

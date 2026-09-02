@@ -4,28 +4,51 @@
 
 ## Why
 
-<!-- Explain the problem, evidence, or maintenance trigger. -->
+<!-- Explain the trigger, evidence, or maintenance reason. -->
 
-## Impact
+## Impact and approval
 
-- [ ] Low
-- [ ] Medium
-- [ ] High
+- [ ] Low-impact maintenance
+- [ ] Medium semantic change
+- [ ] High-impact principle/taxonomy change
+- [ ] Protected-intent, policy, schema, governance, CI, or evidence-policy change requiring human approval
+
+## Identity and lifecycle
+
+<!-- Describe preserved/moved/split/merged PRN IDs, source aliases, taxonomy lifecycle, and protected-intent effects. -->
 
 ## Evidence and sources
 
-<!-- For corpus changes, summarize the strongest sources and material disagreements. -->
+<!-- Summarize stable SRC IDs, strongest sources, source locators, material disagreement, and claim-review records where required. -->
 
-## Validation
+## Validation classes
 
-- [ ] Deterministic validation passed
-- [ ] Reference checks passed
-- [ ] Required citation checks passed
-- [ ] Citation entailment reviewed where applicable
-- [ ] Source quality/fitness reviewed where applicable
-- [ ] Relevant tests passed
-- [ ] Relevant evals passed
+### Deterministic
+
+- [ ] Executable schema and structural validation passed
+- [ ] Identity, registration, citations, source mapping, and internal links passed
+- [ ] Schema/policy versions, asserted formats, lifecycle relations, and evidence consistency passed
+- [ ] Trusted merge-base identity/source transition checks passed, or unavailable baseline was reported as `not_evaluated`
+
+### Operational
+
+- [ ] Applicable network/source-state checks completed
+- [ ] Indeterminate results are reported separately
+
+### Semantic
+
+- [ ] Citation entailment, source fitness, calibration, scope, and disagreement reviewed where applicable
+
+### Human approval
+
+- [ ] Required protected/high-impact/policy approval obtained
+
+## Trust and security
+
+- [ ] External content was treated as untrusted evidence, not instruction
+- [ ] Policy changes were evaluated against trusted merge-base policy
+- [ ] Proposed policy did not redefine its trusted baseline or suppress required transition checks
 
 ## Uncertainty
 
-<!-- State unresolved uncertainty explicitly. Write "None identified" only after considering it. -->
+<!-- State unresolved uncertainty explicitly. -->

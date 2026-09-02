@@ -2,135 +2,47 @@
 
 ## Principle
 
-Give an AI the smallest complete context needed to make the current decision correctly.
+Give an AI the smallest complete context needed to make the current decision correctly. More context is not automatically better.
 
-More context is not automatically better. Irrelevant context competes with the task, evidence, and applicable rules.
+## Layers
 
-## Context layers
+1. `AGENTS.md` router and universal invariants.
+2. Applicable standards and workflow.
+3. Relevant executable configuration.
+4. Target domain manifest and taxonomy review state.
+5. Target corpus and neighboring content needed for scope.
+6. Referenced source records and claim-review records where relevant.
+7. Task evidence, diffs, diagnostics, tests, or eval results.
 
-### Layer 1 — Stable repository map
+Do not automatically load the entire corpus or all standards.
 
-`AGENTS.md`
+## Interactive and programmatic use
 
-Contains mission-level orientation, core invariants, policy pointers, and validation expectations.
+Interactive agents read repository-local context directly. Future automation must assemble the same canonical sources rather than maintain a divergent policy copy.
 
-### Layer 2 — Applicable standards and workflow
+## Context selection
 
-Load only documents relevant to the task.
+Prefer explicit stable file and principle IDs when scope is known. Principle IDs are location-independent. Source IDs and review provenance should travel with selected claims when the profile requires verification.
 
-Examples:
+Initial derived profiles may include:
 
-- New domain: taxonomy, research, prompting, AI-contribution standards, and create-domain workflow.
-- New corpus file: content, research, sources, citations, writing, taxonomy, and create-content workflow.
-- Parser bug: architecture, schema, validation, and bootstrap guidance.
+- `minimal`: ID, title, statement, source IDs.
+- `standard`: statement, all rationale, all practices, applicability, source IDs.
+- `learning`: full selected entries and used references.
+- `verification`: claim blocks, source records, locators, and review outcomes.
 
-### Layer 3 — Machine policy
+Deterministic tooling must not guess which rationale is “essential” or which practice is “relevant.” Include complete blocks for the selected profile.
 
-Load relevant portions of:
+## Traceability and reproducibility
 
-- `config/schema.yaml`
-- `config/content-policy.yaml`
-- `config/source-policy.yaml`
-- `config/taxonomy-policy.yaml`
-- `config/validation.yaml`
+Derived context records file IDs, principle IDs, source IDs, claim hashes, input hashes, profile, filters, and explicit source revision. Timestamps are injected explicitly rather than read implicitly by pure generators.
 
-### Layer 4 — Taxonomy state
-
-For existing domain work, load:
-
-```text
-domains/<domain>/domain.yaml
-```
-
-For a new domain, inspect only neighboring or overlapping manifests needed to reason about boundaries.
-
-A generated repository-wide taxonomy may be used for discovery, but canonical decisions come from individual manifests.
-
-### Layer 5 — Target corpus
-
-Load:
-
-- The file being changed.
-- Neighboring files required to understand boundaries or duplication.
-- Parent domain `principles.md` when relevant.
-- Directly referenced principles required for consistency.
-
-Do not automatically load the entire corpus.
-
-### Layer 6 — Task evidence
-
-Load source passages, retrieved documentation, diffs, test output, or eval results needed for the current judgment.
-
-## Interactive versus programmatic execution
-
-### Interactive Codex
-
-When Codex operates inside the repository, it should read repository-local context directly through `AGENTS.md` and task-relevant files. The user need not paste the context into every prompt.
-
-### Programmatic automation
-
-Future model-driven automation should use a context builder that assembles the same applicable policy, target manifest, corpus files, and evidence.
-
-Do not create a second, divergent copy of project policy inside application code.
-
-## Context assembly for downstream projects
-
-Future tooling should build context from selected stable IDs or scopes.
-
-Example:
-
-```yaml
-include:
-  files:
-    - coding.principles
-    - coding.design
-    - devops.infrastructure-as-code
-  principles:
-    - COD-PRI-001
-    - COD-DES-003
-```
-
-The context builder should:
-
-1. Resolve requested IDs through domain manifests and corpus metadata.
-2. Include the principle statement.
-3. Include practices relevant to the downstream task.
-4. Include rationale when needed for correct judgment.
-5. Preserve provenance.
-6. Avoid unrelated entries.
-7. Record canonical IDs and revisions used.
-
-## Context profiles
-
-Future implementation may support profiles such as:
-
-- `minimal`: principle statements and IDs.
-- `standard`: principles, practices, and essential rationale.
-- `learning`: full entries plus references.
-- `verification`: claims plus source metadata/evidence needed for checking.
-
-Profiles are derived artifacts. The Markdown corpus remains canonical.
+Document-local citation labels must be namespaced or rewritten safely when multiple files are combined.
 
 ## Retrieval
 
-Prefer explicit file or stable-ID selection when scope is known.
+Semantic retrieval may later supplement explicit selection, but it must not silently omit known mandatory principles. Embeddings and semantic search are deferred until the pilot establishes need.
 
-Semantic retrieval may supplement explicit selection for broad tasks, but should not silently omit known mandatory principles.
+## Evaluation
 
-## Traceability
-
-Generated context should record:
-
-- Generation timestamp.
-- Source commit when available.
-- Domain manifest revisions or hashes when available.
-- Canonical file IDs.
-- Principle IDs.
-- Context profile.
-- Filters applied.
-
-## Context evaluation
-
-Measure relevance, mandatory coverage, unnecessary-token rate, preservation of nuance, preservation of provenance, and downstream task quality.
-
-Do not optimize token count at the expense of necessary reasoning context.
+Measure mandatory coverage, relevance, unnecessary-token rate, preservation of scope and disagreement, provenance, and downstream quality. Do not optimize token count at the expense of correct judgment.

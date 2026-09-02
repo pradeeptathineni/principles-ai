@@ -1,0 +1,29 @@
+{
+  "name": "principles-tooling",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "bin": {
+    "principles": "./bin/principles.js"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test --test-reporter=spec",
+    "validate": "node bin/principles.js validate --offline",
+    "generate:taxonomy": "node bin/principles.js taxonomy --output generated/taxonomy.yaml",
+    "check:links": "node bin/principles.js links external"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "canonicalize": "4.0.0",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "unified": "11.0.5",
+    "unist-util-visit": "5.1.0",
+    "yaml": "2.9.0"
+  }
+}

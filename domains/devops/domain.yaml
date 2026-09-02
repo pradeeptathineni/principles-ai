@@ -1,119 +1,127 @@
-schema_version: 1
+schema_version: 3
 id: devops
 code: DEV
 title: DevOps
-status: active
-description: Principles for improving software delivery, infrastructure, automation, observability, reliability,
-  and collaboration across the delivery lifecycle.
-required_subdomains: []
+taxonomy_status: proposed
+description: Principles for improving software delivery, infrastructure, automation,
+  observability, reliability, and collaboration across the delivery lifecycle.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: culture-collaboration
   code: CUL
   title: Culture & Collaboration
-  status: active
+  status: proposed
   origin: research
 - id: infrastructure
   code: INF
   title: Infrastructure
-  status: active
+  status: proposed
   origin: research
 - id: infrastructure-as-code
   code: IAC
   title: Infrastructure as Code
-  status: active
+  status: proposed
   origin: research
 - id: configuration
   code: CFG
   title: Configuration
-  status: active
+  status: proposed
   origin: research
 - id: automation
   code: AUT
   title: Automation
-  status: active
+  status: proposed
   origin: research
 - id: ci-cd
   code: CICD
   title: CI/CD
-  status: active
+  status: proposed
   origin: research
 - id: software-delivery
   code: DLV
   title: Software Delivery
-  status: active
+  status: proposed
   origin: research
 - id: containers
   code: CTR
   title: Containers
-  status: active
+  status: proposed
   origin: research
 - id: orchestration
   code: ORC
   title: Orchestration
-  status: active
+  status: proposed
   origin: research
 - id: cloud
   code: CLD
   title: Cloud
-  status: active
+  status: proposed
   origin: research
 - id: networking
   code: NET
   title: Networking
-  status: active
+  status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: active
+  status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
-  status: active
+  status: proposed
   origin: research
 - id: reliability
   code: REL
   title: Reliability
-  status: active
+  status: proposed
   origin: research
 - id: incident-response
   code: INC
   title: Incident Response
-  status: active
+  status: proposed
   origin: research
 - id: disaster-recovery
   code: DR
   title: Disaster Recovery
-  status: active
+  status: proposed
   origin: research
 - id: performance-capacity
   code: PER
   title: Performance & Capacity
-  status: active
+  status: proposed
   origin: research
 - id: cost
   code: CST
   title: Cost
-  status: active
+  status: proposed
   origin: research
 - id: environments
   code: ENV
   title: Environments
-  status: active
+  status: proposed
   origin: research
 - id: change-management
   code: CHG
   title: Change Management
-  status: active
+  status: proposed
   origin: research
 - id: developer-experience
   code: DX
   title: Developer Experience
-  status: active
+  status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: active
+  status: proposed
   origin: research

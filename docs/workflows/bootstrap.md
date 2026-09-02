@@ -2,161 +2,89 @@
 
 ## Goal
 
-Implement the repository harness before bulk-generating the principles corpus.
+Implement the deterministic repository harness from the accepted architecture. Do not generate corpus content during tooling bootstrap.
 
-## Order
+## Phase 0 — Architecture contract gate
 
-### 1. Materialize the repository structure
+This gate has passed: [Architecture](../architecture.md), the applicable standards, and `config/` define the accepted identity, citation, claim-unit, taxonomy, protected-intent, pilot-evidence, precedence, transition, validation-class, trust, and generated-output contracts. Do not reopen architecture during implementation without a concrete contract defect and required review.
 
-Create the approved directories from `README.md`.
+## Phase 1 — Taxonomy state and pilot boundary
 
-Treat existing `domains/*/domain.yaml` files as accepted taxonomy state.
+Preserve existing scopes, retain undocumented research-origin taxonomy as proposed, and independently review the coding taxonomy before pilot generation. Do not perform that coding review as part of architecture correction or deterministic tooling implementation.
 
-Do not populate domain content beyond small fixtures until validation exists.
+## Phase 2 — Runtime and schema foundation
 
-### 2. Implement domain-manifest parsing and taxonomy aggregation
+After explicit authorization:
 
-Requirements:
+- Select a current supported runtime and minimal libraries.
+- Add exact dependency lockfiles.
+- Implement the bounded canonical-text, YAML/frontmatter, discovery, and filesystem contract in [Security and trust](../standards/security.md).
+- Validate `config/schema.yaml` with Draft 2020-12 format assertion.
+- Reject unsupported schema/policy versions, unknown policy fields, and implicit migrations.
+- Implement repository-safe discovery and stable ranged diagnostics.
+- Load trusted merge-base policy, identity, and source state for pull-request transition checks; report `not_evaluated` rather than full success when that baseline is unavailable.
+- Add no model SDK, embeddings, database, daemon, service, or multi-agent orchestration.
 
-- Discover `domains/*/domain.yaml`.
-- Validate manifests against `config/schema.yaml` and `config/taxonomy-policy.yaml`.
-- Detect duplicate domain IDs/codes.
-- Detect duplicate subdomain IDs/codes within domains.
-- Verify every `required_subdomains` entry exists in `subdomains`.
-- Validate subdomain provenance/status values.
-- Build `generated/taxonomy.yaml` deterministically from manifests.
-- Treat the generated aggregate as disposable.
+## Phase 3 — Manifest, identity, source, and taxonomy validation
 
-Do not use a hand-maintained central taxonomy enumeration.
+- Implement manifest, lifecycle, protected-intent, scoped-uniqueness, registration, and review-state rules from `config/taxonomy-policy.yaml` and [Taxonomy](../standards/taxonomy.md).
+- Implement all-time principle/source allocation and trusted-base transition rules from `config/identity-policy.yaml`.
+- Implement source registration, URL/alias normalization, persistence, moves, lifecycle, collisions, and dates from `config/source-policy.yaml` and [Sources](../standards/sources.md).
+- Generate deterministic taxonomy output without committing it by default.
 
-### 3. Implement Markdown parsing
+## Phase 4 — Markdown parser and corpus structure
 
-Requirements:
+- Parse the YAML preamble separately from the GFM body.
+- Use a real Markdown AST with source locations.
+- Normalize all authoring presets into one document model.
+- Implement the path/frontmatter/title and closed AST contract in `config/content-policy.yaml`.
+- Prove `[1][2]` is rejected as citation style and `[1], [2]` works.
 
-- Parse YAML frontmatter.
-- Parse CommonMark/GFM structure using a real Markdown parser.
-- Extract file metadata.
-- Extract principle entries.
-- Extract rationale paragraphs.
-- Extract practice and goal lists.
-- Extract tags.
-- Resolve numeric reference-style links.
-- Preserve source locations where practical for useful errors.
+## Phase 5 — Citations, sources, and evidence records
 
-Do not build the parser from regexes alone.
+- Implement structural citation presence, terminal-run grammar, exact local catalog/source mapping, and canonical URL-or-alias resolution without claiming entailment.
+- Implement complete per-entry claim-review validation under `config/evidence-policy.yaml` and [Claim-review evidence](../standards/evidence.md). Pilot evidence becomes mandatory only when a named corpus path exists.
+- Detect claim-text and source-sequence disagreement deterministically. Surface locator and relevant source-lifecycle transitions, plus operational source-content observations, as semantic re-review triggers without claiming the claim hash detected source freshness.
 
-### 4. Implement deterministic validation
+## Phase 6 — Links and network isolation
 
-Implement checks from:
+- Validate configured nonhistorical internal links offline under `config/validation.yaml`, retaining its exclusions and deferred fragment boundary.
+- Implement external checks as a separate operational command.
+- Test networking against controlled local fixtures.
+- Enforce [Security and trust](../standards/security.md).
 
-- `config/schema.yaml`
-- `config/content-policy.yaml`
-- `config/taxonomy-policy.yaml`
-- `config/validation.yaml`
-- target `domain.yaml` manifests
+## Phase 7 — Deterministic context builder
 
-The validator should produce actionable errors with file, domain, and entry context.
+- Accept explicit file/principle IDs.
+- Build documented profiles using complete selected blocks.
+- Namespace local citations when combining files.
+- Record input hashes and injected revision metadata.
+- Do not add semantic retrieval.
 
-Existing corpus files must be registered by the corresponding domain manifest. Registered subdomains need not all have Markdown files yet during incremental construction.
+## Phase 8 — Eval harness skeleton
 
-### 5. Implement code and ID tooling
+- Add versioned semantic fixtures, rubrics, expected results, human calibration records, and resolving evaluator configurations under `evals/`.
+- Keep semantic evals non-blocking until calibrated.
+- A model API is not required if interactive or manual evaluation satisfies the initial contract.
 
-At minimum:
+## Phase 9 — CI and cleanup
 
-- Validate stable domain/subdomain codes.
-- Generate or validate entry ID prefixes from manifests/policy.
-- Detect collisions.
-- Never renumber accepted IDs automatically.
+- Run build, deterministic tests, and offline validation on pull requests.
+- Run external links separately on schedule/manual request.
+- Use immutable action references and minimal permissions.
+- Do not expose secrets to untrusted pull-request jobs.
+- Remove obsolete manual inventories and tracked platform metadata.
 
-A scaffold command may propose codes for new domains/subdomains, but the accepted manifest remains canonical.
+## Phase 10 — Three-file pilot, separately authorized
 
-### 6. Implement reference tooling
-
-At minimum:
-
-- Resolve references.
-- Detect duplicate definitions.
-- Detect undefined references.
-- Detect unused references.
-- Validate URL syntax.
-- Provide a link-check command.
-
-Network link checks must distinguish temporary network failure from definitive broken links.
-
-### 7. Implement citation-presence checks
-
-Determine which claims require citations according to `docs/standards/citations.md`.
-
-Flag missing citations deterministically where structure allows.
-
-Do not pretend deterministic checks prove entailment.
-
-### 8. Implement tests
-
-Create fixtures for:
-
-- Valid domain manifest.
-- Duplicate domain/subdomain code.
-- Missing required subdomain.
-- Unregistered corpus file.
-- Valid principles file.
-- Valid personal-growth file.
-- Valid subdomain file.
-- Missing citations.
-- Broken references.
-- Invalid IDs.
-- Heading-order errors.
-- Duplicate IDs.
-- Leftover placeholders.
-
-### 9. Implement eval harness skeleton
-
-Create contracts needed to evaluate:
-
-- Citation entailment.
-- Source quality.
-- Scope calibration.
-- Taxonomy fit.
-- Readability.
-
-### 10. Add CI
-
-CI should run deterministic validation and tests on every pull request.
-
-Expensive semantic evals may initially run selectively.
-
-### 11. Validate templates
-
-Run all three templates through the parser and validator using fixture substitutions.
-
-### 12. Generate a pilot
-
-Only after the harness passes, generate three pilot files:
+Only after coding taxonomy acceptance and explicit approval, create:
 
 - `domains/coding/principles.md`
 - `domains/coding/personal-growth.md`
 - `domains/coding/design.md`
 
-Review them deeply before expanding.
-
-### 13. Improve the harness from pilot failures
-
-Any repeated ambiguity or failure should become better documentation, configuration, validation, tests, evals, or workflow guidance.
-
-### 14. Expand gradually
-
-Generate content domain by domain. New domains follow `docs/workflows/create-domain.md` rather than editing a central taxonomy list.
+The pilot must include stable source records and claim-review records. Human review then decides whether evidence records become universally mandatory.
 
 ## Completion criteria
 
-Bootstrap is complete when:
-
-- Domain manifests are validated.
-- Repository-wide taxonomy can be generated deterministically from manifests.
-- Templates are parseable.
-- Deterministic validation is enforced in CI.
-- Corpus structure can be converted to a structured representation.
-- Reference links resolve correctly.
-- Required citation presence is enforceable.
-- Representative semantic eval fixtures exist.
-- The three coding pilot files pass human review.
+Bootstrap is complete when schemas and canonical state validate, parsing and citation contracts are proven, identity is stable, generated output is reproducible, deterministic CI passes, semantic fixtures exist, and the pilot has passed human review. Tooling completion alone does not authorize bulk corpus generation.

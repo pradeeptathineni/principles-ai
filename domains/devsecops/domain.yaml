@@ -1,104 +1,112 @@
-schema_version: 1
+schema_version: 3
 id: devsecops
 code: DSC
 title: DevSecOps
-status: active
-description: Principles for integrating security, risk reduction, verification, and shared responsibility throughout
-  software delivery and operations.
-required_subdomains: []
+taxonomy_status: proposed
+description: Principles for integrating security, risk reduction, verification, and
+  shared responsibility throughout software delivery and operations.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: culture-shared-responsibility
   code: CUL
   title: Culture & Shared Responsibility
-  status: active
+  status: proposed
   origin: research
 - id: threat-modeling
   code: THR
   title: Threat Modeling
-  status: active
+  status: proposed
   origin: research
 - id: secure-sdlc
   code: SDL
   title: Secure SDLC
-  status: active
+  status: proposed
   origin: research
 - id: identity-secrets
   code: IAM
   title: Identity & Secrets
-  status: active
+  status: proposed
   origin: research
 - id: source-control
   code: SRC
   title: Source Control
-  status: active
+  status: proposed
   origin: research
 - id: pipeline-security
   code: PIP
   title: Pipeline Security
-  status: active
+  status: proposed
   origin: research
 - id: dependencies-sbom
   code: SBOM
   title: Dependencies & SBOM
-  status: active
+  status: proposed
   origin: research
 - id: software-supply-chain
   code: SUP
   title: Software Supply Chain
-  status: active
+  status: proposed
   origin: research
 - id: artifact-container-security
   code: ART
   title: Artifact & Container Security
-  status: active
+  status: proposed
   origin: research
 - id: infrastructure-as-code-security
   code: IAC
   title: Infrastructure as Code Security
-  status: active
+  status: proposed
   origin: research
 - id: cloud-security
   code: CLD
   title: Cloud Security
-  status: active
+  status: proposed
   origin: research
 - id: policy-as-code
   code: PAC
   title: Policy as Code
-  status: active
+  status: proposed
   origin: research
 - id: testing-scanning
   code: TST
   title: Testing & Scanning
-  status: active
+  status: proposed
   origin: research
 - id: vulnerability-management
   code: VUL
   title: Vulnerability Management
-  status: active
+  status: proposed
   origin: research
 - id: observability-detection
   code: DET
   title: Observability & Detection
-  status: active
+  status: proposed
   origin: research
 - id: incident-response
   code: INC
   title: Incident Response
-  status: active
+  status: proposed
   origin: research
 - id: compliance-governance
   code: GOV
   title: Compliance & Governance
-  status: active
+  status: proposed
   origin: research
 - id: risk-exceptions
   code: RSK
   title: Risk & Exceptions
-  status: active
+  status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: active
+  status: proposed
   origin: research

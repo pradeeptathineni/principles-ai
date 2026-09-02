@@ -4,115 +4,111 @@
 
 This project preserves and continuously improves the principles the maintainer wants to embody across the disciplines they practice.
 
-It is an evidence-grounded knowledge system, not a generic list of best practices. The corpus should represent considered judgment synthesized from authoritative evidence, established practice, meaningful experience, explicit human priorities, and explicit tradeoffs.
+It is an evidence-grounded system of curated guidance, not a generic list of best practices and not an objective declaration that evidence alone determines values. The corpus combines authoritative evidence, established practice, meaningful experience, explicit human priorities, explicit tradeoffs, and reviewed editorial judgment.
 
 The project should help a reader answer:
 
 - What matters most in this domain?
 - Why does it matter?
-- What should I actually do?
-- How should I keep growing?
-- What evidence supports this guidance?
-- Where is the guidance contextual, disputed, or changing?
+- What should I do?
+- Under what conditions or limitations does the guidance apply?
+- How can I continue growing?
+- What evidence supports the externally grounded claims?
+- Where is the guidance disputed, contextual, uncertain, or changing?
 
 ## Primary outputs
 
-The primary artifact is the Markdown corpus under `domains/`.
+Canonical corpus content is Markdown under `domains/`. Each domain owns a manifest describing taxonomy lifecycle and protected human intent. Stable source records live under `sources/`. Minimal claim-review records may live under `evidence/`; they are required for the initial three-file pilot but are not yet universally mandatory.
 
-Each domain also owns a `domain.yaml` manifest that defines its accepted taxonomy and stable ID codes.
+A domain may register proposed or accepted scopes before corresponding Markdown exists. Taxonomy acceptance and content coverage are separate concepts.
 
-Each domain contains or may progressively build:
+## Epistemic model
 
-- `principles.md`: the highest-order guidance worth carrying into nearly every task in the domain.
-- `personal-growth.md`: the best ways to continue developing capability and judgment in the domain.
-- Subdomain files: focused principles, practices, and goals for materially distinct areas of practice.
+The repository distinguishes:
 
-A domain manifest may register scopes before all corresponding Markdown files have been written. This supports deliberate, incremental corpus growth.
+- Evidence-backed descriptive claims about consequences, requirements, behavior, or observed practice.
+- Normative recommendations synthesized from evidence and judgment.
+- Maintainer-adopted priorities and values.
+- Developmental goals derived from surrounding guidance.
+
+A citation can substantiate a claim; it cannot hide the editorial judgment involved in choosing or adopting a principle. The corpus should make scope, tradeoffs, and meaningful disagreement visible rather than presenting subjective synthesis as mechanically proven truth.
 
 ## Human intent
 
-Human intent is first-class project input.
+Human intent is first-class input and includes domain purpose, required subdomains, priorities, exclusions, and scope notes. An agent may challenge or recommend changes, but it must not silently remove, deprecate, rename, merge, or materially redefine protected intent.
 
-A maintainer may ask for a new domain and explicitly identify subdomains that matter personally or professionally. Those requirements should be preserved as protected taxonomy intent while AI research fills in other major areas of the discipline.
-
-The project should not force a human to know the final taxonomy before asking for a domain. The agent is expected to help research and synthesize it.
+Natural-language interaction remains the primary interface. Users should not need to author YAML or know internal identity formats.
 
 ## Audiences
 
 ### Humans
 
-The corpus should be pleasant to browse as a learning resource. A reader should be able to understand a principle without knowing the repository's parser or automation.
+The raw Markdown should be pleasant to browse and useful without knowledge of parser internals.
 
 ### AI systems
 
-The corpus should be structured enough to retrieve, parse, filter, validate, and inject selected principles into AI context without lossy interpretation.
+The corpus should be structured enough to retrieve, parse, filter, validate, and inject selected principles without losing identity, scope, or provenance.
 
 ### Maintainers and reviewers
 
-Changes should be reviewable as evidence-backed proposals. The repository should make it easy to see what changed, why, which human priorities are protected, and which sources substantiate the content.
+Changes should be reviewable as evidence-backed proposals. Reviewers should be able to see what changed, which intent is protected, which sources are involved, what was actually verified, and which judgments remain human decisions.
 
 ## Quality model
 
 The repository optimizes for:
 
-1. **Truthfulness** — claims accurately reflect the evidence.
-2. **Authority** — sources are strong and fit for the claim.
-3. **Usefulness** — guidance changes judgment or behavior.
-4. **Durability** — principles survive ordinary changes in tools and fashion.
-5. **Nuance** — scope, tradeoffs, uncertainty, and disagreement are preserved.
-6. **Readability** — humans can learn from the raw Markdown.
-7. **Parseability** — machines can extract structure without heuristic guessing.
-8. **Maintainability** — stale evidence and weak content can be detected and updated.
-9. **Context efficiency** — selected content can be supplied to AI without unnecessary repository noise.
-10. **Intent preservation** — explicit human priorities survive autonomous maintenance unless a human intentionally changes them.
+1. Truthfulness.
+2. Source authority and claim-specific fitness.
+3. Usefulness.
+4. Durability.
+5. Nuance and scope calibration.
+6. Human readability.
+7. Machine parseability.
+8. Maintainability and re-verifiability.
+9. Context efficiency.
+10. Intent preservation.
+11. Traceable identity and provenance.
+12. Honest separation of deterministic proof, semantic judgment, and human approval.
 
 ## Stability gradient
 
-Different content changes at different rates:
-
 | Content | Expected stability |
 | --- | --- |
-| Principles | Slow-changing |
+| Principle identity | Permanent |
+| Principle wording | Slow-changing |
 | Rationale | Slow to moderate |
 | Practices | Moderate |
 | Goals | Personal and evolving |
-| References | Actively maintained |
-| Research-added taxonomy | Deliberate, reviewable |
+| Source URLs | Changeable without changing source identity |
+| Source review status | Actively maintained |
+| Research-added taxonomy | Provisional until accepted; deliberate thereafter |
 | Explicit human taxonomy requirements | Protected until explicitly revised |
-
-A newer tool or article is not sufficient reason to rewrite a durable principle.
 
 ## Human and agent roles
 
-Humans define purpose, personal priorities, acceptable judgment, and final governance. Agents can interpret natural-language intent, research domain structure, synthesize taxonomy, research content, challenge assumptions, validate, implement, and propose updates.
+Humans define purpose, personal priorities, acceptable judgment, taxonomy acceptance, and final governance. Agents may interpret intent, research, synthesize, challenge assumptions, validate, implement approved tooling, and propose changes.
 
-Code should enforce deterministic invariants. AI should handle judgment where deterministic rules are insufficient.
+Code enforces deterministic invariants. Operational checks observe changing external state. AI and humans evaluate semantics. Humans approve protected and high-impact decisions.
 
-The project should progressively encode human judgment into repository-local documentation, configuration, manifests, tests, and evaluation so agent performance improves without requiring larger ad hoc prompts.
+Permanent identity and source-move guarantees are transition invariants. Pull-request checks compare proposed state with trusted merge-base state; a snapshot without that baseline cannot prove all-time non-reuse or valid historical moves.
 
 ## Non-goals
 
 This repository is not intended to:
 
-- Catalog every fact, tool, framework, or technique in a domain.
-- Treat popularity as proof.
-- Pretend engineering or teaching has one universal answer when credible disagreement exists.
+- Catalog every fact, tool, framework, or technique.
+- Treat popularity or citation count as proof.
+- Pretend one universal answer exists when credible disagreement remains.
 - Turn vendor guidance into universal doctrine.
-- Replace primary source documentation.
-- Accumulate quotations or scraped source text.
-- Optimize for maximum file size or principle count.
-- Hide subjective synthesis behind authoritative-looking citations.
-- Hardcode a forever-complete ontology of domains and subdomains in one central configuration file.
-- Require users to express natural-language priorities through a low-level CLI or schema.
+- Replace primary documentation.
+- Accumulate scraped source text.
+- Optimize for file, principle, subdomain, tag, or citation count.
+- Hide values or editorial judgment behind authoritative-looking citations.
+- Freeze a forever-complete ontology.
+- Require users to speak in schemas or CLI arguments.
+- Depend on one transient AI interface, model, or product label.
+- Add model orchestration, embeddings, databases, or services before demonstrated need.
 
 ## Repository-local context
 
-Important project knowledge should live in the repository rather than depending on external chat history or unwritten conventions. Agents are more reliable when the environment, rules, and feedback loops they need are inspectable and enforceable in-repo. OpenAI describes this pattern as making repository knowledge the system of record and using `AGENTS.md` as a compact map to deeper documentation. [1]
-
-## References
-
-1. [OpenAI — Harness engineering: leveraging Codex in an agent-first world][1]
-2. [OpenAI — Unrolling the Codex agent loop][2]
-
-[1]: https://openai.com/index/harness-engineering/
-[2]: https://openai.com/index/unrolling-the-codex-agent-loop/
+Durable project knowledge belongs in versioned repository policy rather than chat history. `AGENTS.md` is a compact router; task prompts remain lean; exact executable constraints live in schemas and deterministic configuration.

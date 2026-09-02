@@ -1,114 +1,122 @@
-schema_version: 1
+schema_version: 3
 id: frontend-development
 code: FRT
 title: Frontend Development
-status: active
-description: Principles for building accessible, usable, performant, maintainable, and reliable user-facing web
-  experiences.
-required_subdomains: []
+taxonomy_status: proposed
+description: Principles for building accessible, usable, performant, maintainable,
+  and reliable user-facing web experiences.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: web-platform
   code: WEB
   title: Web Platform
-  status: active
+  status: proposed
   origin: research
 - id: html-semantics
   code: HTM
   title: HTML Semantics
-  status: active
+  status: proposed
   origin: research
 - id: css-layout
   code: CSS
   title: CSS & Layout
-  status: active
+  status: proposed
   origin: research
 - id: javascript-typescript
   code: JTS
   title: JavaScript & TypeScript
-  status: active
+  status: proposed
   origin: research
 - id: architecture
   code: ARC
   title: Architecture
-  status: active
+  status: proposed
   origin: research
 - id: components-state
   code: STA
   title: Components & State
-  status: active
+  status: proposed
   origin: research
 - id: responsive-design
   code: RSP
   title: Responsive Design
-  status: active
+  status: proposed
   origin: research
 - id: accessibility
   code: ACC
   title: Accessibility
-  status: active
+  status: proposed
   origin: research
 - id: user-experience
   code: UXD
   title: User Experience
-  status: active
+  status: proposed
   origin: research
 - id: design-systems
   code: DSY
   title: Design Systems
-  status: active
+  status: proposed
   origin: research
 - id: data-api-integration
   code: API
   title: Data & API Integration
-  status: active
+  status: proposed
   origin: research
 - id: testing
   code: TST
   title: Testing
-  status: active
+  status: proposed
   origin: research
 - id: debugging
   code: DBG
   title: Debugging
-  status: active
+  status: proposed
   origin: research
 - id: error-handling
   code: ERR
   title: Error Handling
-  status: active
+  status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: active
+  status: proposed
   origin: research
 - id: performance
   code: PER
   title: Performance
-  status: active
+  status: proposed
   origin: research
 - id: compatibility
   code: CMP
   title: Compatibility
-  status: active
+  status: proposed
   origin: research
 - id: dependencies-tooling
   code: DEP
   title: Dependencies & Tooling
-  status: active
+  status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
-  status: active
+  status: proposed
   origin: research
 - id: seo-discoverability
   code: SEO
   title: SEO & Discoverability
-  status: active
+  status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: active
+  status: proposed
   origin: research

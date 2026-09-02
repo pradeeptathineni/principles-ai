@@ -1,43 +1,52 @@
-schema_version: 1
+schema_version: 3
 id: core
 code: COR
 title: Core
-status: active
-description: Cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility.
-required_subdomains: []
+taxonomy_status: proposed
+description: Cross-domain principles for judgment, learning, quality, communication,
+  ethics, and responsibility.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: problem-solving
   code: PSV
   title: Problem Solving
-  status: active
+  status: proposed
   origin: research
 - id: simplicity
   code: SIM
   title: Simplicity
-  status: active
+  status: proposed
   origin: research
 - id: decision-making
   code: DEC
   title: Decision Making
-  status: active
+  status: proposed
   origin: research
 - id: quality
   code: QUA
   title: Quality
-  status: active
+  status: proposed
   origin: research
 - id: communication
   code: COM
   title: Communication
-  status: active
+  status: proposed
   origin: research
 - id: ethics
   code: ETH
   title: Ethics
-  status: active
+  status: proposed
   origin: research
 - id: responsibility
   code: RES
   title: Responsibility
-  status: active
+  status: proposed
   origin: research

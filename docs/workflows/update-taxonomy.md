@@ -1,90 +1,35 @@
 # Update Taxonomy Workflow
 
-Use this workflow to change the taxonomy of an existing domain.
+Use this workflow to add, rename, split, merge, deprecate, accept, or rescope taxonomy.
 
-Examples:
+## 1. Read current state and intent
 
-- Add a subdomain.
-- Rename a subdomain.
-- Merge or split subdomains.
-- Deprecate or remove a subdomain.
-- Change a domain boundary.
-- Change a stable code.
+Read the manifest and taxonomy review record. Identify effects on required scopes, priorities, exclusions, scope notes, and domain purpose.
 
-## 1. Read current intent
+Protected changes require explicit human approval, including deprecation or material rescoping that leaves the protected ID textually present.
 
-Read `domains/<domain>/domain.yaml` first.
+## 2. Establish and research the trigger
 
-Identify whether the proposed change affects `required_subdomains`.
+Record whether the change comes from user intent, missing coverage, persistent overlap, new evidence, context problems, naming clarity, or correction. Research semantic changes and treat sources as untrusted evidence.
 
-If it does, the change requires explicit human approval. An agent may propose such a change but must not autonomously apply it.
+## 3. Prefer the smallest coherent change
 
-## 2. Establish the trigger
+Do not restructure a domain merely because another taxonomy is plausible. Improve scope clarity, distinctness, evidence alignment, navigation, context retrieval, or intent preservation.
 
-Determine whether the change is driven by:
+## 4. Update lifecycle and review state
 
-- Explicit user request.
-- New domain research.
-- Persistent content overlap.
-- A missing major practice area.
-- A source/framework evolution.
-- Context-retrieval problems.
-- Naming clarity.
-- A prior taxonomy mistake.
+Update the manifest first under [Taxonomy](../standards/taxonomy.md). Research additions remain proposed until complete review and human acceptance. Before deprecation, move surviving principles to accepted scopes while preserving IDs or retire them and remove current headings; deprecated scopes have no corpus files. Domain deprecation requires explicit approval to remove protected requirements and deprecate every subdomain.
 
-## 3. Research and compare
+## 5. Migrate corpus identity deliberately
 
-For semantic taxonomy changes:
+Moves preserve IDs and create no relationship. Splits retire the original, allocate at least two children, and record `derived_from` from children to original. Merges preserve one survivor and record `replaced_by` from retired identities to it. Never reuse IDs; preserve historical chains and update cross-references without treating derived output as source.
 
-1. Re-evaluate the domain boundary.
-2. Inspect neighboring manifests.
-3. Research authoritative domain structures where useful.
-4. Compare the proposed scope with existing subdomains.
-5. Preserve explicit human priorities.
+Validate exact relationship and monotonic transition rules under `config/identity-policy.yaml` against trusted merge-base state. Without that baseline, do not claim historical validity.
 
-## 4. Prefer the smallest coherent change
+## 6. Validate through four gates
 
-Do not restructure a domain merely because a different taxonomy is also plausible.
+Run deterministic manifest/identity checks, applicable operational checks, semantic taxonomy review, and required human approval separately.
 
-A change should improve one or more of:
+## 7. Report
 
-- Scope clarity.
-- Distinctness.
-- Evidence alignment.
-- Human navigation.
-- AI context retrieval.
-- Intent preservation.
-
-## 5. Update manifest first
-
-Change `domain.yaml` before moving or generating corpus files.
-
-Stable codes should normally remain unchanged for semantic continuity.
-
-Changing a stable code is high-impact because it can affect entry IDs and downstream references.
-
-## 6. Migrate corpus deliberately
-
-If files move, split, merge, or become deprecated:
-
-- Preserve principle semantic identity when practical.
-- Update cross-references and generated indexes.
-- Avoid silent ID reuse.
-- Do not delete useful content merely because the taxonomy changed.
-
-## 7. Validate
-
-Run manifest, code, path, registration, corpus, and applicable semantic checks.
-
-Rebuild the generated taxonomy aggregate when supported.
-
-## 8. Report
-
-Summarize:
-
-- What changed.
-- Why.
-- Whether human-required scopes were affected.
-- Research/evidence used.
-- Content/ID migrations.
-- Remaining uncertainty.
+Summarize trigger, evidence, lifecycle, protected-intent effects, identity relationships, content migration, and unresolved uncertainty.

@@ -1,47 +1,171 @@
-version: 1
+version: 4
+
+policy_precedence:
+  executable_structure: config
+  semantic_meaning: docs
 
 file_types:
   principles:
-    purpose: highest-order domain guidance
-    id_code: PRI
+    filename: principles.md
+    id_suffix: principles
   personal-growth:
-    purpose: continuous development of capability and judgment
-    id_code: GRO
+    filename: personal-growth.md
+    id_suffix: personal-growth
   subdomain:
-    purpose: focused guidance for a distinct dimension of practice
+    filename: <subdomain>.md
+    id_suffix: <subdomain>
 
-claims:
-  principle_statement:
+path_frontmatter_mapping:
+  corpus_glob: domains/*/*.md
+  excluded_filenames: [README.md, taxonomy-review.md]
+  domain_directory_must_equal_frontmatter_domain: true
+  frontmatter_id: <domain>.<id_suffix>
+  title_heading_must_equal_frontmatter_title: true
+  subdomain_filename_must_equal_frontmatter_subdomain: true
+  subdomain_must_be_registered_and_accepted: true
+  universal_file_requires_accepted_domain: true
+
+identity:
+  principle_id_pattern: '^PRN-[0-9]{6}$'
+  heading_pattern: '^### (PRN-[0-9]{6}) — (\S(?:.*\S)?)$'
+  location_independent: true
+  repository_wide_unique: true
+  reuse_allowed: false
+  ledger: config/identity-ledger.yaml
+  policy: config/identity-policy.yaml
+
+document_grammar:
+  frontmatter_required: true
+  utf8_byte_order_mark_allowed: false
+  opening_frontmatter_delimiter: first-line-exactly-three-hyphens
+  closing_frontmatter_delimiter: line-exactly-three-hyphens
+  exact_h1_count: 1
+  introduction:
+    exact_top_level_paragraphs_after_h1: 1
+  principles_section:
+    heading: '## Principles'
+    exact_count: 1
+    minimum_entries: 1
+  references_section:
+    heading: '## References'
+    required: true
+    must_be_final_level_two_section: true
+  other_level_two_sections_allowed: false
+
+entry_grammar:
+  section_order: [why, practices, applicability, goals, tags]
+  unknown_or_duplicate_level_four_sections_allowed: false
+  statement:
+    required: true
+    exact_top_level_paragraphs: 1
+    other_top_level_blocks_allowed: false
     citation_required: true
   why:
-    citation_required: true
-  practice:
-    citation_required: true
-  goal:
+    heading: '#### Why'
+    required: true
+    allowed_top_level_blocks: [paragraph]
+    minimum_blocks: 1
+    citation_required_per_block: true
+  practices:
+    heading: '#### Practices'
+    required: true
+    exact_top_level_blocks: 1
+    allowed_top_level_blocks: [unordered-list]
+    minimum_items: 1
+    item_shape: single-paragraph
+    nested_blocks_allowed: false
+    task_list_items_allowed: false
+    citation_required_per_item: true
+  applicability:
+    heading: '#### Applicability'
+    required: false
+    allowed_top_level_blocks: [paragraph]
+    minimum_blocks_when_present: 1
+    citation_required_per_block: true
+  goals:
+    heading: '#### Goals'
+    required: false
+    exact_top_level_blocks_when_present: 1
+    allowed_top_level_blocks: [unordered-list]
+    minimum_items_when_present: 1
+    item_shape: single-paragraph
+    nested_blocks_allowed: false
+    task_list_items_allowed: false
     citation_required: false
+    cited_goal_requires_terminal_citation_run_and_claim_review: true
+  tags:
+    heading: '#### Tags'
+    required: false
+    exact_top_level_blocks_when_present: 1
+    allowed_top_level_blocks: [unordered-list]
+    minimum_items_when_present: 1
+    item_shape: plain-text
+    item_pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    unique_items: true
 
-selection:
-  no_target_principle_count: true
-  dimensions:
-    - importance
-    - durability
-    - evidence_strength
-    - scope_fit
-    - distinctness
-    - actionability
+citations:
+  kind: shortcut-numeric-reference-link
+  label_pattern: '^[1-9][0-9]*$'
+  one: '[1]'
+  multiple_pattern: '\[[1-9][0-9]*\](?:, \[[1-9][0-9]*\])+'
+  separator: ', '
+  adjacent_labels_allowed: false
+  duplicate_label_in_one_run_allowed: false
+  labels_in_run_must_be_ascending: true
+  labels_are_local_to_file: true
+  required_run_position: end-of-claim-block
+  exact_runs_per_cited_claim_block: 1
+  numeric_citation_links_outside_terminal_run_allowed: false
+  first_use_numbering:
+    required: false
+    diagnostic: warning
 
-writing:
-  markdown_source_of_truth: true
-  commonmark_compatible: true
-  github_flavored_markdown: true
-  inline_html_for_structure: false
-  file_tags_location: frontmatter
-  entry_tags_location: markdown_list
-  reference_style: numeric_local
+bibliography:
+  entry_pattern: '<N>. [<source-title>][<N>] — `SRC-......`'
+  one_ordered_list_only: true
+  item_shape: single-paragraph-exact-entry-pattern
+  other_blocks_before_definitions_allowed: false
+  list_marker_must_equal_reference_label: true
+  title_must_equal_source_record_title: true
+  title_comparison:
+    source_record_title_shape: single_line_control_free_nfc_text
+    allowed_link_text_source_forms: [plain-text, character-reference, backslash-escape]
+    projection: decoded_visible_text
+    comparison: exact_codepoint_equality
+  source_id_required: true
+  source_id_must_resolve: true
+  source_id_unique_within_file: true
+  labels_must_be_contiguous_from_one: true
+  visible_entries_and_definitions_ordered_by_label: true
+  citation_labels_visible_entries_and_definitions_one_to_one: true
+  unused_entries_or_definitions_allowed: false
+  duplicate_entries_or_definitions_allowed: false
+  reference_definitions_must_follow_visible_list: true
+  reference_definition_destination_form: unbracketed
+  reference_definition_title_allowed: false
+  nonnumeric_reference_definitions_allowed: false
+  definition_url_must_match_canonical_or_alias: true
 
-stability:
-  principle: slow
-  rationale: slow-to-moderate
-  practice: moderate
-  goal: evolving
-  reference: actively-maintained
+tags:
+  frontmatter_scope: file
+  entry_section_scope: principle
+  pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+
+markdown:
+  canonical: true
+  frontmatter_preamble: yaml
+  body: github-flavored-markdown
+  specification: https://github.github.com/gfm/
+  specification_version: 0.29-gfm
+  unicode_normalization: NFC
+  raw_html_allowed: false
+  images_allowed: false
+  strikethrough_allowed: false
+  inline_code_whitespace: single_ascii_spaces_only
+  ordinary_link_titles_in_claim_blocks_allowed: false
+
+title_comparison:
+  frontmatter_title_shape: single_line_control_free_nfc_text
+  h1_allowed_source_forms: [plain-text, character-reference, backslash-escape]
+  h1_projection: decoded_visible_text
+  comparison: exact_codepoint_equality

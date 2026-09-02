@@ -1,119 +1,127 @@
-schema_version: 1
+schema_version: 3
 id: backend-development
 code: BCK
 title: Backend Development
-status: active
-description: Principles for designing and operating server-side software, APIs, data systems, integrations, and
-  distributed behavior.
-required_subdomains: []
+taxonomy_status: proposed
+description: Principles for designing and operating server-side software, APIs, data
+  systems, integrations, and distributed behavior.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: architecture
   code: ARC
   title: Architecture
-  status: active
+  status: proposed
   origin: research
 - id: api-design
   code: API
   title: API Design
-  status: active
+  status: proposed
   origin: research
 - id: contracts-interfaces
   code: CTR
   title: Contracts & Interfaces
-  status: active
+  status: proposed
   origin: research
 - id: business-logic
   code: BUS
   title: Business Logic
-  status: active
+  status: proposed
   origin: research
 - id: data-modeling
   code: DMD
   title: Data Modeling
-  status: active
+  status: proposed
   origin: research
 - id: databases
   code: DBS
   title: Databases
-  status: active
+  status: proposed
   origin: research
 - id: authentication-authorization
   code: AUTH
   title: Authentication & Authorization
-  status: active
+  status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: active
+  status: proposed
   origin: research
 - id: validation-error-handling
   code: VAL
   title: Validation & Error Handling
-  status: active
+  status: proposed
   origin: research
 - id: distributed-systems
   code: DST
   title: Distributed Systems
-  status: active
+  status: proposed
   origin: research
 - id: concurrency-asynchrony
   code: CON
   title: Concurrency & Asynchrony
-  status: active
+  status: proposed
   origin: research
 - id: caching
   code: CAC
   title: Caching
-  status: active
+  status: proposed
   origin: research
 - id: messaging-events
   code: MSG
   title: Messaging & Events
-  status: active
+  status: proposed
   origin: research
 - id: testing
   code: TST
   title: Testing
-  status: active
+  status: proposed
   origin: research
 - id: debugging
   code: DBG
   title: Debugging
-  status: active
+  status: proposed
   origin: research
 - id: reliability-resilience
   code: REL
   title: Reliability & Resilience
-  status: active
+  status: proposed
   origin: research
 - id: performance-scalability
   code: PER
   title: Performance & Scalability
-  status: active
+  status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
-  status: active
+  status: proposed
   origin: research
 - id: configuration-secrets
   code: CFG
   title: Configuration & Secrets
-  status: active
+  status: proposed
   origin: research
 - id: dependencies
   code: DEP
   title: Dependencies
-  status: active
+  status: proposed
   origin: research
 - id: data-migrations
   code: MIG
   title: Data Migrations
-  status: active
+  status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: active
+  status: proposed
   origin: research

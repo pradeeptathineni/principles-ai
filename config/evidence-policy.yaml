@@ -1,0 +1,109 @@
+version: 3
+
+records:
+  directory: evidence/claims
+  glob: evidence/claims/PRN-[0-9][0-9][0-9][0-9][0-9][0-9].yaml
+  filename: <entry-id>.yaml
+  filename_id_must_equal_entry_id: true
+  entry_id_must_resolve_to_one_allocated_nonretired_corpus_entry: true
+  schema: config/schema.yaml#/$defs/claim_review_record
+  record_granularity: one_complete_record_per_entry
+  claim_hash: sha256
+  claim_hash_encoding: utf-8
+  claim_hash_normalization:
+    source: parsed_claim_block
+    remove_terminal_citation_run: true
+    render: plain_text
+    ordinary_link_representation: visible_text_space_angle_bracket_destination
+    ordinary_link_titles_allowed: false
+    code_representation: literal_text
+    decode_character_references: true
+    normalize_unicode: NFC
+    soft_and_hard_breaks: single_ascii_space
+    collapse_whitespace_runs: single_ascii_space
+    trim: true
+  bulk_source_text_allowed: false
+
+coverage:
+  record_when_present_must_be_complete: true
+  role_mapping:
+    statement:
+      corpus_blocks: exactly_one_statement
+      evidence_roles: [statement]
+    why:
+      corpus_blocks: every_why_paragraph_in_document_order
+      evidence_role_pattern: 'why-<one-based-ordinal>'
+    practice:
+      corpus_blocks: every_practice_item_in_document_order
+      evidence_role_pattern: 'practice-<one-based-ordinal>'
+    applicability:
+      corpus_blocks: every_applicability_paragraph_when_section_present
+      evidence_role_pattern: 'applicability-<one-based-ordinal>'
+      evidence_roles_when_section_absent: none
+    goal:
+      corpus_blocks: every_goal_item_with_a_terminal_citation_run
+      evidence_role_pattern: 'goal-<one-based-ordinal-among-all-goal-items>'
+      uncited_goal_evidence_role: forbidden
+  role_ordinals_follow_document_order: true
+  claim_record_order: [statement, why, practice, applicability, cited-goal]
+  duplicate_roles_allowed: false
+  source_ids_must_equal_unique_resolved_claim_citations_in_first_use_order: true
+  every_source_id_requires_at_least_one_locator: true
+  locator_source_id_must_be_in_source_ids: true
+  duplicate_locator_pairs_allowed: false
+
+adoption:
+  required_for_three_file_pilot: true
+  required_paths:
+    - domains/coding/principles.md
+    - domains/coding/personal-growth.md
+    - domains/coding/design.md
+  required_for_all_future_corpus: false
+  required_path_rule_applies_only_when_corpus_path_exists: true
+  required_path_absence_before_authorized_pilot_is_valid: true
+  universal_policy_decision: pending_post_pilot_review
+
+outcomes:
+  values: [strong, partial, unsupported, disputed]
+  publishable_for_active_content: [strong, disputed]
+  publishable_outcome_required_only_for_active_content: true
+
+reviewer_configuration:
+  human_configuration: null
+  ai_or_hybrid_required_fields:
+    - system
+    - model
+    - configuration_ref
+    - prompt_sha256
+    - settings_sha256
+  configuration_ref_must_resolve_within_repository: true
+  configuration_ref_must_be_under: evals/configurations
+  configuration_record:
+    glob: evals/configurations/*.yaml
+    filename: <configuration-id>.yaml
+    schema: config/schema.yaml#/$defs/evaluator_configuration_record
+    filename_id_must_equal_record_id: true
+    claim_system_and_model_must_equal_record: true
+    prompt_hash:
+      algorithm: sha256
+      input: parsed_prompt_string_normalized_to_utf8_nfc_lf
+    settings_hash:
+      algorithm: sha256
+      input: rfc8785_json_canonicalization_of_parsed_settings
+      input_domain: i-json
+      numeric_scalar_parsing: ieee754_binary64_using_json_number_semantics
+      numeric_overflow_or_nonfinite_result: error
+      integer_range_inclusive: [-9007199254740991, 9007199254740991]
+      integer_outside_range: error_use_string
+      decimal_and_exponent_values_hash_the_parsed_binary64_value: true
+    nonfinite_numbers_allowed: false
+    credentials_or_secrets_allowed: false
+
+invalidation:
+  claim_hash_change_requires_rereview: true
+  resolved_source_id_set_or_order_change_requires_rereview: true
+  locator_transition_triggers_semantic_rereview: true
+  source_status_transition_to_values_triggers_semantic_rereview: [superseded, withdrawn, unavailable]
+  source_status_snapshot_alone_proves_staleness: false
+  observed_source_content_change_triggers_semantic_rereview: true
+  registered_url_move_transition_triggers_semantic_rereview: false

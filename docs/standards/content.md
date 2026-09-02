@@ -2,179 +2,101 @@
 
 ## Purpose
 
-This standard defines what belongs in the principles corpus and how its content types differ.
+This standard defines what belongs in the corpus and the semantic meaning of its content types. Executable structure is defined by `config/schema.yaml` and `config/content-policy.yaml`.
 
-## Core content types
+## Content types
 
 ### Principle
 
-A durable statement that guides judgment or behavior within a defined scope.
+A durable normative statement that guides judgment or behavior within a defined scope. It must be important, useful, evidence-calibrated, distinct, and durable enough to outlive ordinary tool churn.
 
-A strong principle:
-
-- Matters repeatedly, not only in an edge case.
-- Changes a meaningful decision or behavior.
-- Is durable enough to outlive ordinary tool churn.
-- Is scoped no more broadly than its evidence supports.
-- Can be explained and operationalized.
-- Is not merely a fact, feature, slogan, or preference.
+A principle is not merely a fact, feature, slogan, preference, or tutorial step.
 
 ### Why
 
-The reasoning that makes the principle worth following.
+Rationale explaining consequences, evidence, tradeoffs, requirements, failure modes, conditions, or meaningful disagreement. It must add reasoning rather than restate the principle.
 
-A strong rationale may explain:
-
-- Consequences.
-- Tradeoffs.
-- Failure modes.
-- Empirical evidence.
-- Standards or requirements.
-- Operational experience.
-- Conditions under which the principle applies or does not apply.
-
-`Why` must add reasoning. It should not simply restate the principle in different words.
+Each top-level paragraph is a structural rationale claim block and requires citations.
 
 ### Practice
 
-A concrete behavior, technique, or decision pattern that operationalizes a principle.
+A concrete behavior or decision pattern that operationalizes the principle. Each top-level practice list item is a structural claim block and requires citations.
 
-A practice should be:
+Practices may change faster than principles. A product or tool name by itself is not a practice.
 
-- Actionable.
-- Specific enough to change behavior.
-- Appropriate to the principle's scope.
-- More replaceable than the principle when technology evolves.
+### Applicability
 
-A tool name by itself is not a practice.
+An optional section for conditions, limitations, exceptions, or contexts that materially affect correct use. Do not add it when the rationale already communicates scope clearly.
+
+Each top-level Applicability paragraph is a structural claim block and requires citations. This prevents conditions and exceptions from becoming an uncited escape hatch.
 
 ### Goal
 
-A developmental capability, habit, or outcome worth pursuing to better embody the surrounding principle.
+An optional developmental capability, habit, or outcome that helps a person embody the principle. Goals are not required for symmetry and should not repeat `personal-growth.md` mechanically.
 
-Goals are intentionally different from practices:
-
-- A practice says what to do.
-- A goal says what capability or outcome to develop.
-
-Goals may be personal and need not be direct quotations or prescriptions from external authorities.
+Goals need no citation when they are editorial developmental objectives. If a goal makes an externally grounded claim, cite and review that claim.
 
 ### Tag
 
-A concise normalized concept used for retrieval and grouping.
+An optional normalized retrieval concept. Tags should not merely duplicate the domain or file path. Until a tag vocabulary is adopted, prefer fewer high-value tags over uncontrolled expansion.
 
-Tags should describe meaning, not duplicate every word in the file path.
+Frontmatter tags describe the file. Tags under an entry describe that principle. Both use the executable normalized syntax, but no controlled vocabulary is imposed before the pilot demonstrates a need.
 
-## File types
+## File presets
 
 ### `principles.md`
 
-Contains the domain's highest-order principles.
-
-Use this test:
-
-> If nearly all other files in the domain disappeared, which principles would still be most important to carry into work in this domain?
-
-It is not a summary of every subdomain and should remain selective.
+The domain's selective highest-order guidance.
 
 ### `personal-growth.md`
 
-Contains the principles and practices for continuously developing capability, judgment, fluency, and currency within the domain.
-
-It may include:
-
-- Deliberate practice.
-- Projects.
-- Reading.
-- Feedback.
-- Mentorship.
-- Formal education.
-- Certifications when materially useful.
-- Community participation.
-- Reflection.
-- Staying current with changing standards and tooling.
+Principles and practices for developing capability, judgment, fluency, and currency in the domain. It differs by selection criteria, not parser grammar.
 
 ### Subdomain file
 
-Contains principles specific to a materially distinct dimension of practice, such as `coding/design.md` or `devops/observability.md`.
+Guidance specific to one registered, materially distinct scope.
 
-## Entry structure
+All three presets share one grammar.
 
-Every principle entry uses this structure:
+## Entry grammar
 
-```markdown
-### COD-DES-001 — Delay abstraction until the pattern is understood
+Every entry contains:
 
-Do not generalize code merely because two implementations currently look similar. [1]
+1. `### PRN-000001 — Title`
+2. Exactly one statement paragraph with citations.
+3. Required `#### Why` with at least one cited top-level paragraph.
+4. Required `#### Practices` with at least one cited top-level list item.
+5. Optional `#### Applicability` with at least one cited top-level paragraph when present.
+6. Optional `#### Goals`.
+7. Optional `#### Tags`.
 
-#### Why
+The grammar is closed. Statement, Why, and Applicability blocks are top-level paragraphs; Practices and Goals are flat single-paragraph unordered items; Tags is a flat unique normalized list. Sections follow policy order, and unknown or duplicate sections are invalid. Ordinary GFM inline forms remain available within allowed paragraphs, subject to the claim-hash restrictions. Images, strikethrough, and raw HTML are outside the initial grammar.
 
-Premature abstractions can encode assumptions before the real variation of a problem is understood. [1]
+Each document has one title, one editorial introduction, one `## Principles` section with at least one entry, and final `## References`; no other level-two section is allowed. `config/content-policy.yaml` is canonical for exact AST shapes, inline restrictions, ordering, and bibliography grammar.
 
-#### Practices
+## Path and frontmatter agreement
 
-- Generalize after a meaningful pattern emerges. [1]
-- Remove abstractions that no longer reduce conceptual complexity. [2]
+Corpus Markdown lives directly under `domains/<domain>/`. Universal filenames and IDs use the domain `principles` and `personal-growth` presets; subdomain filenames, IDs, type, and registered subdomain agree. Directory, path, frontmatter, and decoded title agreement is exact under `config/content-policy.yaml`. Corpus content requires an accepted domain, and subdomain content requires that subdomain to be accepted.
 
-#### Goals
+Corpus status is `draft` or `active`; taxonomy and principle retirement provide historical lifecycle, so a third deprecated-file state is intentionally absent. `last_reviewed` is null while status is `draft`. An `active` file carries the date of its last complete semantic content review against then-current citations and required human review. Any substantive draft revision resets it to null. Formatting or link reachability alone does not advance it.
 
-- Improve judgment about when abstraction is worthwhile.
-- Become comfortable retaining small duplication when the alternative is a worse abstraction.
+## Introductions
 
-#### Tags
-
-- abstraction
-- simplicity
-- maintainability
-```
+The paragraph after the file title is an editorial scope statement. It should define the file boundary and must not be used to place substantive external claims outside the citation grammar.
 
 ## Selection bar
 
-A candidate principle should be evaluated for:
-
-- Importance.
-- Durability.
-- Evidence strength.
-- Breadth within its intended scope.
-- Distinctness from existing principles.
-- Actionability.
-- Ability to survive wording simplification without losing meaning.
-
-Do not write to a target principle count.
+Evaluate candidates for importance, durability, evidence strength, scope fit, distinctness, actionability, and ability to survive wording simplification. Do not write to a target count.
 
 ## Duplication
 
-Duplication across domains is allowed when the context materially changes the principle's interpretation, practices, goals, or authoritative sources.
-
-For example, `security.md` may belong in engineering, coding, DevOps, cloud, AI, and frontend development because security responsibilities and evidence differ across those contexts.
-
-Within the same file, avoid principles that merely restate one another.
-
-## Facts and tutorials
-
-Facts may appear in rationale when needed, but the corpus is not an encyclopedia.
-
-Tutorial steps may appear only when they represent a durable practice. Detailed procedures belong in external documentation or a different repository.
-
-## Principles versus current techniques
-
-Prefer:
-
-> Make important system behavior observable.
-
-over:
-
-> Always deploy Prometheus.
-
-The first is a durable principle. The second may be one implementation choice.
+Contextual duplication across domains is allowed when meaning, practices, goals, evidence, scope, or importance materially changes. Avoid duplication for structural symmetry.
 
 ## Normative strength
 
-Use language calibrated to the evidence:
-
 - `must` for genuine requirements or invariants.
 - `should` for strong recommendations.
-- `prefer` for context-sensitive defaults.
+- `prefer` for contextual defaults.
 - `consider` for conditional techniques.
 
-Avoid absolute wording when credible exceptions exist.
+Do not strengthen wording beyond the cited evidence and reviewed judgment.

@@ -1,0 +1,62 @@
+version: 2
+
+ledger: config/identity-ledger.yaml
+
+allocation_sets:
+  allocated_meaning: every_id_ever_issued_including_retired
+  retired_must_be_subset_of_allocated: true
+  issued_sequences_start_at: 1
+  issued_sequences_below_next_sequence_are_contiguous: true
+  next_sequence_must_equal_highest_allocated_sequence_plus_one: true
+  empty_set_next_sequence: 1
+  allocated_and_retired_arrays_sorted_by_numeric_sequence: true
+  reuse_allowed: false
+
+transition_validation:
+  required_in_pull_request_ci: true
+  baseline: trusted_merge_base
+  baseline_policy_source: trusted_merge_base
+  unavailable_baseline_result: not_evaluated
+  unavailable_baseline_must_not_be_reported_as_full_identity_validation: true
+  allocated_ids_must_be_monotonic: true
+  retired_ids_must_be_monotonic: true
+  next_sequence_must_not_decrease: true
+  newly_allocated_ids_must_be_exact_contiguous_suffix_from_baseline_next_sequence: true
+  existing_relationships_must_not_be_deleted_or_rewritten: true
+  exceptional_repair_requires_explicit_versioned_migration_and_human_approval: true
+
+principles:
+  active_heading_id_must_be_allocated_and_not_retired: true
+  allocated_id_without_heading_allowed: true
+  retired_id_must_not_appear_as_heading: true
+
+sources:
+  registry_id_must_be_allocated_and_not_retired: true
+  retired_allocation_must_not_have_record_or_bibliography_use: true
+  lifecycle_change_uses_status_not_retirement: true
+
+relationships:
+  allowed_types: [derived_from, replaced_by]
+  endpoints_must_be_allocated_principle_ids: true
+  duplicate_relationships_allowed: false
+  self_relationships_allowed: false
+  directed_cycles_allowed: false
+  move_creates_relationship: false
+  split:
+    relationship_type: derived_from
+    from: newly_allocated_split_id
+    to: retired_original_id
+    original_must_be_retired: true
+    minimum_distinct_children_per_original: 2
+    children_must_be_newly_allocated_in_same_transition: true
+    original_must_be_allocated_and_nonretired_in_baseline: true
+  merge:
+    relationship_type: replaced_by
+    from: retired_replaced_id
+    to: surviving_id
+    replaced_id_must_be_retired: true
+    replaced_ids_must_be_allocated_and_nonretired_in_baseline: true
+    survivor_must_be_allocated_and_nonretired_in_baseline: true
+    survivor_must_remain_nonretired_in_merge_transition: true
+  historical_target_may_later_be_retired: true
+  canonical_order: from_numeric_then_type_then_to_numeric

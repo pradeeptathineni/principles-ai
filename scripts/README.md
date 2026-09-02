@@ -1,20 +1,18 @@
 # Scripts
 
-Repository tooling should be implemented during the bootstrap workflow.
+The deterministic harness is exposed through one local CLI:
 
-Expected deterministic capabilities:
+```text
+npm run validate
+node bin/principles.js validate --json
+node bin/principles.js validate --baseline-ref <trusted-merge-base>
+node bin/principles.js taxonomy --output generated/taxonomy.yaml
+node bin/principles.js parse --output -
+node bin/principles.js context --profile standard --principle PRN-000001 --revision <revision>
+npm run check:links -- --json
+node bin/principles.js links external --baseline generated/operational-links.json --as-of 2026-09-01 --snapshot-output generated/operational-links-next.json --json
+```
 
-- Discover and validate `domains/*/domain.yaml` manifests.
-- Build a derived repository-wide taxonomy from domain manifests.
-- Scaffold domain/subdomain codes and detect collisions.
-- Parse corpus Markdown into structured data.
-- Validate schema and taxonomy membership.
-- Check references and links.
-- Check required citation presence.
-- Build derived AI context.
-- Run or orchestrate semantic evals.
-- Produce actionable diagnostics.
+`validate` is offline. External reachability is an isolated operational command and workflow. A supplied operational baseline enables hash-only source-content comparison; without one that check reports `not_evaluated`. Review-due output uses the explicit observation date when provided. Operational snapshots, generated taxonomy, parsed models, and context packs are derived outputs; they are not canonical and are not committed by default.
 
-Scripts should enforce deterministic invariants, not replace AI judgment about fuzzy user intent, domain boundaries, or evidence synthesis.
-
-Implementation details are intentionally not fixed by policy. Prefer small composable commands with deterministic behavior where possible.
+The harness contains no model SDK, embeddings, semantic search, database, service, daemon, or agent orchestration.

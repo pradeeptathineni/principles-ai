@@ -1,60 +1,89 @@
-version: 1
+version: 4
 
 manifests:
   glob: domains/*/domain.yaml
+  schema: config/schema.yaml#/$defs/domain_manifest
+  directory_name_must_equal_manifest_id: true
   aggregate_output: generated/taxonomy.yaml
   aggregate_is_canonical: false
+  aggregate_committed_by_default: false
+
+identity_scope:
+  domain_id: repository-wide
+  domain_code: repository-wide
+  subdomain_id: within-domain
+  subdomain_code: within-domain
 
 universal_files:
   principles:
     type: principles
-    code: PRI
+    requires_domain_status: accepted
   personal-growth:
     type: personal-growth
-    code: GRO
+    requires_domain_status: accepted
 
 naming:
   directory_style: kebab-case
   file_style: kebab-case
-  domain_id_pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-  subdomain_id_pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-  domain_code_pattern: "^[A-Z]{2,4}$"
-  subdomain_code_pattern: "^[A-Z0-9]{2,5}$"
 
-status_values:
-  - active
-  - deprecated
+lifecycle:
+  values: [proposed, accepted, deprecated]
+  content_coverage_is_derived: true
+  origin_proves_acceptance: false
+  undocumented_research_origin_is_provisional: true
+  proposed_domain:
+    allowed_subdomain_statuses: [proposed, deprecated]
+    taxonomy_review_state: empty
+  accepted_domain:
+    allowed_subdomain_statuses: [proposed, accepted, deprecated]
+    taxonomy_review_state: complete
+    required_subdomain_status: accepted
+  deprecated_domain:
+    allowed_subdomain_statuses: [deprecated]
+    required_subdomains_must_be_empty: true
+    taxonomy_review_state: empty-or-complete
+  accepted_subdomain_requires_accepted_domain: true
 
-origin_values:
-  - user
-  - research
-  - mixed
-  - policy
+taxonomy_review:
+  filename: taxonomy-review.md
+  empty:
+    reviewed_at: null
+    source_ids: []
+    review_record: null
+  complete:
+    reviewed_at: date
+    minimum_source_ids: 1
+    review_record: taxonomy-review.md
+    source_ids_must_resolve: true
+    review_record_must_resolve_within_domain: true
 
-creation:
-  natural_language_input_supported: true
-  research_domain_boundary: true
-  research_candidate_subdomains: true
-  preserve_user_required_subdomains: true
-  require_distinct_scope: true
-  inspect_existing_domain_overlap: true
-  avoid_symmetry_for_its_own_sake: true
-  manifest_before_bulk_content: true
-
-protected_intent:
-  field: required_subdomains
-  autonomous_removal_allowed: false
-  autonomous_rename_allowed: false
-  autonomous_merge_allowed: false
-  explicit_human_approval_required_for_change: true
+human_intent:
+  field: human_intent
+  domain_purpose_field: description
+  required_subdomains_field: required_subdomains
+  protected_changes:
+    - removal
+    - rename
+    - merge
+    - deprecation
+    - material_rescope
+    - domain_purpose_change
+  explicit_human_approval_required: true
 
 registration:
   existing_subdomain_markdown_must_be_registered: true
   registered_subdomain_markdown_may_be_missing: true
   universal_files_may_be_missing_during_incremental_build: true
+  required_subdomain_must_not_be_deprecated: true
+  accepted_content_requires_accepted_scope: true
+  deprecated_scope_must_not_have_corpus_file: true
 
-ids:
-  entry_pattern: "<DOMAIN-CODE>-<FILE-CODE>-<NNN>"
-  accepted_codes_are_stable: true
-  retired_entry_ids_reusable: false
-  tooling_should_generate_or_validate_prefixes: true
+principle_identity:
+  policy: config/identity-policy.yaml
+  pattern: '^PRN-[0-9]{6}$'
+  derived_from_domain_or_file_code: false
+  moves_preserve_id: true
+  splits_allocate_new_ids: true
+  merges_preserve_one_id: true
+  replaced_relationship_required: true
+  retired_ids_reusable: false

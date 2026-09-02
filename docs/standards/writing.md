@@ -2,176 +2,59 @@
 
 ## Goal
 
-Write principles that are enjoyable for humans to learn from and predictable for machines to parse.
-
-Structured Markdown should remain natural prose, not YAML disguised as a document.
+Write guidance that is useful to humans and structurally predictable for machines. The YAML preamble and GFM body should remain readable source, not configuration disguised as prose.
 
 ## Voice
 
-Use:
+Use plain English, concrete verbs, concise sentences, domain-standard terminology, calibrated recommendations, and explicit tradeoffs. Avoid corporate filler, motivational padding, empty intensifiers, artificial symmetry, and jargon that adds no precision.
 
-- Plain English.
-- Concrete verbs.
-- Concise sentences.
-- Domain-standard terminology.
-- Direct recommendations.
-- Explicit tradeoffs.
+## Titles and statements
 
-Avoid:
-
-- Corporate filler.
-- Motivational padding.
-- AI throat-clearing.
-- Empty intensifiers such as `robust`, `comprehensive`, or `seamless` when they add no meaning.
-- Unnecessary adjectives.
-- Jargon when a simpler term is equally precise.
-- Artificial symmetry that forces every section to have the same number of bullets.
-
-## Principle titles
-
-Titles should be memorable and action-oriented.
-
-Prefer:
-
-> Keep complexity proportional to the problem
-
-over:
-
-> Complexity considerations
-
-The title may be concise; the paragraph beneath it carries the precise claim and citations.
-
-## Principle statements
-
-The first paragraph after an entry heading is the principle statement.
-
-It should:
-
-- Express one central idea.
-- Be understandable without reading the rest of the entry.
-- Use normative strength appropriate to the evidence.
-- Include claim-level citations.
-- Avoid unnecessary qualification while preserving material conditions.
-
-## Rationale
-
-`Why` explains reasoning rather than repeating the title.
-
-Prefer separate paragraphs when distinct rationale claims require different evidence.
-
-## Practices
-
-Use bullet lists.
-
-Each bullet should:
-
-- Represent one actionable behavior.
-- Be independently readable.
-- Include its own citation when externally grounded.
-- Avoid combining three unrelated actions with `and`.
-
-## Goals
-
-Use bullet lists.
-
-Goals should describe capabilities, habits, or outcomes rather than implementation steps.
-
-Prefer:
-
-> Become faster at tracing unfamiliar execution paths.
-
-over:
-
-> Read GitHub for 30 minutes every Tuesday.
-
-The latter may be a personal plan, not a durable domain goal.
-
-## Tags
-
-Entry-level tags use Markdown bullet lists:
+Entry headings use an immutable location-independent ID:
 
 ```markdown
-#### Tags
-
-- abstraction
-- simplicity
-- maintainability
+### PRN-000001 — Keep complexity proportional to the problem
 ```
 
-Do not use inline backticked tags. Backticks represent code spans, and a Markdown list is more semantically explicit.
+The first paragraph expresses one central principle and includes citations. The title may be memorable; the paragraph carries precise scope and normative strength.
 
-File-level tags remain YAML lists in frontmatter.
+## Rationale and practices
+
+Use separate `Why` paragraphs for distinct claims or evidence. Keep practice bullets independently actionable. Do not combine unrelated recommendations into one bullet merely to reduce list length.
+
+Applicability uses separate cited paragraphs for distinct conditions, limits, and exceptions. Practices and Goals use flat unordered lists with one paragraph per item; nested lists and extra block children are outside the canonical grammar.
+
+## Optional sections
+
+Use `Applicability`, `Goals`, and `Tags` only when they add material value. Remove unused optional headings. Do not manufacture goals or tags to complete a shape.
+
+Entry Tags are a flat list of normalized kebab-case retrieval concepts. Frontmatter tags apply to the whole file; do not duplicate them at entry level without a retrieval reason.
 
 ## Markdown hierarchy
 
-Use this hierarchy exactly for corpus files:
+- `#` file title.
+- `## Principles`.
+- `### PRN-...... — Principle title`.
+- Required `#### Why` and `#### Practices`.
+- Optional `#### Applicability`, `#### Goals`, and `#### Tags`, in that order.
+- Final `## References` when citations exist.
 
-- `#` file title
-- `## Principles`
-- `### ID — Principle title`
-- `#### Why`
-- `#### Practices`
-- `#### Goals`
-- `#### Tags`
-- `## References`
+Do not skip levels, add unknown or duplicate sections, or use raw HTML. Claim blocks forbid ordinary link titles. Exact block shapes, order, decoded-title equality, and document/path mappings are in `config/content-policy.yaml`.
 
-Do not skip heading levels.
+## Citations
 
-Do not use HTML for ordinary content structure.
+Use `[1]` for one source and comma-space-separated runs such as `[1], [2]`; never `[1][2]`. End every citation-required claim block with its run. Bibliographies include stable source IDs and follow `config/content-policy.yaml` and [Citations](citations.md).
 
-## Links
+## Frontmatter and Markdown
 
-Use numeric reference-style links for evidence according to `citations.md`.
+Corpus files consist of a YAML frontmatter preamble followed by a GitHub Flavored Markdown body. YAML frontmatter is a repository convention, not part of the GFM grammar. A future parser must process the preamble separately.
 
-Normal inline links may be used for navigational links in introductions when they are not evidence citations.
+The executable policy pins the canonical body grammar to GFM 0.29-gfm. Parser-library upgrades must continue to pass the repository's AST contract fixtures rather than silently changing accepted syntax.
 
-## Tables
+## Readability test
 
-Use tables only when tabular comparison materially improves understanding.
+A reader should be able to scan titles, understand statements, learn the reasoning, act on practices, see conditions, pursue meaningful goals, and follow evidence without knowing repository internals.
 
-Do not use tables for ordinary principle entries.
+## Parseability test
 
-## Callouts
-
-Use GitHub callouts sparingly and only for file-level notes that genuinely deserve emphasis. Do not make every principle a callout.
-
-## Length
-
-No global word count is imposed.
-
-Prefer the shortest wording that preserves:
-
-- Meaning.
-- Evidence.
-- Scope.
-- Nuance.
-- Actionability.
-
-A long entry is justified only when the topic is genuinely nuanced.
-
-## Human-readability test
-
-A reader should be able to:
-
-1. Scan titles and understand the file's major ideas.
-2. Read only principle statements and get useful guidance.
-3. Read `Why` to understand reasoning.
-4. Read practices to act.
-5. Read goals to grow.
-6. Click directly from a claim to its evidence.
-
-## Machine-readability test
-
-A parser should be able to determine structure from standard Markdown syntax and documented heading order without interpreting typography tricks or prose conventions beyond the schema.
-
-GitHub Flavored Markdown is a strict superset of CommonMark and provides predictable rendering on GitHub. YAML frontmatter is a widely used convention for Markdown metadata and is used with schema validation in GitHub's own documentation tooling. [1][2]
-
-## References
-
-1. [GitHub Flavored Markdown Specification][1]
-2. [GitHub Docs — Using YAML frontmatter][2]
-3. [CommonMark Specification][3]
-
-[1]: https://github.github.com/gfm/
-[2]: https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter
-[3]: https://spec.commonmark.org/
+A parser should determine identity, structure, claim blocks, citations, source mappings, and optional sections from documented standard syntax without interpreting visual tricks.

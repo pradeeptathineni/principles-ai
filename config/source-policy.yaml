@@ -1,74 +1,101 @@
-version: 1
+version: 5
 
-authority_classes:
-  A:
-    name: normative-primary
-    examples:
-      - standards-body
-      - formal-specification
-      - government-publication
-      - regulation
-      - original-research
-  B:
-    name: canonical-first-party
-    examples:
-      - official-vendor-documentation
-      - official-framework-documentation
-      - maintainer-documentation
-  C:
-    name: mature-institutional-practice
-    examples:
-      - engineering-practice
-      - professional-body-guidance
-      - foundation-guidance
-  D:
-    name: expert-academic-secondary
-    examples:
-      - established-book
-      - recognized-expert
-      - university-material
-      - review-paper
-  E:
-    name: community-ecosystem
-    examples:
-      - roadmap
-      - community-survey
-      - open-source-repository
-      - practitioner-article
-      - community-discussion
+registry:
+  directory: sources
+  glob: sources/SRC-[0-9][0-9][0-9][0-9][0-9][0-9].yaml
+  filename: <source-id>.yaml
+  filename_id_must_equal_record_id: true
+  schema: config/schema.yaml#/$defs/source_record
+  id_pattern: '^SRC-[0-9]{6}$'
+  repository_wide_unique: true
+  ledger: config/identity-ledger.yaml
+  identity_policy: config/identity-policy.yaml
+  record_id_must_be_allocated_and_not_retired: true
+  url_change_preserves_identity: true
+  aliases_supported: true
+  existing_record_id_and_filename_immutable: true
+  existing_records_must_not_be_deleted: true
 
-fitness_dimensions:
-  - authority
-  - directness
-  - relevance
-  - normativity
-  - evidence
-  - currency
-  - stability
-  - independence
-  - applicability
+urls:
+  normalization:
+    unicode: NFC
+    scheme_and_host: lowercase
+    unicode_host_allowed: false
+    internationalized_host_storage: preencoded_ascii_idna
+    percent_encoded_host_allowed: false
+    userinfo_allowed: false
+    default_port:
+      http: 80
+      https: 443
+      comparison: parsed_decimal_port_value
+      action: remove
+    empty_path: slash
+    fragments_allowed: false
+    query_preserved: true
+    path_trailing_slash_preserved: true
+    percent_encoding: preserve_exact_stored_octets_and_hexadecimal_letter_case
+    dot_segments: preserve
+    other_path_serialization: preserve
+    parser_must_not_apply_unlisted_rewriting: true
+    operation_order:
+      - parse_without_rewriting
+      - reject_forbidden_components
+      - lowercase_ascii_scheme_and_host
+      - remove_default_port
+      - replace_empty_path_with_slash
+      - preserve_all_other_component_octets
+  stored_url_must_equal_normalized_form: true
+  equality_for_collision_checks: normalized_stored_string
+  canonical_must_not_appear_in_own_aliases: true
+  canonical_and_alias_values_unique_across_registry: true
+  semantic_duplicate_detection_beyond_normalization_and_registered_aliases: semantic_review
+  aliases_order: ascending_unsigned_utf8_byte_order_of_normalized_stored_string
 
-requirements:
-  inspect_source_content: true
-  search_snippets_are_evidence: false
-  remembered_model_knowledge_is_evidence: false
-  exact_language_checked_when_needed: true
-  citation_entailment_required: true
-  bulk_source_copying_allowed: false
+url_transition_validation:
+  baseline: trusted_merge_base
+  existing_source_canonical_url_change:
+    source_id_must_be_unchanged: true
+    status_must_be: moved
+    previous_canonical_url_must_become_alias: true
+    previous_aliases_must_be_retained_except_new_canonical_url: true
+  alias_removal_requires_explicit_versioned_migration_and_human_approval: true
+  unavailable_baseline_result: not_evaluated
+  unavailable_baseline_must_not_be_reported_as_full_source_identity_validation: true
 
-triangulation:
-  broad_synthesized_principle:
-    independent_strong_sources_preferred: 2
-  canonical_fact_or_requirement:
-    one_canonical_source_may_be_sufficient: true
+lifecycle:
+  active:
+    superseded_by: forbidden
+  moved:
+    meaning: canonical_url_is_current_destination_and_aliases_retain_prior_urls
+    minimum_aliases: 1
+    superseded_by: forbidden
+  superseded:
+    superseded_by: required
+    replacement_must_be_different_registered_nonretired_source: true
+    new_replacement_target_statuses: [active, moved]
+  withdrawn:
+    superseded_by: forbidden
+  unavailable:
+    superseded_by: forbidden
+  dates:
+    first_retrieved_must_not_follow_last_reviewed: true
+    review_due_after_days: 365
+  supersession_graph:
+    directed_cycles_allowed: false
+    existing_historical_chain_may_end_in_any_current_status: true
+    resolution_must_report_terminal_status: true
 
-reject_or_deprioritize:
-  - unverifiable
-  - unclear-ai-provenance
-  - content-farm
-  - repost-of-primary-source
-  - stale-for-high-change-topic
-  - anonymous-opinion-as-fact
-  - topic-only-without-claim-support
-  - marketing-as-universal-truth
-  - search-snippet-only
+retirement_transition_validation:
+  newly_retired_source_id_must_have_no_record_or_bibliography_use_in_baseline_or_proposed_state: true
+  registered_source_lifecycle_change_must_use_status: true
+  exceptional_repair_requires_explicit_versioned_migration_and_human_approval: true
+
+operational_observation:
+  content_hash: sha256
+  retain_fetched_source_content: false
+  source_content_change_requires_explicit_baseline: true
+  missing_content_baseline_result: not_evaluated
+  external_markdown_excluded_prefixes: [tests/, config/templates/, evals/fixtures/]
+
+claim_reviews:
+  policy: config/evidence-policy.yaml

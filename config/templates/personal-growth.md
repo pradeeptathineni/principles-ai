@@ -1,29 +1,26 @@
 ---
-schema_version: 1
+schema_version: 4
 id: <domain>.personal-growth
 title: <Domain> Personal Growth
 domain: <domain>
 type: personal-growth
-status: active
-last_reviewed: YYYY-MM-DD
-tags:
-  - <domain>
-  - personal-growth
+status: draft
+last_reviewed: null
 ---
 
 # <Domain> Personal Growth
 
-<One concise paragraph defining what continuous improvement means in this domain.>
+<One concise editorial paragraph defining continuous improvement in this domain.>
 
 ## Principles
 
-### <DOM>-GRO-001 — <Memorable growth principle>
+### PRN-000001 — <Memorable growth principle>
 
-<One precise principle for continuously improving capability or judgment.> [1]
+<One precise principle for improving capability or judgment.> [1]
 
 #### Why
 
-<Why this mode of growth is valuable in the domain.> [1]
+<One rationale claim block explaining why this mode of growth matters.> [1]
 
 #### Practices
 
@@ -32,18 +29,16 @@ tags:
 
 #### Goals
 
-- <A capability, fluency, habit, or outcome to develop.>
-- <Another developmental goal.>
+- <A meaningful capability, fluency, habit, or outcome to develop.>
 
 #### Tags
 
-- personal-growth
-- <tag>
+- <normalized-retrieval-tag>
 
 ## References
 
-1. [<Human-readable source title>][1]
-2. [<Human-readable source title>][2]
+1. [<Human-readable source title>][1] — `SRC-000001`
+2. [<Human-readable source title>][2] — `SRC-000002`
 
 [1]: https://example.com/source-one
 [2]: https://example.com/source-two

@@ -1,104 +1,112 @@
-schema_version: 1
+schema_version: 3
 id: full-stack-development
 code: FST
 title: Full-Stack Development
-status: active
-description: Principles for reasoning across frontend, backend, data, integration, deployment, and end-to-end product
-  behavior.
-required_subdomains: []
+taxonomy_status: proposed
+description: Principles for reasoning across frontend, backend, data, integration,
+  deployment, and end-to-end product behavior.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: architecture
   code: ARC
   title: Architecture
-  status: active
+  status: proposed
   origin: research
 - id: product-thinking
   code: PRD
   title: Product Thinking
-  status: active
+  status: proposed
   origin: research
 - id: end-to-end-design
   code: E2E
   title: End-to-End Design
-  status: active
+  status: proposed
   origin: research
 - id: frontend-backend-boundaries
   code: BND
   title: Frontend/Backend Boundaries
-  status: active
+  status: proposed
   origin: research
 - id: api-contracts
   code: API
   title: API Contracts
-  status: active
+  status: proposed
   origin: research
 - id: data-flow-state
   code: DAT
   title: Data Flow & State
-  status: active
+  status: proposed
   origin: research
 - id: authentication-authorization
   code: AUTH
   title: Authentication & Authorization
-  status: active
+  status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: active
+  status: proposed
   origin: research
 - id: integration
   code: INT
   title: Integration
-  status: active
+  status: proposed
   origin: research
 - id: user-experience
   code: UXD
   title: User Experience
-  status: active
+  status: proposed
   origin: research
 - id: testing
   code: TST
   title: Testing
-  status: active
+  status: proposed
   origin: research
 - id: debugging
   code: DBG
   title: Debugging
-  status: active
+  status: proposed
   origin: research
 - id: error-handling
   code: ERR
   title: Error Handling
-  status: active
+  status: proposed
   origin: research
 - id: performance
   code: PER
   title: Performance
-  status: active
+  status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
-  status: active
+  status: proposed
   origin: research
 - id: environments-configuration
   code: ENV
   title: Environments & Configuration
-  status: active
+  status: proposed
   origin: research
 - id: deployment-delivery
   code: DPL
   title: Deployment & Delivery
-  status: active
+  status: proposed
   origin: research
 - id: maintainability
   code: MAI
   title: Maintainability
-  status: active
+  status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: active
+  status: proposed
   origin: research

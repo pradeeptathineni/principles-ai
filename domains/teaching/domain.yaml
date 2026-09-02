@@ -1,90 +1,98 @@
-schema_version: 1
+schema_version: 3
 id: teaching
 code: TEA
 title: Teaching
-status: active
-description: Principles for helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment,
-  accessibility, and learner-support contexts.
-required_subdomains:
-- tutoring
-- classroom
-- virtual
-- students
-- teachers
-- parents
+taxonomy_status: proposed
+description: Principles for helping people learn effectively across curriculum, tutoring,
+  classroom, virtual, assessment, accessibility, and learner-support contexts.
+human_intent:
+  required_subdomains:
+  - tutoring
+  - classroom
+  - virtual
+  - students
+  - teachers
+  - parents
+  priorities: []
+  exclusions: []
+  scope_notes: []
+taxonomy_review:
+  reviewed_at: null
+  source_ids: []
+  review_record: null
 subdomains:
 - id: curriculum
   code: CUR
   title: Curriculum
-  status: active
+  status: proposed
   origin: research
 - id: lesson-design
   code: LES
   title: Lesson Design
-  status: active
+  status: proposed
   origin: research
 - id: tutoring
   code: TUT
   title: Tutoring
-  status: active
+  status: proposed
   origin: mixed
 - id: classroom
   code: CLS
   title: Classroom
-  status: active
+  status: proposed
   origin: mixed
 - id: virtual
   code: VIR
   title: Virtual
-  status: active
+  status: proposed
   origin: mixed
 - id: students
   code: STU
   title: Students
-  status: active
+  status: proposed
   origin: mixed
 - id: teachers
   code: TCH
   title: Teachers
-  status: active
+  status: proposed
   origin: mixed
 - id: adults
   code: ADL
   title: Adults
-  status: active
+  status: proposed
   origin: research
 - id: parents
   code: PAR
   title: Parents
-  status: active
+  status: proposed
   origin: mixed
 - id: differentiation
   code: DIF
   title: Differentiation
-  status: active
+  status: proposed
   origin: research
 - id: assessment
   code: ASM
   title: Assessment
-  status: active
+  status: proposed
   origin: research
 - id: engagement
   code: ENG
   title: Engagement
-  status: active
+  status: proposed
   origin: research
 - id: accessibility
   code: ACC
   title: Accessibility
-  status: active
+  status: proposed
   origin: research
 - id: feedback
   code: FDB
   title: Feedback
-  status: active
+  status: proposed
   origin: research
 - id: safety-safeguarding
   code: SAF
   title: Safety & Safeguarding
-  status: active
+  status: proposed
   origin: research

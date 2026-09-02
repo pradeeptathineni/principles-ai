@@ -2,170 +2,60 @@
 
 ## Purpose
 
-Agent behavior must be evaluated, not assumed.
+Agent and corpus quality must be evaluated, not assumed. Keep deterministic validation, operational checks, semantic evaluation, and human approval distinct.
 
-Prompt length, model capability, citation count, and polished prose are not substitutes for measured quality.
+## Deterministic validation
 
-## Evaluation layers
+Software validates exact structure, versions, identity and lifecycle, trusted-base transitions, scoped uniqueness, path and AST contracts, citations and source mapping, configured links, evidence consistency, outcomes, and reproducibility according to `config/`.
 
-### Deterministic validation
+When trusted baseline state is unavailable, transition checks are `not_evaluated`; snapshot validity must not be reported as proof of all-time non-reuse, a valid move, or append-only history.
 
-Test properties that software can determine exactly:
+Deterministic citation presence never proves entailment. A source-review due date never proves semantic staleness.
 
-- YAML validity.
-- Required frontmatter fields.
-- Taxonomy membership.
-- Heading hierarchy.
-- Stable ID format and uniqueness.
-- Required sections.
-- Reference-label resolution.
-- URL syntax.
-- Required citation presence.
-- No leftover template placeholders.
+## Operational checks
 
-### Semantic evaluation
+Network-dependent checks observe URL reachability, redirects, source-content changes relative to an explicit operational baseline, and review-due state. They are time-dependent, can be indeterminate, and do not belong in ordinary offline validation. Claim hashes do not detect source content changing in place.
 
-Use curated fixtures, AI evaluators, and human review for properties that require judgment:
+## Semantic evaluation
 
-- Citation entailment.
-- Source authority.
+Curated fixtures, AI evaluators, and humans judge entailment, source fitness, calibration, durability, distinctness, taxonomy fit, disagreement, scope, hidden unsupported claims, and readability.
+
+## Human approval
+
+Humans approve protected intent, taxonomy acceptance, principle addition/removal/merge/rescoping, policy/schema/governance changes, evidence-policy changes, and unresolved material disagreement.
+
+## Core measures
+
+- Structural citation presence.
+- Claim-level entailment.
 - Source fitness.
-- Claim calibration.
-- Principle durability.
-- Duplicate meaning.
-- Misplaced taxonomy.
-- Missing nuance.
-- Human readability.
+- Unsupported-claim rate.
+- Principle distinctness and durability.
+- Scope calibration.
+- Taxonomy fit.
+- Disagreement preservation.
+- Human readability and usefulness.
+- Context coverage and efficiency.
+- Protected-intent preservation.
 
-## Core metrics
+Targets such as zero unsupported claims apply to overall semantic support, not to citation count. Multiple individually partial sources may jointly support a claim when the review records that conclusion.
 
-### Citation presence
+## Fixtures
 
-Percentage of externally grounded required claims containing references.
+Maintain positive and negative fixtures across structural, transition, source, citation, evidence, semantic, security, and protected-intent contracts. The concrete families belong in `tests/` and `evals/` and must include unavailable-baseline reporting, disagreement, prompt injection, policy weakening, optional-section filler, and hidden claims.
 
-Target for canonical content: 100%.
+## Evaluator governance
 
-### Citation entailment
+Version fixtures, rubrics, evaluator prompts, model/configuration, expected classifications, and human calibration records. Track false positives, false negatives, and failure categories.
 
-Percentage of cited claims judged strongly or adequately supported by the cited source.
+Hosted-model semantic judgments are traceable and repeatable in setup, not guaranteed bit-for-bit reproducible. A newer model or longer prompt is not assumed better; compare representative results.
 
-Unsupported citations are failures, not minor defects.
+## Pilot evidence records
 
-### Source-quality fitness
+Claim-review records are required for the three-file coding pilot. Humans decide universal adoption after the pilot; do not encode it earlier. Exact adoption and validation rules are in `config/evidence-policy.yaml` and [Claim-review evidence](evidence.md).
 
-Measures whether the chosen source is appropriately authoritative and direct for the claim.
+## CI
 
-### Unsupported-claim rate
+Deterministic validation blocks pull requests once implemented; operational checks run separately. Semantic evals remain non-blocking until calibrated, and completion is not semantic correctness. Human approval remains necessary for high-impact changes.
 
-Externally grounded claims lacking sufficient evidence.
-
-Target: 0%.
-
-### Principle distinctness
-
-Detect principles that are semantic duplicates within a file or should be merged.
-
-### Scope calibration
-
-Detect claims that are broader or more absolute than their evidence.
-
-### Taxonomy fit
-
-Detect content that belongs in a neighboring domain or subdomain.
-
-### Human readability
-
-Human reviewers should be able to understand the principle, reasoning, practices, and evidence without parsing machine metadata.
-
-### Context efficiency
-
-Generated AI context should contain the smallest relevant set of principles needed for a downstream task without stripping necessary rationale or provenance.
-
-## Eval fixtures
-
-Maintain representative positive and negative cases.
-
-Examples:
-
-### Unsupported generalization
-
-Source:
-
-> Documentation discusses microservices tradeoffs.
-
-Candidate:
-
-> Microservices always reduce operational complexity.
-
-Expected: `unsupported / overbroad`
-
-### Canonical requirement
-
-Source:
-
-> Current normative standard explicitly states requirement X.
-
-Candidate accurately paraphrases requirement X at the same scope.
-
-Expected: `strong support`
-
-### Topic citation without entailment
-
-Source is about code review generally.
-
-Candidate makes a specific claim not present or implied in the source.
-
-Expected: `unsupported`
-
-### Nuanced synthesis
-
-Two credible sources favor different approaches under different conditions.
-
-Candidate expresses a conditional principle preserving those conditions.
-
-Expected: `good synthesis`
-
-## Regression testing
-
-When changing:
-
-- Prompts.
-- Models.
-- Source scoring.
-- Research workflow.
-- Citation evaluator.
-- Parser.
-- Templates.
-
-rerun representative evals.
-
-Do not assume a more detailed prompt or newer model improves this repository's actual quality. OpenAI's current model guidance recommends simplifying prompts and validating changes against representative evals. [1]
-
-## Human baseline
-
-Periodically compare agent output to careful human review.
-
-Human review should record not only pass/fail but the failure category so recurring weaknesses can become new fixtures or deterministic checks.
-
-## Eval artifacts
-
-Evals should be versioned and reproducible.
-
-Future structure:
-
-```text
-evals/
-├── fixtures/
-│   ├── citation-entailment/
-│   ├── source-quality/
-│   ├── taxonomy/
-│   └── writing/
-├── expected/
-└── README.md
-```
-
-## References
-
-1. [OpenAI — Model guidance][1]
-
-[1]: https://developers.openai.com/api/docs/guides/latest-model
+Validators enable Draft 2020-12 format assertion and reject unsupported versions, unknown policy keys, and implicit migration. First-use citation numbering is a warning; unused bibliography entries or definitions are errors.
