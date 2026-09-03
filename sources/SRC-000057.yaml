@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000057
+title: Objects In Kubernetes
+publisher: Kubernetes project
+evidence_kind: official-documentation
+canonical_url: https://kubernetes.io/docs/concepts/overview/working-with-objects/
+url_aliases: []
+published_or_version: Kubernetes v1.37 documentation
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

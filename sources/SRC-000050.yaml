@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000050
+title: "Postmortem Culture: Learning from Failure"
+publisher: Google
+evidence_kind: institutional-practice
+canonical_url: https://sre.google/sre-book/postmortem-culture/
+url_aliases: []
+published_or_version: Site Reliability Engineering, 2016
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

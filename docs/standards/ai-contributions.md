@@ -71,7 +71,7 @@ Agents must not:
 - Change principle meaning or scope.
 - Add or remove a principle.
 - Resolve a documented disagreement.
-- Add, remove, merge, rename, or materially rescope a domain/subdomain.
+- Add, remove, merge, split, replace, rename, reframe, deprecate, or reactivate a domain/subdomain.
 - Change stable taxonomy codes.
 - Change citation, source, or taxonomy policy.
 

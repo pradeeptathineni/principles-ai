@@ -1,13 +1,13 @@
-version: 6
+version: 12
 
 schema_validation:
   draft: '2020-12'
-  schema_document_id: https://principles.local/config/schema/v5
+  schema_document_id: https://principles.local/config/schema/v6
   format_assertion_required: true
   unsupported_schema_versions: error
   unknown_canonical_fields: error
   supported_record_versions:
-    domain_manifest: 5
+    domain_manifest: 6
     corpus_frontmatter: 5
     source_record: 4
     claim_review_record: 4
@@ -43,8 +43,8 @@ policy_loading:
     evidence-policy: 4
     identity-policy: 2
     source-policy: 6
-    taxonomy-policy: 6
-    validation: 6
+    taxonomy-policy: 8
+    validation: 12
 
 trusted_baseline:
   pull_request_source: merge_base_with_trusted_target_branch
@@ -107,6 +107,25 @@ classes:
       - claim_review_hash_match
       - claim_review_publishable_outcome
       - generated_output_reproducibility
+      - workflow_model_consistency
+      - workflow_route_reachability
+      - architecture_change_classification
+      - domain_preparation_workset
+      - task_scoped_gate_reporting
+      - source_usage_reporting
+      - transactional_mutation_preconditions_and_rollback
+      - canonical_writer_serialization
+      - atomic_identity_and_source_registration
+      - batch_source_registration
+      - batch_content_materialization
+      - citation_bibliography_synchronization
+      - domain_citation_synchronization
+      - evidence_review_invalidation_scaffold
+      - run_checkpoint_binding
+      - run_checkpoint_invalidation
+      - activation_decision_package_binding_verification
+      - activation_human_review_projection
+      - activation_manifest_derivation
   operational:
     blocking_in_pull_request_ci: false
     checks:
@@ -114,6 +133,7 @@ classes:
       - redirect_behavior
       - source_content_change
       - review_due_report
+      - head_get_method_fallback
   semantic:
     blocking_in_ci_until_calibrated: false
     checks:
@@ -125,23 +145,138 @@ classes:
       - claim_calibration
       - hidden_external_claim
       - taxonomy_fit
+      - taxonomy_independent_research
+      - taxonomy_scope_definition_fitness
+      - intentional_cross_domain_overlap
       - duplicate_meaning
       - disagreement_handling
       - durability
       - human_readability
+      - workflow_prerequisite_sufficiency
+      - workflow_composition
+      - human_gate_necessity
+      - state_ownership_clarity
+      - authority_and_implementation_alignment
+      - deterministic_semantic_boundary
+      - context_efficiency
+      - natural_language_outcome_resolution
+      - candidate_discovery_breadth
+      - candidate_coverage_analysis
+      - candidate_comparison_and_consolidation
+      - subject_determined_final_selection
+      - generation_shaped_uniformity
   human_approval:
-    required_for:
-      - protected_intent_change
-      - domain_purpose_change
-      - taxonomy_acceptance
-      - taxonomy_deprecation_reactivation_or_definition_change
-      - principle_add_remove_merge_or_rescope
-      - corpus_activation_or_active_semantic_change
-      - active_corpus_removal
-      - policy_or_schema_change
-      - governance_or_ci_change
-      - evidence_policy_change
-      - unresolved_material_disagreement
+    gates:
+      deterministic:
+        - architecture-review
+        - evidence-policy-change
+        - governance-or-ci-change
+        - policy-or-schema-change
+        - principle-activation
+        - principle-removal
+        - principle-semantic-change
+        - protected-intent-change
+        - taxonomy-acceptance
+        - taxonomy-addition
+        - taxonomy-definition-change
+        - taxonomy-deprecation
+        - taxonomy-reactivation
+      semantic:
+        - unresolved-material-disagreement
+      manual_only: []
+
+workflow_model:
+  version: 1
+  defaults:
+    prerequisite_owner: agent
+    mutation_owner: agent
+    semantic_review_owner: ai_or_human
+    consequential_decision_owner: human
+    resume_parent_after_prerequisite_or_gate: true
+    terminal_action: outcome-satisfied
+  outcomes:
+    - id: create-or-complete-content
+      route: docs/workflows/create-content.md
+      inspector: content-target
+    - id: fully-furnish-domain
+      route: docs/workflows/furnish-domain.md
+      inspector: domain-furnishing
+    - id: refine-domain-content
+      route: docs/workflows/furnish-domain.md
+      inspector: domain-refinement
+    - id: create-domain
+      route: docs/workflows/create-domain.md
+      inspector: new-domain
+    - id: update-taxonomy
+      route: docs/workflows/update-taxonomy.md
+      inspector: ai-routed-with-deterministic-transitions
+    - id: update-content
+      route: docs/workflows/update-content.md
+      inspector: ai-routed-with-deterministic-transitions
+    - id: review-content
+      route: docs/workflows/review-content.md
+      inspector: ai-routed-with-deterministic-validation
+    - id: review-architecture
+      route: docs/workflows/review-architecture.md
+      inspector: ai-routed-with-deterministic-support
+  supporting_routes:
+    - docs/workflows/orchestrate-outcome.md
+    - docs/workflows/bootstrap.md
+  action_ids:
+    agent:
+      - independently-research-and-prepare-new-domain
+      - independently-research-and-prepare-new-subdomain-definition
+      - independently-research-and-prepare-domain-reactivation-decision
+      - independently-research-and-prepare-subdomain-reactivation-decision
+      - research-target-fit-and-accept-unchanged-requested-scope
+      - research-target-fit-and-accept-unchanged-requested-domain
+      - research-and-create-content-draft
+      - complete-semantic-and-adversarial-content-review
+      - independently-evaluate-proposed-subdomains-for-acceptance-deprecation-or-unresolved
+      - run-create-content-for-missing-furnishing-targets
+      - run-substantive-update-content-for-all-domain-targets
+      - complete-per-file-semantic-and-adversarial-review
+      - run-domain-cross-file-consistency-and-quality-review
+      - follow-canonical-outcome-workflow
+    terminal: [outcome-satisfied]
+
+architecture_review:
+  route: docs/workflows/review-architecture.md
+  trigger_groups:
+    routing:
+      - AGENTS.md
+      - README.md
+    governance:
+      - docs/architecture.md
+      - docs/project.md
+      - docs/schema-versions.md
+    workflows:
+      - docs/workflows/
+    standards:
+      - docs/standards/
+    executable-policy:
+      - config/
+    tooling:
+      - src/
+      - bin/
+      - scripts/
+      - package.json
+      - package-lock.json
+      - .node-version
+    tests:
+      - tests/
+    evaluator-authority:
+      - evals/
+    ci:
+      - .github/
+  excluded_paths:
+    - config/identity-ledger.yaml
+    - docs/reviews/
+  minimum_context:
+    - AGENTS.md
+    - docs/architecture.md
+    - docs/workflows/review-architecture.md
+    - config/validation.yaml
 
 severity:
   first_use_citation_numbering: warning

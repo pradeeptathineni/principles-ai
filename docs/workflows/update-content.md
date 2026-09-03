@@ -1,18 +1,13 @@
 # Update Content Workflow
 
-Use this workflow for source maintenance, changed evidence, clearer synthesis, contradiction correction, stale practices, or personal-growth changes.
+Use this route for source maintenance, changed evidence, contradiction correction, stale practices, clearer synthesis, or substantive scope refinement. Read [Content](create-content.md) when meaning, coverage, or the selected principle set may change; a URL move or localized claim correction need not reload unrelated selection guidance.
 
-1. Inspect current state and resume an existing draft rather than recreating it.
-2. Confirm target taxonomy remains accepted and correctly scoped. If not, orchestrate the taxonomy prerequisite.
-3. Classify the trigger and semantic impact.
-4. If taxonomy changes, follow `update-taxonomy.md` first and then resume automatically.
-5. Preserve the `PRN-......` ID when semantic identity remains, including file moves.
-6. For splits or merges, follow [Update taxonomy](update-taxonomy.md) and the identity policy.
-7. Re-read existing cited sources before changing meaning.
-8. Reuse source identity across URL changes and apply the trusted-base move rules in [Sources](../standards/sources.md); do not allocate duplicates.
-9. Prefer the smallest evidence-accurate change.
-10. Recompute retained or required claim records under [Claim-review evidence](../standards/evidence.md); do not add optional sidecars by reflex.
-11. Revalidate affected neighboring claims and disagreements.
-12. For substantive changes, work in `draft`; activate only after the exact semantic content has passed review and received required human approval. Formatting-only maintenance may remain active when its semantic hash is unchanged.
-13. Run all four applicable validation/review gates.
-14. Explain why the change improves truthfulness, authority, usefulness, currency, scope, or maintainability.
+1. Read the manifest and existing target; resume a draft rather than recreating it. Confirm the taxonomy is accepted and correctly scoped, or complete [Update taxonomy](update-taxonomy.md) and resume.
+2. Classify the trigger and semantic reach. Re-read affected cited sources before changing meaning; preserve source identity across URL moves under [Sources](../standards/sources.md).
+3. Preserve a `PRN-......` ID while semantic identity remains. Taxonomy moves, splits, and merges follow the taxonomy workflow and identity policy.
+4. For scope-level refinement, run the Content workflow's full evidence and selection sequence against existing and newly discovered candidates: broad discovery, coverage analysis, comparison/consolidation, and subject-determined selection. Its approximately-ten-theme prompt is defeasible, never a minimum or publication target. Local maintenance may remain local.
+5. Make the smallest evidence-accurate change that also resolves any material gap exposed by the trigger. “Smallest” does not justify premature convergence or combining distinct concerns.
+6. Recheck neighboring ownership, meaningful recurrence versus harmful duplication, source fitness, entailment, qualifiers, applicability, and disagreement. Do not merge cross-domain records when context materially changes meaning, practice, applicability, importance, evidence, or provenance.
+7. Update retained or required claim-review records under [Claim-review evidence](../standards/evidence.md); do not add optional sidecars by reflex.
+8. Substantive changes return to `draft` and require exact semantic review and human activation. Formatting-only work may remain active when the semantic hash is unchanged.
+9. Run applicable deterministic, operational, semantic, and human gates separately. Report why the change improves truthfulness, authority, usefulness, currency, scope, coverage, or maintainability, including consequential candidate dispositions when selection was reopened.

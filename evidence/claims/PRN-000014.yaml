@@ -9,7 +9,7 @@ reviewer:
     configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
 claims:
 - role: statement
-  claim_sha256: 36db4fcfd1d1a2a1f7bcfaff7a6809940752664f038636e5be0ecede1f2c25dc
+  claim_sha256: 818c94be5f4ff70eb0545f417a4e332c28e3984ce6649643b82dbcdfc9611a12
   sources:
   - source_id: SRC-000029
     locators: [Abstract, The Original Definition of Deliberate Practice]
@@ -17,24 +17,26 @@ claims:
     locators: [Principle 8 — Self]
   outcome: strong
 - role: why-1
-  claim_sha256: 99cb311d8efdc5445e5c420b3839e8edc2ce497d8a401cb1952bad58f5ce129f
+  claim_sha256: 8176b29cbe4756e58ebddeb8c57ad49b93bd24b8536a22ade3679890fc04e179
   sources:
   - source_id: SRC-000029
-    locators: [Abstract, Introduction, The Original Definition of Deliberate Practice]
-  - source_id: SRC-000025
-    locators: [Principle 8 — Self]
+    locators: [Introduction, The Original Definition of Deliberate Practice]
   outcome: strong
 - role: practice-1
-  claim_sha256: 0cd64a19f9810e4cbcbc7b287b019fc5cad3a293ee56049b1ecab0b44cc7616a
+  claim_sha256: 4664936d24af0bdd24228ca39a16699f92aaa3598058ae0f8a57f0f30f1943f9
   sources:
   - source_id: SRC-000029
     locators: [The Original Definition of Deliberate Practice]
-  - source_id: SRC-000028
-    locators: [Explain Why, Giving Guidance]
   outcome: strong
 - role: practice-2
-  claim_sha256: 21beaa0c186906753b5cbc39ccb734034c2d7fe5ac1570d537150e58d60740c4
+  claim_sha256: 3e06f4f6267147aa4df4477880f496a52b1511c7a5b4e06d56d5cbea581b0cb2
   sources:
   - source_id: SRC-000029
-    locators: [Assessing the Modifiability of Expert Performance]
+    locators: [The Original Definition of Deliberate Practice, Assessing the Modifiability of Expert Performance]
+  outcome: strong
+- role: applicability-1
+  claim_sha256: dc766c4cb245dab277e619651d44af6949301f542e0b00c382ed3baf33b22985
+  sources:
+  - source_id: SRC-000029
+    locators: [The Original Definition of Deliberate Practice, Deliberate Practice in Well-Established Domains]
   outcome: strong

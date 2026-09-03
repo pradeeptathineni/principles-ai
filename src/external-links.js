@@ -111,7 +111,8 @@ export async function checkExternalUrl(input, options = {}) {
     for (let attempt = 0; attempt <= (options.retries ?? LIMITS.externalRetries); attempt += 1) {
       try {
         response = await request(current, record.address, record.family, 'HEAD', timeoutMs, responseLimit)
-        if ([405, 501].includes(response.status) || (options.captureContent && response.status >= 200 && response.status < 400)) {
+        const headClass = classify(response.status)
+        if (options.captureContent || [405, 501].includes(response.status) || headClass !== 'reachable') {
           response = await request(current, record.address, record.family, 'GET', timeoutMs, responseLimit)
         }
         break

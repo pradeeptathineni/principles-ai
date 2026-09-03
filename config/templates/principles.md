@@ -11,27 +11,24 @@ reviewed_content_sha256: null
 
 # <Domain> Principles
 
-<One concise editorial paragraph defining the scope of the domain's highest-order principles.>
+<Editorial scope. This scaffold shows only the grammar's lower bound; after evidence-backed selection, shape entries and sections to the subject rather than a target count or pattern.>
 
 ## Principles
 
-### PRN-000001 — <Memorable principle title>
+### PRN-000001 — <Selected principle title>
 
-<One precise, durable principle statement.> [1]
+<Precise, durable statement for this selected principle.> [1]
 
 #### Why
 
-<One rationale claim block that adds meaning rather than restating the principle.> [1], [2]
+<Rationale that adds meaning rather than restating the principle.> [1]
 
 #### Practices
 
-- <One actionable practice.> [1]
-- <Another actionable practice.> [2]
+- <Actionable practice warranted by the subject and evidence.> [1]
 
 ## References
 
-1. [<Human-readable source title>][1] — `SRC-000001`
-2. [<Human-readable source title>][2] — `SRC-000002`
+1. [<Cited source title>][1] — `SRC-000001`
 
 [1]: https://example.com/source-one
-[2]: https://example.com/source-two

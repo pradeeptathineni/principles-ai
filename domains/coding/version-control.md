@@ -7,7 +7,7 @@ type: subdomain
 subdomain: version-control
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 71a08a1aaa9d1b01e589c35f8a0e1f5610689ff5ac076e23faf8ad9315908eba
+reviewed_content_sha256: 76a17dc3a1b778a2aa6d53f0d11d28e502d37cdeebaaff171dd0b7e13044e315
 ---
 
 # Coding Version Control
@@ -16,7 +16,7 @@ Version control concerns creating an inspectable, attributable, and recoverable 
 
 ## Principles
 
-### PRN-000043 — Commit one coherent change
+### PRN-000043 — Record one coherent change per commit
 
 Make each published commit a small logical step that is internally consistent and independently understandable. [1]
 
@@ -53,7 +53,11 @@ Integration strategies encode different relationships between changes. Rewriting
 #### Practices
 
 - Rebase private work when useful, but avoid rebasing a topic after it has been merged or otherwise shared as stable history. [1]
-- Apply fixes to the oldest supported line that needs them, then propagate them through the project’s documented integration flow. [1]
+- Follow the project’s documented release and backport policy; use oldest-line-upward propagation only in workflows organized that way. [1]
+
+#### Applicability
+
+The cited Git workflow documents the Git project’s own integration model and explicitly warns that a different project may need only selected ideas. Preserve understandable ancestry without copying its branch direction literally. [1]
 
 ## References
 

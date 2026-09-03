@@ -7,7 +7,7 @@ type: subdomain
 subdomain: maintainability
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 11940b7fc5a2a93006eeaa5b156167ecc686915e22a1f1929387c9aa0a5b1b30
+reviewed_content_sha256: 42c072374f846c087059722b5ad423b78ef87beb1bb27cbeffe009ef17a619a9
 ---
 
 # Coding Maintainability
@@ -35,11 +35,11 @@ Reduce complexity when evidence shows that it repeatedly increases change cost, 
 
 #### Why
 
-Evolving software tends to become more complex unless maintainers actively simplify it. Improvement is most valuable at change hotspots and unstable boundaries, not wherever cleanup is aesthetically attractive. [1]
+Technical debt makes code more expensive to maintain, but its reward is uncertain and not all debt is urgent. Complexity measures and observed maintenance effort help direct simplification where it is likely to improve maintainability. [1]
 
 #### Practices
 
-- Use change history, defect recurrence, review difficulty, and test friction to identify costly maintenance hotspots. [1]
+- Prioritize simplification where complexity measures or repeated maintenance difficulty show that complexity is costly. [1]
 - Refactor in verified steps that preserve behavior, and keep unrelated cleanup out of urgent or high-risk fixes. [1], [3]
 
 ### PRN-000022 — Make impact analysis routine

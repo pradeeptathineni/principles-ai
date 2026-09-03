@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000036
+title: Expectations, Outcomes, and Challenges of Modern Code Review
+publisher: Institute of Electrical and Electronics Engineers
+evidence_kind: academic-evidence
+canonical_url: https://www.microsoft.com/en-us/research/publication/expectations-outcomes-and-challenges-of-modern-code-review/
+url_aliases: []
+published_or_version: Proceedings of ICSE, May 2013
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

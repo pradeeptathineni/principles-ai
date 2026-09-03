@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000033
+title: An Introduction to Programming with Threads
+publisher: Digital Equipment Corporation Systems Research Center
+evidence_kind: academic-evidence
+canonical_url: https://www.microsoft.com/en-us/research/publication/an-introduction-to-programming-with-threads/
+url_aliases: []
+published_or_version: SRC Research Report 35, January 1989
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

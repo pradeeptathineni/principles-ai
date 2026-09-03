@@ -1,0 +1,48 @@
+schema_version: 4
+entry_id: PRN-000054
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 08e57d4e0f007605c7c77c693cef1a1119dc7e2bb9aad827cb7b33533237aa20
+  sources:
+  - source_id: SRC-000034
+    locators: [Guidance, Source compatibility, Wire compatibility, Semantic compatibility]
+  - source_id: SRC-000035
+    locators: [Summary, Semantic Versioning Specification]
+  outcome: strong
+- role: why-1
+  claim_sha256: 6b911792b7d9ff10df0290d1a99d4ed4fe957422e77f9c71927fb1dab5205ea2
+  sources:
+  - source_id: SRC-000034
+    locators: [Backwards compatibility, Guidance]
+  - source_id: SRC-000035
+    locators: [Introduction, Why Use Semantic Versioning, FAQ — deprecating functionality]
+  outcome: strong
+- role: practice-1
+  claim_sha256: b74b4916a7e68f199b5ba29f6a0953dccc4adfd36bc06c5599aec2a3984b814b
+  sources:
+  - source_id: SRC-000034
+    locators: [Guidance, Removing or renaming components, Changing the type of fields, Semantic changes]
+  outcome: strong
+- role: practice-2
+  claim_sha256: 37945895b713171f5af28b40c223dd394a272c5799d09e10e2bb26dcce7c8e6a
+  sources:
+  - source_id: SRC-000034
+    locators: [Guidance, Removing or renaming components]
+  - source_id: SRC-000035
+    locators: [Semantic Versioning Specification, FAQ — deprecating functionality]
+  outcome: strong
+- role: applicability-1
+  claim_sha256: b7a0de1aa59175d470869494c5e87ccb1a2a0f78e69ed9a9e760d31d3b44a0d1
+  sources:
+  - source_id: SRC-000034
+    locators: [Guidance — compatibility requirements for limited-scope APIs]
+  - source_id: SRC-000035
+    locators: [Semantic Versioning Specification — major version zero]
+  outcome: strong

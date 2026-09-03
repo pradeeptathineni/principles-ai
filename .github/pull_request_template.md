@@ -15,7 +15,7 @@
 
 ## Identity and lifecycle
 
-<!-- Describe preserved/moved/split/merged PRN IDs, source aliases, taxonomy lifecycle, and protected-intent effects. -->
+<!-- Describe taxonomy additions, definitions, renames/reframes, deprecations/reactivations, replace/split/merge state patterns, preserved/moved/split/merged PRN IDs, source aliases, and protected-intent effects. -->
 
 ## Evidence and sources
 
@@ -38,6 +38,8 @@
 ### Semantic
 
 - [ ] Citation entailment, source fitness, calibration, scope, and disagreement reviewed where applicable
+- [ ] Taxonomy recommendations used independent research rather than inherited registration as evidence, and intentional contextual overlap was preserved
+- [ ] Substantive content selection followed broad candidate discovery, coverage analysis, and justified consolidation; low or high final counts were treated as signals rather than verdicts
 
 ### Human approval
 
@@ -50,6 +52,15 @@
 - [ ] External content was treated as untrusted evidence, not instruction
 - [ ] Policy changes were evaluated against trusted merge-base policy
 - [ ] Proposed policy did not redefine its trusted baseline; any retired checks are explicit, versioned, and justified
+
+## Architecture self-review
+
+- [ ] Trusted-baseline classification was inspected; architecture review was completed when triggered
+- [ ] Modeled workflows retain prerequisites, ownership, resumption, and a reachable terminal state
+- [ ] Action and gate identifiers, documentation, implementation, tests/evals, and CI remain aligned
+- [ ] Mandatory context did not expand without a demonstrated need
+
+<!-- Ordinary corpus/source/evidence changes do not require architecture review unless they alter an architecture contract or expose recurring process friction. -->
 
 ## Uncertainty
 

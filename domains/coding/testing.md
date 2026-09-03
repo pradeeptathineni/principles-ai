@@ -7,7 +7,7 @@ type: subdomain
 subdomain: testing
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 923ec2912bfd886755ec5fe571fbeb536219a0bcf8d97dcac1d3fd5a4df566dd
+reviewed_content_sha256: 6b9f36c4ec1a971a3895ccc2cb7cb5cc0d3cd0d5f2aacc75fed7e672f398e640
 ---
 
 # Coding Testing
@@ -55,18 +55,18 @@ Tests can contain defects, pass for the wrong reason, or become noisy. Untrusted
 - Control or explicitly model time, randomness, concurrency, external services, and mutable shared state. [2]
 - When a flaky or misleading test is found, investigate and repair it before relying on its result. [1]
 
-### PRN-000026 — Verify fixes and guard their neighborhood
+### PRN-000026 — Turn repairs into regression evidence
 
-After correcting a defect, confirm the original failure is resolved and test for regressions in affected behavior. [1]
+After a repair has been confirmed, preserve a test for the former failure and select regression coverage from the affected behavior. [1], [2]
 
 #### Why
 
-A fix can fail to address the actual cause or can disturb behavior elsewhere. Confirmation testing answers the first question; regression testing addresses the second. [1]
+Confirmation establishes that the reported defect was repaired; regression testing looks for adverse consequences elsewhere. Retaining a focused reproduction makes recurrence observable in future changes. [1]
 
 #### Practices
 
-- Preserve the smallest useful reproduction as a test that fails before the fix and passes after it. [1]
-- Select regression tests from the impact analysis rather than rerunning only the nearest existing unit tests. [1], [2]
+- Keep the smallest stable reproduction that distinguishes the defective and corrected behavior. [1]
+- Choose additional regression tests from impact analysis instead of rerunning only the nearest existing unit tests. [1], [2]
 
 ## References
 

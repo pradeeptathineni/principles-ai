@@ -1,0 +1,38 @@
+schema_version: 4
+entry_id: PRN-000086
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: a403e2122055b4a6930b8485db64c8ea29c40cfc5de0efd48af93fd4e4626088
+  sources:
+  - source_id: SRC-000064
+    locators: ['Resiliency, and the components of reliability']
+  - source_id: SRC-000067
+    locators: ['Preventing Server Overload', 'Load Shedding and Graceful Degradation']
+  outcome: strong
+- role: why-1
+  claim_sha256: eebddf57fe4a1321a7a8729923d40fbb432b83e1a1e0595e837eba86e9407dd0
+  sources:
+  - source_id: SRC-000064
+    locators: ['Resiliency, and the components of reliability']
+  - source_id: SRC-000067
+    locators: ['Causes of Cascading Failures', 'Preventing Server Overload']
+  outcome: strong
+- role: practice-1
+  claim_sha256: f9d1a4918451408d4b2001ca1c8ad54998f1b09c43923a58fe067357cb735545
+  sources:
+  - source_id: SRC-000067
+    locators: ['Load Shedding and Graceful Degradation']
+  outcome: strong
+- role: practice-2
+  claim_sha256: aed65d00e0b6478db795a5847ea84003ceca9e128bd85200d4bac01a294b9f80
+  sources:
+  - source_id: SRC-000067
+    locators: ['Test Until Failure, and Beyond', 'Queue Management', 'Retry Requests']
+  outcome: strong

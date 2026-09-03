@@ -4,7 +4,7 @@ An AI-assisted, evidence-grounded knowledge system for durable principles, actio
 
 It is a human learning resource, a curated source of considered guidance, structured context for AI-assisted work, and a maintainable corpus improved through research and review.
 
-> The deterministic harness is implemented. Natural-language outcomes such as `Create domains/coding/design.md` and `Fully furnish the coding domain.` are sufficient; the repository owns prerequisite orchestration and stops only for genuine judgment.
+> The deterministic harness is implemented. Natural-language outcomes such as `Create domains/coding/design.md`, `Fully furnish the coding domain.`, and `Reassess principle coverage across the coding domain.` are sufficient; the repository owns prerequisite orchestration and stops only for genuine judgment.
 
 ## Deterministic tooling
 
@@ -19,7 +19,7 @@ npm run validate
 
 Use `node bin/principles.js --help` for taxonomy generation, normalized parsing, optional explicit-selection context export, trusted-merge-base validation, JSON diagnostics, and isolated operational link checks. External network checks never run as part of ordinary validation.
 
-Tooling does not accept principles or prove semantic quality. Users request outcomes; agents orchestrate prerequisites. An unchanged registered target named by the user needs no separate taxonomy ceremony; new or materially changed taxonomy and exact principle activation remain human-governed.
+Tooling does not accept principles or prove semantic quality. Users request outcomes; agents orchestrate prerequisites. An unchanged proposed registered target named by the user needs no separate taxonomy ceremony after independent fit research; additions, definition changes, deprecations, reactivations, and exact principle activation remain human-governed.
 
 ## Repository model
 
@@ -54,6 +54,7 @@ See [Architecture](docs/architecture.md), [Taxonomy](docs/standards/taxonomy.md)
 - [Schema and policy versions](docs/schema-versions.md)
 - [Bootstrap workflow](docs/workflows/bootstrap.md)
 - [Outcome orchestration workflow](docs/workflows/orchestrate-outcome.md)
+- [Architecture self-review workflow](docs/workflows/review-architecture.md)
 - [Historical architecture review](docs/reviews/2026-09-01-architecture-audit.md)
 
 The review is historical input, not canonical policy. Accepted decisions are authoritative only where encoded in current `docs/`, `config/`, manifests, templates, and workflows.

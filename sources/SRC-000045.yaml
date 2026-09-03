@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000045
+title: "DORA | Capabilities: Flexible infrastructure"
+publisher: Google Cloud DORA
+evidence_kind: expert-synthesis
+canonical_url: https://dora.dev/capabilities/flexible-infrastructure/
+url_aliases: []
+published_or_version: null
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

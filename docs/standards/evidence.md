@@ -1,68 +1,36 @@
 # Claim-Review Evidence Standard
 
-## Purpose
+## Purpose and adoption
 
-Claim-review records retain the minimum provenance needed to tell whether a semantic support judgment still applies. They do not store bulk source content and do not turn evaluator output into proof.
+Claim-review records retain enough provenance to determine whether a support judgment still applies. They store no bulk source content and never turn evaluator output into proof. `config/evidence-policy.yaml` owns executable adoption, coverage, hashing, outcomes, and invalidation; the schema owns record shape.
 
-Executable adoption, coverage, hashing, outcome, and invalidation rules are in `config/evidence-policy.yaml`; record structure is in `config/schema.yaml#/$defs/claim_review_record`.
+Records are required for configured pilot paths and optional elsewhere, where impact, dispute, novelty, or weak evidence should justify them. One compact record covers one principle entry: review metadata is stored once, followed by exactly one item for the statement, every Why paragraph, every Practice item, every Applicability paragraph, and each cited Goal. Roles use document-order ordinals. Missing, duplicate, surplus, or reordered roles are invalid.
 
-## Adoption boundary
+The filename and `entry_id` agree and resolve to one allocated non-retired corpus entry. Version history retains evidence for removed or retired wording.
 
-Records are mandatory for the exact pilot paths named in `config/evidence-policy.yaml` when those files exist. Records are optional elsewhere and recommended for high-impact, disputed, novel, or weak-evidence work. The production pilot showed that universal sidecars would grow faster than their demonstrated value.
+## Claims, sources, and outcomes
 
-The storage design is one compact evidence record per principle entry. Review date, reviewer identity, and evaluator configuration are stored once per record. The record then contains exactly one claim item for:
+A claim hash covers normalized semantic wording, not terminal citation labels or emphasis. It includes ordinary link destinations and changes when wording changes; exact AST normalization is executable policy. Formatting-only emphasis and citation renumbering do not invalidate review.
 
-- The statement.
-- Every Why paragraph.
-- Every Practice item.
-- Every Applicability paragraph.
-- Every Goal item that contains a citation.
+Each claim's ordered unique `sources` exactly matches resolved citations in first-use order. Adding, removing, replacing, or reordering sources invalidates the record even when wording stays fixed. Every source has a concise source-specific locator such as a section, page, clause, fragment, or stable passage ID; locator changes require review.
 
-Roles use one-based document-order ordinals within their family. Goal ordinals count all Goals, although only cited Goals receive records. Missing, duplicate, surplus, or reordered roles are invalid. The path is `evidence/claims/<entry-id>.yaml`, and filename equals `entry_id`.
+Outcomes evaluate the whole claim:
 
-The entry ID resolves to exactly one allocated, non-retired corpus entry. Evidence for removed or retired wording remains available through version history rather than as an unverifiable current record.
+- `strong`: adequately supported and calibrated.
+- `partial`: incomplete support; not publishable as active.
+- `unsupported`: not supported; not publishable as active.
+- `disputed`: credible disagreement remains, visibly calibrated; activation requires human review.
 
-## Claim hash
+Multiple individually partial sources may jointly yield an overall strong outcome. Drafts may retain nonpublishable outcomes while being repaired.
 
-The hash covers claim wording, not local citation numbering. Compute it from the parsed claim block as follows:
+## Reviewer binding and invalidation
 
-1. Remove the claim block's single terminal citation run and its separators.
-2. Render the remaining inline AST to normalized text. Text and decoded character references contribute their characters; code spans contribute literal code text; each ordinary link contributes its visible text, one space, and its destination in angle brackets. Ordinary link titles are forbidden in claim blocks so they cannot change semantic material without changing the hash. Images and strikethrough are outside the canonical corpus grammar.
-3. Convert soft and hard line breaks to one ASCII space.
-4. Normalize Unicode to NFC.
-5. Collapse every remaining whitespace run to one ASCII space and trim both ends.
-6. Encode the result as UTF-8 without a byte-order mark.
-7. Compute SHA-256 and store lowercase hexadecimal.
+Human reviews use a named identity and no evaluator configuration. AI/hybrid reviews use a named identity plus a resolving versioned YAML configuration and its exact SHA-256; that artifact carries system, model, prompt, and interoperable settings without duplication in each claim.
 
-Formatting-only emphasis changes and local citation renumbering therefore do not invalidate a review. Wording changes do. Citation identity is validated separately.
+Never store credentials, hidden reasoning, personal secrets, or source text in reviewer identity/configuration.
 
-## Sources and locators
+A record is inconsistent when normalized text or source sequence differs. Locator changes, relevant source supersession/withdrawal/unavailability, and observed content changes against an operational baseline require semantic review. URL moves alone do not invalidate support when identity and applicable content are unchanged. Claim hashes cannot detect content changing in place.
 
-The ordered `sources` list exactly equals the claim's unique resolved citation IDs in first-use order. A citation addition, removal, replacement, or order change invalidates the record even when claim wording is unchanged.
+Deterministic validation detects corpus/evidence disagreement and trusted-baseline provenance transitions; operational observation detects in-place source changes; semantic review decides continued support. Humans retain disputed and high-impact decisions.
 
-Every source has at least one locator. Duplicate sources or locators are invalid. A locator is a concise source-specific pointer such as a section heading, page, numbered clause, fragment, or stable passage identifier. Locator changes require re-review.
-
-## Outcomes
-
-- `strong`: the claim as a whole is sufficiently supported and calibrated.
-- `partial`: overall support remains incomplete; active publication is not allowed until the claim is narrowed or support improves.
-- `unsupported`: the claim is not supported; active publication is not allowed.
-- `disputed`: credible material disagreement remains and is visibly calibrated in the corpus; active publication requires human review.
-
-Multiple individually partial sources may jointly produce an overall `strong` result. The stored outcome evaluates the claim as a whole, not each source in isolation.
-
-The publishable-outcome restriction applies to `active` content. Draft work may temporarily retain partial or unsupported outcomes so reviewers can correct it, but it cannot be activated in that state.
-
-## Reviewer identity and configuration
-
-Human reviews use a non-empty reviewer identity and null configuration. AI and hybrid reviews use a non-empty identity, a resolving repository-relative `.yaml` configuration, and the SHA-256 of that exact configuration file.
-
-The versioned artifact stores system, model, prompt, and I-JSON-compatible settings. Hashing the exact file binds all of them without copying five fields into every claim item. Non-finite, overflowing, or non-interoperable integers remain invalid or must be stored as strings.
-
-Do not place credentials, source text, hidden reasoning, or personal secrets in reviewer identity or configuration.
-
-## Invalidation
-
-A retained record is inconsistent when normalized claim text or resolved source sequence no longer agrees with the corpus. Locator edits require transition review. A cited source becoming superseded, withdrawn, or unavailable, or an operational observation of source-content change against an explicit baseline, requires semantic review. A URL move alone does not invalidate support when identity and applicable content are unchanged.
-
-Deterministic validation detects current corpus/evidence disagreement and, with trusted baseline state, relevant provenance transitions. It cannot detect source content changing in place from the claim hash. Operational observation detects that condition; semantic re-review decides whether support remains adequate. Human approval remains required for disputed claims and high-impact corpus changes.
+The scaffolder derives roles, hashes, and source order. It preserves locators/outcomes only when wording and source order are unchanged; otherwise it marks review required and emits no judgment. A scaffold remains derived preparation until a reviewer supplies valid locators, outcomes, identity, and configuration.

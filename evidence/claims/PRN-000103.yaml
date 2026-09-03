@@ -1,0 +1,54 @@
+schema_version: 4
+entry_id: PRN-000103
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 6f737dff6eb47c7102154536d7d0a42ab85ff93ec39f26b12c2d9dd566b775d0
+  sources:
+  - source_id: SRC-000073
+    locators: [Balanced On-Call, Avoiding Inappropriate Operational Load]
+  - source_id: SRC-000074
+    locators: [Why Less Toil Is Better, Calculating Toil]
+  outcome: strong
+- role: why-1
+  claim_sha256: a0e165d44b7a5001b51bab9fcc36da49894b91149a1abf6a4940be85ffda992e
+  sources:
+  - source_id: SRC-000073
+    locators: [Balanced On-Call, Operational Overload]
+  - source_id: SRC-000074
+    locators: [Why Less Toil Is Better]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 492f7a2a875343bf395b5e3fdde071ddea3508c614897ac6daf4e5035295a8b9
+  sources:
+  - source_id: SRC-000073
+    locators: [Balance in Quantity, Balance in Quality, Operational Overload]
+  - source_id: SRC-000074
+    locators: [Calculating Toil]
+  outcome: strong
+- role: practice-2
+  claim_sha256: 1cb1683da7108b534d75aef62141f0a08b7b1ef618b3c5b635f9e18eb3ff72cd
+  sources:
+  - source_id: SRC-000073
+    locators: [Operational Overload]
+  - source_id: SRC-000074
+    locators: [Why Less Toil Is Better, What Qualifies as Engineering]
+  outcome: strong
+- role: practice-3
+  claim_sha256: f2631d186539359bef211f1acf3ef4c0adf8187360ab1b0ad1cb8b039ddacac0
+  sources:
+  - source_id: SRC-000073
+    locators: [Balanced On-Call, A Treacherous Enemy]
+  outcome: strong
+- role: applicability-1
+  claim_sha256: 0246a33ad21ef70b2f0dd3f0c5e266da16ef23707128dcfe021669bbb0d64080
+  sources:
+  - source_id: SRC-000073
+    locators: [Balanced On-Call, Compensation]
+  outcome: strong

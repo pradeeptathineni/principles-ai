@@ -1,0 +1,34 @@
+schema_version: 4
+entry_id: PRN-000081
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 87fdf8aed8f80267128e820742f948986fe6b055a3d8c9e2803fde96c12beb0a
+  sources:
+  - source_id: SRC-000014
+    locators: ['Section 1.1, pages 1 to 3', 'Table 1, practice groups PO, PS, PW, and RV, page 4']
+  outcome: strong
+- role: why-1
+  claim_sha256: de0761f6315de0b4d9a633fd18e1120e0b6e3d8e53989c8fbfc0f3e8ba930e58
+  sources:
+  - source_id: SRC-000014
+    locators: [Abstract, 'Section 1.1, pages 1 to 3']
+  outcome: strong
+- role: practice-1
+  claim_sha256: 139aebf5562ddf9385559cae01e235d054dcbe97343cb2cda744c13a197756f7
+  sources:
+  - source_id: SRC-000014
+    locators: ['Practices PO.1 and PW.1, pages 6 and 12']
+  outcome: strong
+- role: practice-2
+  claim_sha256: aac6d83471502923aa091d30c42dcbe314c9ed896d7285515c7663b3e3195cb7
+  sources:
+  - source_id: SRC-000014
+    locators: ['Practices PO.4, PW.7, RV.1, and RV.2, pages 9 and 15 to 18']
+  outcome: strong

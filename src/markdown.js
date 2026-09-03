@@ -5,6 +5,7 @@ import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import { visit } from 'unist-util-visit'
+import { WORKFLOW_GATES } from './workflow-contract.js'
 import { LIMITS } from './constants.js'
 import { nodeLocation } from './diagnostics.js'
 import { readCanonicalText, toRepoPath, walkCanonicalRepository } from './repository.js'
@@ -431,22 +432,26 @@ export function parseCorpusFile(root, path, schema, manifestsById, sourceById, b
   return document
 }
 
-export function validateCorpusTransition(baselineDocuments, proposedDocuments, bag) {
+export function validateCorpusTransition(baselineDocuments, proposedDocuments, bag, options = {}) {
   const gates = new Set()
+  const addGate = (gate, path) => {
+    gates.add(gate)
+    options.onGate?.(gate, path)
+  }
   const before = new Map(baselineDocuments.map((document) => [document.path, document]))
   const after = new Map(proposedDocuments.map((document) => [document.path, document]))
   for (const [path, oldDocument] of before) {
     const next = after.get(path)
     if (!next) {
-      if (oldDocument.frontmatter.status === 'active') gates.add('principle-removal')
+      if (oldDocument.frontmatter.status === 'active') addGate(WORKFLOW_GATES.principleRemoval, path)
       continue
     }
     if (next.frontmatter.status === 'active' && (oldDocument.frontmatter.status !== 'active' || oldDocument.semanticSha256 !== next.semanticSha256)) {
-      gates.add(oldDocument.frontmatter.status === 'active' ? 'principle-semantic-change' : 'principle-activation')
+      addGate(oldDocument.frontmatter.status === 'active' ? WORKFLOW_GATES.principleSemanticChange : WORKFLOW_GATES.principleActivation, path)
     }
   }
   for (const [path, document] of after) {
-    if (!before.has(path) && document.frontmatter.status === 'active') gates.add('principle-activation')
+    if (!before.has(path) && document.frontmatter.status === 'active') addGate(WORKFLOW_GATES.principleActivation, path)
   }
   return gates
 }

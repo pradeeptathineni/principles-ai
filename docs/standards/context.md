@@ -20,6 +20,8 @@ Do not automatically load the entire corpus or all standards.
 
 Interactive agents read repository-local context directly. The deterministic context exporter is optional downstream tooling and is not required for authoring. Future automation must assemble the same canonical sources rather than maintain a divergent policy copy.
 
+For a long domain-authoring run or context handoff, a disposable run checkpoint may bind explicit coordination declarations to the current task workset. It can reduce repeated reconstruction, but it is not canonical state, evidence that a source was interpreted correctly, proof that semantic review occurred, or human approval. Changed bound inputs invalidate it.
+
 ## Context selection
 
 Prefer explicit stable file and principle IDs when scope is known. Principle IDs are location-independent. Source IDs and review provenance should travel with selected claims when the profile requires verification.
@@ -46,3 +48,5 @@ Semantic retrieval may later supplement explicit selection, but it must not sile
 ## Evaluation
 
 Measure mandatory coverage, relevance, unnecessary-token rate, preservation of scope and disagreement, provenance, and downstream quality. Do not optimize token count at the expense of correct judgment.
+
+Architecture review records the minimum routed workset, changed architecture files, and a deterministic UTF-8 byte estimate. These measurements expose growth and duplicated loading but do not determine whether the selected context is semantically sufficient. A change that expands mandatory agent context requires architecture review even when validation remains structurally correct.

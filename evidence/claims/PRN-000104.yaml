@@ -1,0 +1,40 @@
+schema_version: 4
+entry_id: PRN-000104
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 4aae721cae588499e120afa4cb26a46748b3e78131cb5ccbdd21018fdbc62737
+  sources:
+  - source_id: SRC-000072
+    locators: [Ensure a consistent review of operational readiness, Implementation guidance]
+  outcome: strong
+- role: why-1
+  claim_sha256: 9add712d8e77c059a945436fd6eecc6418b0be150d2cc136695aa5aaa907d93e
+  sources:
+  - source_id: SRC-000072
+    locators: [Desired outcome, 'Common anti-patterns:', 'Benefits of establishing this best practice:']
+  outcome: strong
+- role: practice-1
+  claim_sha256: bdd00e4c5fc0894302dc059510f809e21945a4afa98d1edbe515fd089f8aaf01
+  sources:
+  - source_id: SRC-000072
+    locators: [Implementation guidance, Implementation steps]
+  outcome: strong
+- role: practice-2
+  claim_sha256: 27be74d70b2f32818a81846cd5399d69b42445865863be08a1c2de825f4dbc4e
+  sources:
+  - source_id: SRC-000072
+    locators: [Implementation guidance, Implementation steps]
+  outcome: strong
+- role: applicability-1
+  claim_sha256: e7bf5a1d5ce29d3693438459cf366a1d11a52251e73df30a9f01bac2d0865847
+  sources:
+  - source_id: SRC-000072
+    locators: [Implementation guidance]
+  outcome: strong

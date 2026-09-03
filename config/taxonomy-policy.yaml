@@ -1,4 +1,4 @@
-version: 6
+version: 8
 
 manifests:
   glob: domains/*/domain.yaml
@@ -7,6 +7,7 @@ manifests:
   aggregate_output: generated/taxonomy.yaml
   aggregate_is_canonical: false
   aggregate_committed_by_default: false
+  subdomain_scope_definition_field: description
 
 identity_scope:
   domain_id: repository-wide
@@ -40,10 +41,40 @@ lifecycle:
     allowed_subdomain_statuses: [deprecated]
     required_subdomains_must_be_empty: true
   accepted_subdomain_requires_accepted_domain: true
+  allowed_transitions:
+    proposed: [accepted, deprecated]
+    accepted: [deprecated]
+    deprecated: [accepted]
+
+operations:
+  add:
+    new_id_required: true
+    initial_working_status: proposed
+    trusted_diff_may_finish_accepted_after_exact_human_decision: true
+  rename:
+    preserve_id: true
+    change_fields: [title]
+  reframe:
+    preserve_id_when_semantic_identity_remains: true
+    change_fields: [description]
+  deprecate:
+    retained_status: deprecated
+    corpus_file_must_be_absent: true
+  reactivate:
+    transition: deprecated-to-accepted
+  replace:
+    old_scope_transition: to-deprecated
+    replacement_scope: new-proposed-id
+  split:
+    original_scope_transition: to-deprecated
+    minimum_new_proposed_scopes: 2
+  merge:
+    absorbed_scope_transition: to-deprecated
+    survivor: existing-accepted-or-new-proposed
 
 explicit_target_request:
-  existing_registered_scope_with_unchanged_definition: authorizes_acceptance_after_agent_research_confirms_fit
-  new_renamed_merged_or_materially_rescoped_scope: requires_human_approval
+  existing_proposed_registered_scope_with_unchanged_definition: authorizes_acceptance_after_independent_agent_research_confirms_fit
+  addition_rename_reframe_merge_split_replace_deprecation_or_reactivation: requires_human_approval
   protected_intent_change: requires_human_approval
   canonical_review_sidecar_required: false
   decision_rationale_location_when_material: pull_request_or_issue_record
@@ -53,9 +84,20 @@ transition_validation:
   domain_and_subdomain_removal_allowed: false
   accepted_to_proposed_allowed: false
   protected_intent_change_requires_human_approval: true
-  taxonomy_acceptance_deprecation_reactivation_requires_human_approval: true
+  proposed_to_accepted_classification: taxonomy-acceptance
+  proposed_to_accepted_may_be_satisfied_by_explicit_unchanged_target_request: true
+  explicit_authorization_target_format: domain-or-domain-slash-subdomain
+  authorized_acceptance_is_reported_as_routine_transition_not_human_gate: true
+  authorization_does_not_prove_semantic_fit_or_human_approval: true
+  proposed_or_accepted_to_deprecated_classification: taxonomy-deprecation
+  deprecated_to_accepted_classification: taxonomy-reactivation
+  deprecated_to_proposed_allowed: false
+  new_scope_classification: taxonomy-addition
+  new_scope_requires_human_approval: true
+  deprecation_and_reactivation_require_human_approval: true
   existing_domain_or_subdomain_definition_change_requires_human_approval: true
-  new_scope_must_start_proposed: true
+  new_scope_working_state_starts_proposed: true
+  exact_human_approved_addition_may_finish_accepted_in_same_outcome: true
   unavailable_baseline_result: not_evaluated
 
 human_intent:
@@ -66,10 +108,20 @@ human_intent:
     - removal
     - rename
     - merge
+    - split
+    - replacement
     - deprecation
     - material_rescope
     - domain_purpose_change
   explicit_human_approval_required: true
+
+semantic_review:
+  research_standard: docs/standards/research.md
+  source_standard: docs/standards/sources.md
+  inherited_or_registered_taxonomy_is_context_not_evidence: true
+  independent_evidence_landscape_required: true
+  source_fitness_required: true
+  intentional_cross_domain_overlap_allowed_when_context_materially_changes_guidance: true
 
 registration:
   existing_subdomain_markdown_must_be_registered: true

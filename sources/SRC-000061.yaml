@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000061
+title: The OpenContainers Image Spec
+publisher: Open Container Initiative
+evidence_kind: normative-authority
+canonical_url: https://specs.opencontainers.org/image-spec/
+url_aliases: []
+published_or_version: null
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

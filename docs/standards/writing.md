@@ -18,19 +18,21 @@ Entry headings use an immutable location-independent ID:
 
 The first paragraph expresses one central principle and includes citations. The title may be memorable; the paragraph carries precise scope and normative strength.
 
+Do not compress materially distinct durable decisions into one compound principle merely to keep a file small. Separation should follow distinct judgment, consequence, evidence, applicability, or scope ownership; wording differences alone do not justify separate principles.
+
 ## Rationale and practices
 
 Use separate `Why` paragraphs for distinct claims or evidence. Keep practice bullets independently actionable. Do not combine unrelated recommendations into one bullet merely to reduce list length.
 
-Say everything necessary and useful, but nothing merely because the format permits it. A rationale explains; it does not restate. A practice changes behavior; it is not another paraphrase. Prefer one Why paragraph and two or three Practices unless distinct additional material earns space.
+Say everything necessary and useful, but nothing merely because the format permits it. A rationale explains; it does not restate. A practice changes behavior; it is not another paraphrase. Use as many Why paragraphs and Practices as the subject and evidence require, subject only to the grammar's required minimums. Do not treat the structure of a template, example, prior file, or neighboring domain as a target, and do not introduce arbitrary variation for appearance.
 
-The executable policy defines preferred lengths and emits warnings rather than rejection errors. These are prompts to edit; precision, safety, and necessary qualification take precedence. `config/content-policy.yaml` is the single source for the current thresholds.
+The executable policy defines advisory maximum lengths and emits warnings rather than rejection errors. They identify possible word-economy problems, not desired lengths; shorter and longer claim blocks remain correct when their content warrants it. Precision, safety, and necessary qualification take precedence. `config/content-policy.yaml` is the single source for the current thresholds.
 
 Applicability uses separate cited paragraphs for distinct conditions, limits, and exceptions. Practices and Goals use flat unordered lists with one paragraph per item; nested lists and extra block children are outside the canonical grammar.
 
 ## Optional sections
 
-Use `Applicability`, `Goals`, and `Tags` only when they add material value. Remove unused optional headings. Do not manufacture goals or tags to complete a shape.
+Use `Applicability`, `Goals`, and `Tags` only when they add material value. Applicability deserves explicit consideration when scale, risk, maturity, architecture, regulation, operating model, workload, lifecycle stage, reversibility, statefulness, or human burden changes correct use. Omit it when the statement and rationale already provide sufficient calibration. Apply the same inclusion test to Goals and Tags. Remove unused optional headings, and do not treat either universal presence or universal absence as a default.
 
 Entry Tags are a flat list of normalized kebab-case retrieval concepts. Frontmatter tags apply to the whole file; do not duplicate them at entry level without a retrieval reason.
 

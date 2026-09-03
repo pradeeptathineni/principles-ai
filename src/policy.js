@@ -10,8 +10,8 @@ const expectedShapeFingerprints = Object.freeze({
   'evidence-policy': '6d5f35136f0bc5284c8b6a27a24badc3fa769e7bc0d4955f26e53bace016a94d',
   'identity-policy': 'd403ff29ce9411c31c0d38ce93599a32231ef8b808cfc1969052d66bbc7eee54',
   'source-policy': '813a8b4a41ff7aa2fd5f21f1d07caff10853f6aeffc3f67548109246bc3075fe',
-  'taxonomy-policy': 'e381778210d125b33fea3c45ccfc1c0b41ba8843fd4c4c32d4dc88dec4642ef2',
-  validation: '11b9d4a47f7cfc0cb94770696521802bf3db1ee9a7f9d848ebf7791be7c30199'
+  'taxonomy-policy': 'ebf86644a227d05fccc7f9ff09888a2fe210a61fd015ca88657d758f1be01040',
+  validation: '7ac64c47aa99632fc7ca396d4412796901c8ad74371b170e99e70ae5cf82ca87'
 })
 
 const expectedValueFingerprints = Object.freeze({
@@ -19,8 +19,8 @@ const expectedValueFingerprints = Object.freeze({
   'evidence-policy': 'b2a65d438c149786121c144837aa177f4186fcc6f813af0dc7f3dba8640c356b',
   'identity-policy': 'ee88ae4bd1264d34a97535457856a04b353627ebd81a17bc95f7aefbf7882279',
   'source-policy': 'b9c6e773909c98001d30f90e0a07d378f6b06ac07e3f3564f9006d8be4e1e78d',
-  'taxonomy-policy': '9ecc06a30213ea82905461c44e4300a8777710c92e56e1c9ca1d4d615eb71ff3',
-  validation: '48f776bd39ec1a26ab8835b82359674f92ed6618f5b6605a3b790113883172fd'
+  'taxonomy-policy': '2e56153c93a822d12cf7af995e03686332a2ff59403926974ea6fee08ee62ca0',
+  validation: '5c5c575b1a123762d97f6093832f13715a49e8d6bc4606ddc74430d7a7850901'
 })
 
 const shapes = {
@@ -37,8 +37,8 @@ const shapes = {
   },
   'source-policy': { version: 0, registry: '*', urls: '*', url_transition_validation: '*', lifecycle: '*', retirement_transition_validation: '*', operational_observation: '*', claim_reviews: '*', evidence_kinds: '*' },
   'evidence-policy': { version: 0, records: '*', coverage: '*', adoption: '*', outcomes: '*', reviewer_configuration: '*', invalidation: '*' },
-  'taxonomy-policy': { version: 0, manifests: '*', identity_scope: '*', universal_files: '*', naming: '*', lifecycle: '*', explicit_target_request: '*', transition_validation: '*', human_intent: '*', registration: '*', principle_identity: '*' },
-  validation: { version: 0, schema_validation: '*', yaml_loading: '*', canonical_text: '*', policy_loading: '*', trusted_baseline: '*', classes: '*', severity: '*', diagnostic_language: '*', internal_links: '*' }
+  'taxonomy-policy': { version: 0, manifests: '*', identity_scope: '*', universal_files: '*', naming: '*', lifecycle: '*', operations: '*', explicit_target_request: '*', transition_validation: '*', human_intent: '*', semantic_review: '*', registration: '*', principle_identity: '*' },
+  validation: { version: 0, schema_validation: '*', yaml_loading: '*', canonical_text: '*', policy_loading: '*', trusted_baseline: '*', classes: '*', workflow_model: '*', architecture_review: '*', severity: '*', diagnostic_language: '*', internal_links: '*' }
 }
 
 function checkShape(value, shape, bag, path, pointer = '') {

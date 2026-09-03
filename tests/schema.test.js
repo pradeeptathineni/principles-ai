@@ -51,13 +51,26 @@ test('domain lifecycle is independent from review sidecars', () => {
   const bag = new DiagnosticBag()
   const schema = new SchemaValidator(root, bag)
   const value = {
-    schema_version: 5,
+    schema_version: 6,
     id: 'coding', code: 'COD', title: 'Coding', taxonomy_status: 'proposed', description: 'Coding guidance.',
     human_intent: { required_subdomains: [], priorities: [], exclusions: [], scope_notes: [] },
-    subdomains: [{ id: 'design', code: 'DES', title: 'Design', status: 'proposed', origin: 'research' }]
+    subdomains: [{ id: 'design', code: 'DES', title: 'Design', description: 'Coding design decisions and practices.', status: 'proposed', origin: 'research' }]
   }
   assert.equal(schema.validate('domain_manifest', value, 'domain.yaml'), true)
   value.taxonomy_status = 'accepted'
   value.subdomains[0].status = 'accepted'
   assert.equal(schema.validate('domain_manifest', value, 'domain.yaml'), true)
+})
+
+test('every subdomain requires a canonical scope description', () => {
+  const bag = new DiagnosticBag()
+  const schema = new SchemaValidator(root, bag)
+  const value = {
+    schema_version: 6,
+    id: 'coding', code: 'COD', title: 'Coding', taxonomy_status: 'proposed', description: 'Coding guidance.',
+    human_intent: { required_subdomains: [], priorities: [], exclusions: [], scope_notes: [] },
+    subdomains: [{ id: 'design', code: 'DES', title: 'Design', status: 'proposed', origin: 'research' }]
+  }
+  assert.equal(schema.validate('domain_manifest', value, 'domain.yaml'), false)
+  assert.ok(bag.items.some((item) => item.code === 'SCHEMA_INVALID' && item.details?.keyword === 'required'))
 })

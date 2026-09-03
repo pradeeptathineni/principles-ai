@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: full-stack-development
 code: FST
 title: Full-Stack Development
@@ -14,95 +14,114 @@ subdomains:
 - id: architecture
   code: ARC
   title: Architecture
+  description: "Covers Architecture as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: product-thinking
   code: PRD
   title: Product Thinking
+  description: "Covers Product Thinking as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: end-to-end-design
   code: E2E
   title: End-to-End Design
+  description: "Covers End-to-End Design as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: frontend-backend-boundaries
   code: BND
   title: Frontend/Backend Boundaries
+  description: "Covers Frontend/Backend Boundaries as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: api-contracts
   code: API
   title: API Contracts
+  description: "Covers API Contracts as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: data-flow-state
   code: DAT
   title: Data Flow & State
+  description: "Covers Data Flow & State as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: authentication-authorization
   code: AUTH
   title: Authentication & Authorization
+  description: "Covers Authentication & Authorization as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
+  description: "Covers Security as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: integration
   code: INT
   title: Integration
+  description: "Covers Integration as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: user-experience
   code: UXD
   title: User Experience
+  description: "Covers User Experience as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: testing
   code: TST
   title: Testing
+  description: "Covers Testing as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: debugging
   code: DBG
   title: Debugging
+  description: "Covers Debugging as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: error-handling
   code: ERR
   title: Error Handling
+  description: "Covers Error Handling as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: performance
   code: PER
   title: Performance
+  description: "Covers Performance as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
+  description: "Covers Observability as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: environments-configuration
   code: ENV
   title: Environments & Configuration
+  description: "Covers Environments & Configuration as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: deployment-delivery
   code: DPL
   title: Deployment & Delivery
+  description: "Covers Deployment & Delivery as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: maintainability
   code: MAI
   title: Maintainability
+  description: "Covers Maintainability as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
+  description: "Covers Documentation as part of reasoning across frontend, backend, data, integration, deployment, and end-to-end product behavior, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

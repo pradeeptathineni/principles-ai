@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000069
+title: SLSA v1.2 — Verifying artifacts
+publisher: SLSA
+evidence_kind: normative-authority
+canonical_url: https://slsa.dev/spec/v1.2/verifying-artifacts
+url_aliases: []
+published_or_version: v1.2
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

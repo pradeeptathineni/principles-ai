@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import canonicalize from 'canonicalize'
 import { DiagnosticBag } from './diagnostics.js'
 import { validateCheckRegistry } from './checks.js'
+import { architectureReviewGates, classifyArchitectureChanges } from './architecture.js'
 import { loadHistoricalPolicies, loadPolicies, validatePolicyTransition } from './policy.js'
 import { SchemaValidator } from './schema.js'
 import { loadYaml } from './yaml.js'
@@ -13,6 +14,8 @@ import { loadManifests, renderTaxonomy, validateTaxonomy, validateTaxonomyTransi
 import { loadEvaluatorConfigurations, loadEvidence, validateEvidence, validateEvidenceTransition } from './evidence.js'
 import { validateInternalLinks } from './internal-links.js'
 import { readCanonicalText, toRepoPath, walkCanonicalRepository } from './repository.js'
+import { validateWorkflowModel } from './workflow.js'
+import { WORKFLOW_GATES } from './workflow-contract.js'
 
 function validateCanonicalRepositoryText(root, bag) {
   const paths = ['AGENTS.md', 'README.md', '.gitignore', '.node-version', 'package.json', 'package-lock.json']
@@ -28,7 +31,8 @@ function validateCanonicalRepositoryText(root, bag) {
 function loadState(root, bag, { complete = true } = {}) {
   if (complete) validateCanonicalRepositoryText(root, bag)
   const policies = loadPolicies(root, bag)
-  validateCheckRegistry(policies.validation, bag)
+  validateCheckRegistry(policies.validation, bag, root)
+  validateWorkflowModel(root, policies.validation, bag)
   const schema = new SchemaValidator(root, bag)
   let ledger = loadYaml(root, 'config/identity-ledger.yaml', bag)
   if (ledger) {
@@ -101,12 +105,20 @@ export function validateRepository(root, options = {}) {
   const state = loadState(root, bag)
   let transitionStatus = 'not_evaluated'
   const humanGates = new Set()
+  const gateEffects = []
+  const addGate = (gate, path = null) => {
+    humanGates.add(gate)
+    if (!gateEffects.some((effect) => effect.gate === gate && effect.path === path)) gateEffects.push({ gate, path })
+  }
+  const routineTransitions = new Set()
+  let architectureReview = { status: 'not_evaluated', required: false, categories: [], changed_paths: [], context: { files: [], utf8_bytes: 0 } }
   if (options.baselineRoot) {
     const baselineBag = new DiagnosticBag()
     const baseline = loadTransitionBaseline(options.baselineRoot, state.schema, baselineBag)
     if (baseline.schema?.$id !== state.schema.schema?.$id || Object.entries(state.policies).some(([name, policy]) => canonicalize(baseline.policies[name]) !== canonicalize(policy))) {
-      humanGates.add('policy-or-schema-change')
+      addGate(WORKFLOW_GATES.policyOrSchemaChange, 'config/validation.yaml')
     }
+    if (canonicalize(baseline.policies['evidence-policy']) !== canonicalize(state.policies['evidence-policy'])) addGate(WORKFLOW_GATES.evidencePolicyChange, 'config/evidence-policy.yaml')
     validatePolicyTransition(baseline.policies, state.policies, bag)
     validateSchemaTransition(baseline.schema, state.schema.schema, bag)
     if (baselineBag.errorCount > 0) {
@@ -117,9 +129,21 @@ export function validateRepository(root, options = {}) {
       validateIdentityTransition(baseline.ledger, state.ledger, bag)
       validateSourceTransition(baseline.sources, state.sources, baseline.ledger, state.ledger, bag, state.policies['source-policy'])
       validateEvidenceTransition(baseline.evidence, state.evidence, baseline.sources, state.sources, bag)
-      for (const gate of validateTaxonomyTransition(baseline.manifests, state.manifests, bag)) humanGates.add(gate)
-      for (const gate of validateCorpusTransition(baseline.corpus.documents, state.corpus.documents, bag)) humanGates.add(gate)
+      for (const gate of validateTaxonomyTransition(baseline.manifests, state.manifests, bag, {
+        authorizedAcceptances: options.authorizedTaxonomyTargets ?? new Set(),
+        routineTransitions,
+        onGate: addGate
+      })) humanGates.add(gate)
+      for (const gate of validateCorpusTransition(baseline.corpus.documents, state.corpus.documents, bag, { onGate: addGate })) humanGates.add(gate)
       transitionStatus = 'evaluated'
+    }
+    const architectureReviewPolicy = baseline.policies.validation?.architecture_review
+      ? { ...state.policies.validation, architecture_review: baseline.policies.validation.architecture_review }
+      : state.policies.validation
+    architectureReview = classifyArchitectureChanges(root, options.baselineRoot, architectureReviewPolicy, bag)
+    for (const gate of architectureReviewGates(architectureReview)) {
+      humanGates.add(gate)
+      addGate(gate)
     }
   } else {
     bag.info('TRANSITION_NOT_EVALUATED', 'Trusted merge-base state was unavailable; identity, source, taxonomy, and corpus transition checks are not_evaluated and snapshot validity does not prove historical transition validity.', '<trusted-baseline>')
@@ -130,7 +154,16 @@ export function validateRepository(root, options = {}) {
   if (bag.errorCount === 0 && replayBag.errorCount > 0) bag.error('GENERATION_REPLAY_INVALID', 'Independent canonical-input replay failed during reproducibility checking.', 'generated/taxonomy.yaml')
   const taxonomyB = renderTaxonomy(replay.manifests, replay.corpus.documents)
   if (taxonomyA !== taxonomyB) bag.error('GENERATION_NONDETERMINISTIC', 'Taxonomy generation is not reproducible.', 'generated/taxonomy.yaml')
-  return { bag, state, transitionStatus, humanGates: [...humanGates].sort(), generated: { taxonomy: taxonomyA } }
+  return {
+    bag,
+    state,
+    transitionStatus,
+    humanGates: [...humanGates].sort(),
+    gateEffects: gateEffects.sort((left, right) => left.gate.localeCompare(right.gate) || String(left.path).localeCompare(String(right.path))),
+    routineTransitions: [...routineTransitions].sort(),
+    architectureReview,
+    generated: { taxonomy: taxonomyA }
+  }
 }
 
 export { loadState }

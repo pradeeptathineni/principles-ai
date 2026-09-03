@@ -25,6 +25,35 @@ test('external checker distinguishes definitive and indeterminate failures', asy
   assert.equal(blocked.result, 'indeterminate')
 })
 
+test('GET overrides method-specific HEAD failures and is authoritative for content capture', async () => {
+  const resolveHost = async () => [{ address: '93.184.216.34', family: 4 }]
+  const methods = []
+  const reachable = await checkExternalUrl('https://example.com/document.pdf', {
+    resolveHost,
+    captureContent: true,
+    request: async (_url, _address, _family, method) => {
+      methods.push(method)
+      return method === 'HEAD'
+        ? { status: 404, headers: {}, bytes: 0, contentSha256: null }
+        : { status: 200, headers: {}, bytes: 8, contentSha256: 'a'.repeat(64) }
+    }
+  })
+  assert.deepEqual(methods, ['HEAD', 'GET'])
+  assert.equal(reachable.result, 'reachable')
+  assert.equal(reachable.status, 200)
+  assert.equal(reachable.contentSha256, 'a'.repeat(64))
+
+  const broken = await checkExternalUrl('https://example.com/missing.pdf', {
+    resolveHost,
+    captureContent: true,
+    request: async (_url, _address, _family, method) => method === 'HEAD'
+      ? { status: 200, headers: {}, bytes: 0, contentSha256: null }
+      : { status: 404, headers: {}, bytes: 0, contentSha256: null }
+  })
+  assert.equal(broken.result, 'broken')
+  assert.equal(broken.status, 404)
+})
+
 test('malformed redirect locations produce a result instead of crashing', async () => {
   const result = await checkExternalUrl('https://example.com/', {
     resolveHost: async () => [{ address: '93.184.216.34', family: 4 }],

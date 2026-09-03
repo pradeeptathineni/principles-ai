@@ -7,7 +7,7 @@ type: subdomain
 subdomain: performance
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 29197cc9577f14384ea630fdd72cce0bc8d3feec368f36c010f3c03097e2ea00
+reviewed_content_sha256: c65ae3417a0ae3db15df346c22388c5d8e57e115c642349ec4d9cae5cf461c01
 ---
 
 # Coding Performance
@@ -44,16 +44,19 @@ Intuition about bottlenecks is often incomplete, and an optimization can move co
 
 ### PRN-000039 — Spend complexity only for measured value
 
-Accept added performance complexity only when the measured benefit matters to an explicit objective and the resulting code remains supportable. [1], [2]
+Add performance-related complexity only when a measured, user-relevant objective justifies its tradeoffs. [1], [2]
 
 #### Why
 
-Caches, concurrency, batching, specialized representations, and lower-level code create invalidation, ordering, memory, and diagnosis costs. A local speedup is not a system improvement when those costs exceed its effect. [1], [2]
+An optimization should be evaluated against the objective it is meant to improve. Because performance interacts with other software qualities, a faster local result is not automatically a better system. [1], [2]
 
 #### Practices
 
-- Record the baseline, expected gain, tradeoffs, and rollback condition for a consequential optimization. [1], [2]
-- Preserve a simpler path or abstraction boundary when it materially reduces risk without defeating the objective. [2]
+- Compare before and after under a representative workload, recording which objective improves and which quality tradeoffs are accepted. [1], [2]
+
+#### Applicability
+
+When no measured bottleneck violates an objective, retain the simpler design. A hard constraint can justify necessary complexity, but its benefit and effects still need evaluation. [1], [2]
 
 ## References
 

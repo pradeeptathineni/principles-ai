@@ -21,12 +21,12 @@ function validateBaseline(baseline, bag) {
   return true
 }
 
-export async function runOperationalChecks({ root, sources, sourcePolicy, bag, baseline = null, asOf, externalOptions = {} }) {
+export async function runOperationalChecks({ root, sources, sourcePolicy, bag, baseline = null, asOf, externalOptions = {}, includeRepositoryLinks = true }) {
   const observedAt = asOf ?? new Date().toISOString().slice(0, 10)
   const observedDate = parseDate(observedAt)
   if (!observedDate) throw new Error(`Invalid operational --as-of date ${observedAt}`)
   const excludedPrefixes = sourcePolicy?.operational_observation?.external_markdown_excluded_prefixes ?? []
-  const urls = collectExternalUrls(root, sources, bag, { excludedPrefixes })
+  const urls = includeRepositoryLinks ? collectExternalUrls(root, sources, bag, { excludedPrefixes }) : []
   const sourceUrls = [...new Set(sources.flatMap((source) => [source.value.canonical_url, ...(source.value.url_aliases ?? [])]))].sort()
   const sourceUrlSet = new Set(sourceUrls)
   const sourceResults = await checkExternalUrls(sourceUrls, bag, { ...externalOptions, captureContent: true })

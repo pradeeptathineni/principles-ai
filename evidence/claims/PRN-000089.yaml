@@ -1,0 +1,34 @@
+schema_version: 4
+entry_id: PRN-000089
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 6acc32ca9131e03d37e245cb6cb9a2957e41b48fc3d3d84749c48e035f351afd
+  sources:
+  - source_id: SRC-000053
+    locators: ['Section 3.2, Conduct the Business Impact Analysis']
+  outcome: strong
+- role: why-1
+  claim_sha256: be01f5a3298655de36b6ff15bc7829fa6bb191c83f4a406f3fbc486afdab4404
+  sources:
+  - source_id: SRC-000053
+    locators: ['Sections 3.2.1 to 3.2.3, impact, recovery objectives, and resource requirements']
+  outcome: strong
+- role: practice-1
+  claim_sha256: 82bb0849e4ed7ac13b0bcc179ceb506a4b33bffd35756c5853c71f3908267f60
+  sources:
+  - source_id: SRC-000053
+    locators: ['Section 3.2.3, Identify Resource Requirements', 'Appendix B, BIA template']
+  outcome: strong
+- role: practice-2
+  claim_sha256: 039664e17f31c398009b82fd956e4142cd812ca8ce372c4c4c182f7fa0f39f32
+  sources:
+  - source_id: SRC-000053
+    locators: ['Section 3.2.2, Identify Resource Recovery Priorities']
+  outcome: strong

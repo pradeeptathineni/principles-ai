@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000070
+title: NIST SP 800-190, Application Container Security Guide
+publisher: National Institute of Standards and Technology
+evidence_kind: normative-authority
+canonical_url: https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-190.pdf
+url_aliases: []
+published_or_version: September 2017
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

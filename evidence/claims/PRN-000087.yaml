@@ -1,0 +1,42 @@
+schema_version: 4
+entry_id: PRN-000087
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: db8444eafa62a31c3cb74f1e764307440c87cc94bf0576c37af20564343b0dbb
+  sources:
+  - source_id: SRC-000049
+    locators: ['Elements of Incident Management Process', 'A Well-Managed Incident']
+  - source_id: SRC-000052
+    locators: ['Section 3, CSF 2.0 Community Profile', 'RS.MA, Incident Management']
+  outcome: strong
+- role: why-1
+  claim_sha256: 0797780fed2cd0abe793a233704a60cc9847e987699935ddf4a2bc0fa648fd28
+  sources:
+  - source_id: SRC-000049
+    locators: ['Unmanaged Incidents', 'A Well-Managed Incident']
+  - source_id: SRC-000052
+    locators: ['RS.MA, Incident Management', 'RS.CO, Incident Response Reporting and Communication']
+  outcome: strong
+- role: practice-1
+  claim_sha256: ae6f7cf0842065ebf4d1314095752d90cfb07a035d7dbb8955e6850a58e32a86
+  sources:
+  - source_id: SRC-000049
+    locators: ['Elements of Incident Management Process']
+  - source_id: SRC-000052
+    locators: ['ID.IM, Improvement', 'RS.MA, Incident Management', 'RS.CO, Incident Response Reporting and Communication']
+  outcome: strong
+- role: practice-2
+  claim_sha256: e1f58fad68ba43ae8889a6c3c15409ca29713ec46bdb3109bc27588be41824a1
+  sources:
+  - source_id: SRC-000049
+    locators: ['A Well-Managed Incident']
+  - source_id: SRC-000052
+    locators: ['RS.MA, Incident Management', 'RS.AN, Incident Analysis']
+  outcome: strong

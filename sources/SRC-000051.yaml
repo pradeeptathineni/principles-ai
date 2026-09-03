@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000051
+title: Configuration Design and Best Practices
+publisher: Google
+evidence_kind: institutional-practice
+canonical_url: https://sre.google/workbook/configuration-design/
+url_aliases: []
+published_or_version: The Site Reliability Workbook, 2018
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

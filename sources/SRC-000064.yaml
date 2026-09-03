@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000064
+title: Resiliency, and the components of reliability
+publisher: Amazon Web Services
+evidence_kind: institutional-practice
+canonical_url: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/resiliency-and-the-components-of-reliability.html
+url_aliases: []
+published_or_version: AWS Well-Architected Framework
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

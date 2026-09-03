@@ -7,7 +7,7 @@ type: subdomain
 subdomain: debugging
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 4d7b96556257ba3ef51588ebef3cc5133e70a7ddd12bac195303be33551c9c09
+reviewed_content_sha256: 17d6d513c8b8863c7a2a7d94d68f38d9cfa7a94526cfebf79b1b24163e7adb26
 ---
 
 # Coding Debugging
@@ -42,18 +42,18 @@ Multiple simultaneous changes destroy causal information. Controlled experiments
 - Compare healthy and failing executions at the earliest point where their relevant state diverges. [2]
 - Add temporary instrumentation at decision boundaries, then remove or convert it into durable observability when it remains useful. [2]
 
-### PRN-000029 — Fix the cause and prove the repair
+### PRN-000029 — Correct the root cause
 
-Correct the defect at the boundary that owns it, then confirm the original failure and relevant regressions. [1]
+Identify and correct the root cause, then confirm that the original failure is resolved. [1], [2]
 
 #### Why
 
-Suppressing a symptom leaves the causal condition available to fail elsewhere. Confirmation and regression testing distinguish a causal repair from a coincidental disappearance. [1]
+Root-cause analysis can prevent similar failures that share the same cause. Repeating the original observation after the repair distinguishes a causal correction from a coincidental disappearance. [1], [2]
 
 #### Practices
 
-- Explain how the defect produced the observed failure before accepting the patch. [1]
-- Preserve a regression test or operational check that would detect recurrence at the most stable observable boundary. [1], [2]
+- Explain the causal chain from defect to observed failure and change the cause rather than only masking the symptom. [1], [2]
+- Rerun the original reproduction under comparable conditions before expanding to regression testing. [1], [2]
 
 ## References
 

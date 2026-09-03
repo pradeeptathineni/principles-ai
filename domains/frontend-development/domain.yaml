@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: frontend-development
 code: FRT
 title: Frontend Development
@@ -14,105 +14,126 @@ subdomains:
 - id: web-platform
   code: WEB
   title: Web Platform
+  description: "Covers Web Platform as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: html-semantics
   code: HTM
   title: HTML Semantics
+  description: "Covers HTML Semantics as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: css-layout
   code: CSS
   title: CSS & Layout
+  description: "Covers CSS & Layout as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: javascript-typescript
   code: JTS
   title: JavaScript & TypeScript
+  description: "Covers JavaScript & TypeScript as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: architecture
   code: ARC
   title: Architecture
+  description: "Covers Architecture as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: components-state
   code: STA
   title: Components & State
+  description: "Covers Components & State as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: responsive-design
   code: RSP
   title: Responsive Design
+  description: "Covers Responsive Design as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: accessibility
   code: ACC
   title: Accessibility
+  description: "Covers Accessibility as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: user-experience
   code: UXD
   title: User Experience
+  description: "Covers User Experience as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: design-systems
   code: DSY
   title: Design Systems
+  description: "Covers Design Systems as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: data-api-integration
   code: API
   title: Data & API Integration
+  description: "Covers Data & API Integration as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: testing
   code: TST
   title: Testing
+  description: "Covers Testing as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: debugging
   code: DBG
   title: Debugging
+  description: "Covers Debugging as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: error-handling
   code: ERR
   title: Error Handling
+  description: "Covers Error Handling as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
+  description: "Covers Security as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: performance
   code: PER
   title: Performance
+  description: "Covers Performance as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: compatibility
   code: CMP
   title: Compatibility
+  description: "Covers Compatibility as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: dependencies-tooling
   code: DEP
   title: Dependencies & Tooling
+  description: "Covers Dependencies & Tooling as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
+  description: "Covers Observability as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: seo-discoverability
   code: SEO
   title: SEO & Discoverability
+  description: "Covers SEO & Discoverability as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
+  description: "Covers Documentation as part of building accessible, usable, performant, maintainable, and reliable user-facing web experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

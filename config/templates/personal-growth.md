@@ -11,35 +11,24 @@ reviewed_content_sha256: null
 
 # <Domain> Personal Growth
 
-<One concise editorial paragraph defining continuous improvement in this domain.>
+<Editorial growth scope. This scaffold shows only the grammar's lower bound; after evidence-backed selection, shape entries and sections to the subject rather than a target count or pattern.>
 
 ## Principles
 
-### PRN-000001 — <Memorable growth principle>
+### PRN-000001 — <Selected growth principle title>
 
-<One precise principle for improving capability or judgment.> [1]
+<Precise statement for this selected capability or judgment principle.> [1]
 
 #### Why
 
-<One rationale claim block explaining why this mode of growth matters.> [1]
+<Rationale explaining why this mode of growth matters.> [1]
 
 #### Practices
 
-- <One concrete growth practice.> [1]
-- <Another concrete growth practice.> [2]
-
-#### Goals
-
-- <A meaningful capability, fluency, habit, or outcome to develop.>
-
-#### Tags
-
-- <normalized-retrieval-tag>
+- <Concrete growth practice warranted by the subject and evidence.> [1]
 
 ## References
 
-1. [<Human-readable source title>][1] — `SRC-000001`
-2. [<Human-readable source title>][2] — `SRC-000002`
+1. [<Cited source title>][1] — `SRC-000001`
 
 [1]: https://example.com/source-one
-[2]: https://example.com/source-two

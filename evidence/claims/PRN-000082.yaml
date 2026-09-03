@@ -1,0 +1,42 @@
+schema_version: 4
+entry_id: PRN-000082
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: fd1201c66992bb0739445a9ab79e7ea262f00e416e09fa65480989cc68418c2f
+  sources:
+  - source_id: SRC-000019
+    locators: [Provenance]
+  - source_id: SRC-000055
+    locators: ['Section 2.1, Tenets of Zero Trust']
+  - source_id: SRC-000069
+    locators: [How to verify, 'Step 1: Check SLSA Build level', 'Step 2: Check expectations']
+  outcome: strong
+- role: why-1
+  claim_sha256: 8fe4a73de73ac10a8baaff2a1d9c66c8f866b4b199ec97c7efd21dde94c64b56
+  sources:
+  - source_id: SRC-000019
+    locators: [Provenance]
+  - source_id: SRC-000055
+    locators: [Abstract, 'Section 2, Zero Trust Basics']
+  - source_id: SRC-000069
+    locators: [How to verify, Forming Expectations]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 2bd24a52d8f3a53e246b77941371345837f002001641ac6ea226360215787982
+  sources:
+  - source_id: SRC-000055
+    locators: ['Section 2.1, tenets 3, 4, 5, and 6']
+  outcome: strong
+- role: practice-2
+  claim_sha256: 6dd5a069b554dc98e2d4dc8ed6cd5da29633f8ae117b2ab0896edca8ffc72059
+  sources:
+  - source_id: SRC-000069
+    locators: ['Step 1: Check SLSA Build level', 'Step 2: Check expectations']
+  outcome: strong

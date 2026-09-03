@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000068
+title: Accelerate State of DevOps Report 2024
+publisher: Google Cloud DORA
+evidence_kind: academic-evidence
+canonical_url: https://dora.dev/research/2024/dora-report/2024-dora-accelerate-state-of-devops-report.pdf
+url_aliases: []
+published_or_version: v2024.3
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

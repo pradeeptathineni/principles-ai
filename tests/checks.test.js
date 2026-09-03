@@ -11,4 +11,9 @@ test('every configured deterministic check has exactly one implementation owner'
   validateCheckRegistry(policy, bag)
   assert.equal(bag.errorCount, 0, bag.items.map((item) => `${item.code}: ${item.message}`).join('\n'))
   assert.deepEqual([...policy.classes.deterministic.checks].sort(), Object.keys(DETERMINISTIC_CHECK_IMPLEMENTATIONS).sort())
+  for (const implementation of Object.values(DETERMINISTIC_CHECK_IMPLEMENTATIONS)) {
+    assert.equal(typeof implementation.run, 'function')
+    assert.ok(implementation.positiveTests.length > 0)
+    assert.ok(implementation.negativeTests.length > 0)
+  }
 })

@@ -1,8 +1,8 @@
-schema_version: 5
+schema_version: 6
 id: devops
 code: DEV
 title: DevOps
-taxonomy_status: proposed
+taxonomy_status: accepted
 description: Principles for improving software delivery, infrastructure, automation,
   observability, reliability, and collaboration across the delivery lifecycle.
 human_intent:
@@ -14,110 +14,132 @@ subdomains:
 - id: culture-collaboration
   code: CUL
   title: Culture & Collaboration
-  status: proposed
+  description: "Culture & Collaboration concerns how teams share information, risk, authority, and service responsibility across delivery and operations; formal production-change controls belong to Change Management."
+  status: accepted
   origin: research
 - id: infrastructure
   code: INF
   title: Infrastructure
-  status: proposed
+  description: "Infrastructure concerns the runtime resources, dependencies, placement, and failure boundaries on which services operate; their machine-readable change model belongs to Infrastructure as Code and their controllers to Orchestration."
+  status: accepted
   origin: research
 - id: infrastructure-as-code
   code: IAC
   title: Infrastructure as Code
-  status: proposed
+  description: "Infrastructure as Code concerns reviewed, versioned declarations of infrastructure intent and the workflow that reconciles deployed resources with them; application behavior inputs belong to Configuration."
+  status: accepted
   origin: research
 - id: configuration
   code: CFG
   title: Configuration
-  status: proposed
+  description: "Configuration concerns the owned interfaces and controls that change deployed-system behavior without rebuilding software; infrastructure topology and source-built artifacts belong to their respective scopes."
+  status: accepted
   origin: research
 - id: automation
   code: AUT
   title: Automation
-  status: proposed
+  description: "Automation concerns software that performs or coordinates recurring operational work beyond a specific delivery pipeline or workload controller, including safe failure and human recovery."
+  status: accepted
   origin: research
 - id: ci-cd
   code: CICD
   title: CI/CD
-  status: proposed
+  description: "CI/CD concerns frequent integration and the automated build, test, evidence, and promotion path that keeps changes releasable; production exposure strategy belongs to Software Delivery."
+  status: accepted
   origin: research
 - id: software-delivery
   code: DLV
   title: Software Delivery
-  status: proposed
+  description: "Software Delivery concerns how integrated changes and new services enter production, gain operational acceptance, expand exposure, and produce feedback; pipeline construction belongs to CI/CD."
+  status: accepted
   origin: research
 - id: containers
   code: CTR
   title: Containers
-  status: proposed
+  description: "Containers concerns the construction, content, identity, portability, and runtime contract of container images; scheduling and recovery of running workloads belong to Orchestration."
+  status: accepted
   origin: research
 - id: orchestration
   code: ORC
   title: Orchestration
-  status: proposed
+  description: "Orchestration concerns controllers that schedule, reconcile, expose, scale, and recover distributed workloads; image construction belongs to Containers and declared resource topology to Infrastructure as Code."
+  status: accepted
   origin: research
 - id: cloud
   code: CLD
   title: Cloud
-  status: proposed
+  description: "Cloud in DevOps concerns how on-demand service characteristics and provider dependencies change provisioning, delivery, operations, ownership, and recovery; general cloud architecture and service selection belong to the Cloud domain."
+  status: accepted
   origin: research
 - id: networking
   code: NET
   title: Networking
-  status: proposed
+  description: "Networking concerns the deployable connectivity and traffic policies between users, workloads, and dependencies, plus runtime behavior when remote calls fail; protocol and API design remain engineering concerns."
+  status: accepted
   origin: research
 - id: security
   code: SEC
   title: Security
-  status: proposed
+  description: "Security in DevOps concerns controls embedded in delivery systems and runtime operations, especially pipeline authority, workload identity, and artifact verification; specialized threat, vulnerability, compliance, and supply-chain depth belongs to DevSecOps."
+  status: accepted
   origin: research
 - id: observability
   code: OBS
   title: Observability
-  status: proposed
+  description: "Observability concerns telemetry and diagnostic interfaces that connect user outcomes to workload and dependency behavior; reliability targets and active incident coordination belong to their own scopes."
+  status: accepted
   origin: research
 - id: reliability
   code: REL
   title: Reliability
-  status: proposed
+  description: "Reliability concerns explicit user-centered service expectations and failure-mode design that keeps workloads useful through change and ordinary disruption; active response and disaster restoration are separate scopes."
+  status: accepted
   origin: research
 - id: incident-response
   code: INC
   title: Incident Response
-  status: proposed
+  description: "Incident Response concerns prepared command, coordination, mitigation, communication, evidence preservation, and transition to learning during active service incidents."
+  status: accepted
   origin: research
 - id: disaster-recovery
   code: DR
   title: Disaster Recovery
-  status: proposed
+  description: "Disaster Recovery concerns restoring prioritized services and data after loss exceeds ordinary resilience and incident mitigation, including recovery objectives and exercised restoration paths."
+  status: accepted
   origin: research
 - id: performance-capacity
   code: PER
   title: Performance & Capacity
-  status: proposed
+  description: "Performance & Capacity concerns workload outcomes, demand, resource efficiency, provisioning lead time, headroom, and overload limits; economic value belongs to Cost and failure survival to Reliability."
+  status: accepted
   origin: research
 - id: cost
   code: CST
   title: Cost
-  status: proposed
+  description: "Cost concerns technology-spend visibility, attribution, forecasting, and optimization against delivered value; it informs but does not own general architecture, capacity, or provider-selection decisions."
+  status: accepted
   origin: research
 - id: environments
   code: ENV
   title: Environments
-  status: proposed
+  description: "Environments concerns reproducible places where software is built, tested, staged, recovered, and operated, with differences controlled according to the behavior being exercised."
+  status: accepted
   origin: research
 - id: change-management
   code: CHG
   title: Change Management
-  status: proposed
+  description: "Change Management concerns authorization, risk treatment, traceability, recovery, and controlled retirement for changes to live services; CI/CD and Software Delivery own the execution mechanisms and rollout tactics."
+  status: accepted
   origin: research
 - id: developer-experience
   code: DX
   title: Developer Experience
-  status: proposed
+  description: "Developer Experience concerns the internal products and working conditions through which developers build, deliver, and operate software; it owns user research and paved-path usability rather than the underlying automation itself."
+  status: accepted
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
-  status: proposed
+  description: "Documentation in DevOps concerns operational knowledge used to deploy, operate, diagnose, recover, and retire services, including runbook ownership and validation; code contracts and implementation explanation belong to Coding."
+  status: accepted
   origin: research

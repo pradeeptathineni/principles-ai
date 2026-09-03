@@ -1,0 +1,44 @@
+schema_version: 4
+entry_id: PRN-000088
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 148e9428d23106da4e9e585c6da4d6a60be73c3bc966c7066915ae708490c604
+  sources:
+  - source_id: SRC-000049
+    locators: ['A Well-Managed Incident']
+  - source_id: SRC-000052
+    locators: ['RS.MI, Incident Mitigation', 'RS.AN, Incident Analysis', 'RC.RP, Incident Recovery Plan Execution']
+  - source_id: SRC-000050
+    locators: [Google’s Postmortem Philosophy]
+  outcome: strong
+- role: why-1
+  claim_sha256: dc3cb0e53bb72632ee77f6495c586ded8b2f83310219404d3cf8bf724dfbf56f
+  sources:
+  - source_id: SRC-000049
+    locators: ['Unmanaged Incidents', 'A Well-Managed Incident']
+  - source_id: SRC-000050
+    locators: [Google’s Postmortem Philosophy]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 4979dcf200aceae363a23fff91976fd297a007e3176504a406e0f482f75b43d9
+  sources:
+  - source_id: SRC-000049
+    locators: ['A Well-Managed Incident']
+  - source_id: SRC-000052
+    locators: ['RS.MI, Incident Mitigation', 'RC.RP, Incident Recovery Plan Execution']
+  outcome: strong
+- role: practice-2
+  claim_sha256: 1da984b25992009bdf2a78fb5721daf951e7e860cbd4c3cc99244db1dbb60437
+  sources:
+  - source_id: SRC-000052
+    locators: ['ID.IM, Improvement', 'RC.CO, Incident Recovery Communication']
+  - source_id: SRC-000050
+    locators: [Google’s Postmortem Philosophy, Best Practices]
+  outcome: strong

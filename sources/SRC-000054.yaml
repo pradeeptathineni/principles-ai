@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000054
+title: NIST SP 800-184, Guide for Cybersecurity Event Recovery
+publisher: National Institute of Standards and Technology
+evidence_kind: normative-authority
+canonical_url: https://csrc.nist.gov/pubs/sp/800/184/final
+url_aliases: []
+published_or_version: December 2016
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

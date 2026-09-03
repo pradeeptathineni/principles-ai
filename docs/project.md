@@ -88,7 +88,7 @@ The repository optimizes for:
 
 Humans define purpose, personal priorities, acceptable judgment, taxonomy acceptance, and final governance. Agents may interpret intent, research, synthesize, challenge assumptions, validate, implement approved tooling, and propose changes.
 
-Users describe desired outcomes rather than internal workflow sequences. Agents own prerequisite discovery and orchestration, including resuming the requested outcome after a human gate. A request authorizes ordinary prerequisite and draft work, but not unseen high-impact judgments. Humans own the decision; agents may apply the resulting state transition mechanically.
+Users describe desired outcomes rather than internal workflow sequences. Agents own prerequisite discovery and orchestration, including resuming the requested outcome after a human gate. A request authorizes ordinary prerequisite and draft work, including acceptance of an unchanged explicitly requested proposed registered target after independent fit research, but not additions, definition changes, deprecations, reactivations, protected intent, or other unseen high-impact judgments. Humans own the decision; agents may apply the resulting state transition mechanically.
 
 Code enforces deterministic invariants. Operational checks observe changing external state. AI and humans evaluate semantics. Humans approve protected and high-impact decisions.
 

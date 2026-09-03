@@ -1,0 +1,34 @@
+schema_version: 4
+entry_id: PRN-000085
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 8b283d2e166c10261ec1770d02d93956062866100e31f0f86da6ce94f50b4ca1
+  sources:
+  - source_id: SRC-000022
+    locators: ['Service Level Terminology', 'Indicators in Practice', 'Choosing an Appropriate SLO']
+  outcome: strong
+- role: why-1
+  claim_sha256: d6af6a7c59c77c72ae3cf976affd40376121e1fd4d03f5db69a99fdcb310334f
+  sources:
+  - source_id: SRC-000022
+    locators: ['Service Level Terminology', Expectations, Agreements]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 33a527a463210dc067ccbd4cd23aa8c5e2fe79c82f89b982eacd574c3ff0e024
+  sources:
+  - source_id: SRC-000022
+    locators: ['Indicators in Practice', 'Choosing an Appropriate SLO']
+  outcome: strong
+- role: practice-2
+  claim_sha256: 81b8d682d7c41762e5aeb6b59ef01872a4550861da6178721678e88a8df1dd9c
+  sources:
+  - source_id: SRC-000022
+    locators: ['Choosing an Appropriate SLO', Expectations]
+  outcome: strong

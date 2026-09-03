@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: user-experience
 code: UX
 title: User Experience
@@ -14,80 +14,96 @@ subdomains:
 - id: problem-framing
   code: PFR
   title: Problem Framing
+  description: "Covers Problem Framing as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: user-research
   code: USR
   title: User Research
+  description: "Covers User Research as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: user-needs
   code: UND
   title: User Needs
+  description: "Covers User Needs as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: information-architecture
   code: IAR
   title: Information Architecture
+  description: "Covers Information Architecture as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: interaction-design
   code: IXD
   title: Interaction Design
+  description: "Covers Interaction Design as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: visual-design
   code: VIS
   title: Visual Design
+  description: "Covers Visual Design as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: content
   code: CNT
   title: Content
+  description: "Covers Content as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: accessibility
   code: ACC
   title: Accessibility
+  description: "Covers Accessibility as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: usability
   code: USA
   title: Usability
+  description: "Covers Usability as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: inclusive-design
   code: INC
   title: Inclusive Design
+  description: "Covers Inclusive Design as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: prototyping
   code: PRO
   title: Prototyping
+  description: "Covers Prototyping as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: testing-validation
   code: TST
   title: Testing & Validation
+  description: "Covers Testing & Validation as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: design-systems
   code: DSY
   title: Design Systems
+  description: "Covers Design Systems as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: feedback
   code: FDB
   title: Feedback
+  description: "Covers Feedback as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: measurement-analytics
   code: MET
   title: Measurement & Analytics
+  description: "Covers Measurement & Analytics as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: ethics
   code: ETH
   title: Ethics
+  description: "Covers Ethics as part of understanding users and designing useful, usable, accessible, inclusive, and evidence-informed experiences, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

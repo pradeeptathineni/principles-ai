@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: azure-cloud
 code: AZR
 title: Azure Cloud
@@ -14,110 +14,132 @@ subdomains:
 - id: architecture
   code: ARC
   title: Architecture
+  description: "Covers Architecture as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: tenants-subscriptions-resources
   code: ORG
   title: Tenants, Subscriptions & Resources
+  description: "Covers Tenants, Subscriptions & Resources as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: identity-access
   code: IAM
   title: Identity & Access
+  description: "Covers Identity & Access as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: networking
   code: NET
   title: Networking
+  description: "Covers Networking as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: compute
   code: CMP
   title: Compute
+  description: "Covers Compute as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: storage
   code: STO
   title: Storage
+  description: "Covers Storage as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: databases
   code: DBS
   title: Databases
+  description: "Covers Databases as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: serverless
   code: SRV
   title: Serverless
+  description: "Covers Serverless as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: containers
   code: CTR
   title: Containers
+  description: "Covers Containers as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: data-analytics
   code: DAT
   title: Data & Analytics
+  description: "Covers Data & Analytics as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: integration-messaging
   code: MSG
   title: Integration & Messaging
+  description: "Covers Integration & Messaging as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: infrastructure-as-code
   code: IAC
   title: Infrastructure as Code
+  description: "Covers Infrastructure as Code as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: automation
   code: AUT
   title: Automation
+  description: "Covers Automation as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
+  description: "Covers Security as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
+  description: "Covers Observability as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: reliability-disaster-recovery
   code: REL
   title: Reliability & Disaster Recovery
+  description: "Covers Reliability & Disaster Recovery as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: performance-efficiency
   code: PER
   title: Performance & Efficiency
+  description: "Covers Performance & Efficiency as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: cost-optimization
   code: CST
   title: Cost Optimization
+  description: "Covers Cost Optimization as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: governance
   code: GOV
   title: Governance
+  description: "Covers Governance as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: ai-ml
   code: AIML
   title: AI/ML
+  description: "Covers AI/ML as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: migration-modernization
   code: MIG
   title: Migration & Modernization
+  description: "Covers Migration & Modernization as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: sustainability
   code: SUS
   title: Sustainability
+  description: "Covers Sustainability as part of applying sound cloud architecture and operational practice using Microsoft Azure, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

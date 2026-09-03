@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000075
+title: Decommissioning assets
+publisher: UK National Cyber Security Centre
+evidence_kind: institutional-practice
+canonical_url: https://www.ncsc.gov.uk/guidance/decommissioning-assets
+url_aliases: []
+published_or_version: Version 1.0, May 2025
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

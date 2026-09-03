@@ -1,104 +1,61 @@
 # Content Standard
 
-## Purpose
+## Scope
 
-This standard defines what belongs in the corpus and the semantic meaning of its content types. Executable structure is defined by `config/schema.yaml` and `config/content-policy.yaml`.
+This standard defines what belongs in the corpus and what each content type means. `config/schema.yaml` and `config/content-policy.yaml` own executable structure.
 
-## Content types
+## Content semantics
 
-### Principle
+- **Principle:** a durable normative statement that guides judgment or behavior in a defined scope. It must be important, useful, evidence-calibrated, distinct, and durable beyond ordinary tool churn—not a fact, feature, slogan, preference, or tutorial step.
+- **Why:** cited rationale about consequences, evidence, tradeoffs, requirements, failure modes, conditions, or disagreement. Each top-level paragraph is one claim block and must add reasoning rather than restate the principle.
+- **Practice:** a cited concrete behavior or decision pattern. Each top-level item is one claim block; a product/tool name alone is not a practice.
+- **Applicability:** optional cited conditions, limits, or exceptions that materially change correct use. Consider scale, risk, maturity, architecture, regulation, operating model, workload, lifecycle, reversibility, statefulness, and human burden without treating them as a checklist. Omit it when the statement or rationale already carries the qualification.
+- **Goal:** an optional developmental capability, habit, or outcome. Editorial goals need no citation; externally grounded claims do. Goals are not required for symmetry or mechanical repetition across personal-growth files.
+- **Tag:** an optional normalized retrieval concept. File tags describe the document and entry tags describe one principle. Until a controlled vocabulary is justified, prefer a few valuable tags and do not repeat path metadata without a retrieval reason.
 
-A durable normative statement that guides judgment or behavior within a defined scope. It must be important, useful, evidence-calibrated, distinct, and durable enough to outlive ordinary tool churn.
+`principles.md` contains selective highest-order domain guidance; `personal-growth.md` concerns developing capability, judgment, fluency, and currency; a subdomain file contains scope-specific guidance. Their selection criteria differ, but all share one grammar.
 
-A principle is not merely a fact, feature, slogan, preference, or tutorial step.
+## Grammar and lifecycle
 
-### Why
+Each entry has a `### PRN-...... — Title` heading, one cited statement, required Why and Practices sections, and optional Applicability, Goals, and Tags in policy order. Claim blocks are top-level paragraphs or flat one-paragraph list items as configured. Each document has one title, one editorial introduction, one `## Principles` section, and final `## References`. The grammar is closed; raw HTML, unknown/duplicate sections, and unsupported block forms are invalid. Required lower bounds make a file parseable, not complete.
 
-Rationale explaining consequences, evidence, tradeoffs, requirements, failure modes, conditions, or meaningful disagreement. It must add reasoning rather than restate the principle.
+Corpus Markdown lives directly under `domains/<domain>/`. Directory, filename, frontmatter ID/type/subdomain, and decoded titles agree exactly. Universal files use the `principles` and `personal-growth` presets; subdomain files require a matching accepted registration. `config/content-policy.yaml` owns exact AST shapes, inline restrictions, ordering, and projections.
 
-Each top-level paragraph is a structural rationale claim block and requires citations.
+The introduction is editorial scope. It cannot hide substantive uncited claims outside the claim grammar.
 
-### Practice
+Content state is `draft` or `active`; absence is pre-creation and taxonomy/identity history represents retirement. Draft is agent-owned working content under accepted taxonomy with null review metadata. Active content carries its review date and exact reviewed semantic hash. Activation readiness is derived, not stored.
 
-A concrete behavior or decision pattern that operationalizes the principle. Each top-level practice list item is a structural claim block and requires citations.
+Deterministic validity and publishable evidence outcomes are necessary but do not prove semantic adequacy or approval. New or materially changed principle meaning requires human activation; proposed substantive edits return to draft. Formatting-only edits and source URL moves that preserve identity may remain active when the semantic hash is unchanged.
 
-Practices may change faster than principles. A product or tool name by itself is not a practice.
+## Discovery and selection
 
-### Applicability
+Research precedes final prose. Selection has four distinct stages:
 
-An optional section for conditions, limitations, exceptions, or contexts that materially affect correct use. Do not add it when the rationale already communicates scope clearly.
+1. discover a broad set of materially different candidate themes from the evidence landscape;
+2. test coverage of the major subject-specific dimensions revealed by strong evidence;
+3. compare candidates and consolidate only genuine redundancy; and
+4. select every candidate that clears the inclusion bar.
 
-Each top-level Applicability paragraph is a structural claim block and requires citations. This prevents conditions and exceptions from becoming an uncited escape hatch.
+For a substantive scope that supports such breadth, approximately ten plausible themes is a defeasible exploration prompt. It is not a minimum candidate count or a target for the published file. A narrow subject may yield fewer after adequate research; do not invent weak, redundant, practice-level, temporary, misplaced, or unimportant candidates. Repeated one- or two-principle results across broad scopes are a signal to recheck discovery and coverage, not a requirement to add entries.
 
-### Goal
+Judge candidates by importance to excellent practice, durability, distinctness, evidence quality and fitness, practical consequence, human usefulness, appropriate placement, actionability, and survival under simpler wording. Select all that meaningfully pass and target no final count. A large set is not inherently better, and a small set is not inherently deficient.
 
-An optional developmental capability, habit, or outcome that helps a person embody the principle. Goals are not required for symmetry and should not repeat `personal-growth.md` mechanically.
+Working candidate analysis remains lightweight unless durable provenance has a use. Canonical files contain selected principles, not rejection inventories, but the author should be able to explain major themes, dimensions, and consequential inclusion, consolidation, rejection, or placement decisions.
 
-Goals need no citation when they are editorial developmental objectives. If a goal makes an externally grounded claim, cite and review that claim.
+No template, example, workflow, prior file, or neighboring domain establishes preferred counts for principles, Why paragraphs, Practices, Goals, Tags, sources, citations, or optional sections. Structure follows the subject and evidence; do not introduce cosmetic variation.
 
-### Tag
+## Duplication and recurrence
 
-An optional normalized retrieval concept. Tags should not merely duplicate the domain or file path. Until a tag vocabulary is adopted, prefer fewer high-value tags over uncontrolled expansion.
+Do not optimize the corpus for textual or conceptual DRYness.
 
-Frontmatter tags describe the file. Tags under an entry describe that principle. Both use the executable normalized syntax, but no controlled vocabulary is imposed before the pilot demonstrates a need.
+- Consolidate accidental semantic duplicates within one scope and sibling duplication that adds no materially different decision, practice, applicability, evidence, or ownership.
+- Preserve recurrence between universal and subdomain guidance when the subdomain materially develops the higher-order idea.
+- Preserve cross-domain recurrence when context changes interpretation, rationale, practice, applicability, importance, evidence, or provenance.
+- Similar wording can express different meaning; different wording can conceal a true duplicate.
+- Derived analysis may group recurring higher-order themes without erasing domain-authored records or identity.
 
-## File presets
+## Calibration and economy
 
-### `principles.md`
+Use `must` only for genuine requirements, `should` for strong recommendations, `prefer` for contextual defaults, and `consider` for conditional techniques. Never exceed the evidence's strength.
 
-The domain's selective highest-order guidance.
-
-### `personal-growth.md`
-
-Principles and practices for developing capability, judgment, fluency, and currency in the domain. It differs by selection criteria, not parser grammar.
-
-### Subdomain file
-
-Guidance specific to one registered, materially distinct scope.
-
-All three presets share one grammar.
-
-## Entry grammar
-
-Every entry contains:
-
-1. `### PRN-000001 — Title`
-2. Exactly one statement paragraph with citations.
-3. Required `#### Why` with at least one cited top-level paragraph.
-4. Required `#### Practices` with at least one cited top-level list item.
-5. Optional `#### Applicability` with at least one cited top-level paragraph when present.
-6. Optional `#### Goals`.
-7. Optional `#### Tags`.
-
-The grammar is closed. Statement, Why, and Applicability blocks are top-level paragraphs; Practices and Goals are flat single-paragraph unordered items; Tags is a flat unique normalized list. Sections follow policy order, and unknown or duplicate sections are invalid. Ordinary GFM inline forms remain available within allowed paragraphs, subject to the claim-hash restrictions. Images, strikethrough, and raw HTML are outside the initial grammar.
-
-Each document has one title, one editorial introduction, one `## Principles` section with at least one entry, and final `## References`; no other level-two section is allowed. `config/content-policy.yaml` is canonical for exact AST shapes, inline restrictions, ordering, and bibliography grammar.
-
-## Path and frontmatter agreement
-
-Corpus Markdown lives directly under `domains/<domain>/`. Universal filenames and IDs use the domain `principles` and `personal-growth` presets; subdomain filenames, IDs, type, and registered subdomain agree. Directory, path, frontmatter, and decoded title agreement is exact under `config/content-policy.yaml`. Corpus content requires an accepted domain, and subdomain content requires that subdomain to be accepted.
-
-Corpus status is `draft` or `active`; absence is the pre-creation state, and taxonomy and principle retirement provide historical lifecycle, so a third deprecated-file state is intentionally absent. `draft` is agent-owned working content under accepted taxonomy; `last_reviewed` and `reviewed_content_sha256` are null. An `active` file carries the date and exact semantic hash of its last complete review against then-current source identities and required human judgment.
-
-Activation readiness is derived, not a third stored status. Deterministic validity and publishable evidence outcomes are necessary but do not prove semantic adequacy or human approval. Activating new or materially changed principles requires human approval of the exact reviewed content. On a proposed substantive update, work returns to draft until review and approval complete. Formatting-only changes and source URL moves that preserve source identity do not alter the semantic hash.
-
-## Introductions
-
-The paragraph after the file title is an editorial scope statement. It should define the file boundary and must not be used to place substantive external claims outside the citation grammar.
-
-## Selection bar
-
-Evaluate candidates for importance, durability, evidence strength, scope fit, distinctness, actionability, and ability to survive wording simplification. Do not write to a target count.
-
-## Duplication
-
-Contextual duplication across domains is allowed when meaning, practices, goals, evidence, scope, or importance materially changes. Avoid duplication for structural symmetry.
-
-## Normative strength
-
-- `must` for genuine requirements or invariants.
-- `should` for strong recommendations.
-- `prefer` for contextual defaults.
-- `consider` for conditional techniques.
-
-Do not strengthen wording beyond the cited evidence and reviewed judgment.
+Say everything necessary and useful, but nothing merely because the format permits it. Advisory length warnings expose possible word-economy issues, not desired sizes or hard caps; safety, precision, and material qualification prevail.

@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000034
+title: "AIP-180: Backwards compatibility"
+publisher: Google
+evidence_kind: institutional-practice
+canonical_url: https://google.aip.dev/180
+url_aliases: []
+published_or_version: Approved; updated 2025-10-21
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

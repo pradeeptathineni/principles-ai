@@ -1,64 +1,74 @@
 # Taxonomy Standard
 
-## Purpose
+## Purpose and authority
 
-Taxonomy creates useful entry points into bodies of practice. It is not a perfect ontology or a mandate to create a file for every topic.
+Taxonomy provides useful entry points into practice; it is neither a perfect ontology nor a mandate to create a file for every topic.
 
-## Canonical model
+`config/taxonomy-policy.yaml` owns executable universal rules. Each `domains/<domain>/domain.yaml` owns local lifecycle, scope definitions, and protected intent. Repository-wide aggregates are derived and disposable.
 
-- `config/taxonomy-policy.yaml` defines executable universal rules.
-- `domains/<domain>/domain.yaml` records canonical local taxonomy state and protected intent.
-- An optional repository-wide aggregate is derived, disposable, and not committed by default.
+## Lifecycle and content
 
-## Lifecycle
+- `proposed`: a preserved candidate whose acceptance is genuinely unresolved.
+- `accepted`: an active reviewed scope.
+- `deprecated`: retained inactive history.
 
-- `proposed`: preserved candidate taxonomy not yet independently accepted.
-- `accepted`: reviewed and human-approved for use.
-- `deprecated`: retained historical taxonomy no longer active.
+Origin explains how a scope entered the taxonomy; it proves neither evidence, quality, nor acceptance. File coverage is derived independently from lifecycle.
 
-Origin describes how a scope entered the taxonomy; it does not prove evidence, quality, or acceptance. Content coverage is derived from validated files and is independent of taxonomy lifecycle.
+An accepted domain has every required subdomain accepted and may retain other proposed/deprecated candidates; accepted subdomains require an accepted parent. A deprecated domain has only deprecated subdomains and no required scopes, after explicit approval to remove requirements and deprecate it.
 
-An accepted domain has every required subdomain accepted and may retain other proposed or deprecated candidates. Accepted subdomains require an accepted parent. A deprecated domain has only deprecated subdomains and no remaining required subdomains; removing those requirements and deprecating the domain require prior human approval.
+Domain acceptance approves its boundary and purpose, its required scopes, and only other candidates included in the decision. It does not bulk-accept every registered subdomain. Universal content requires an accepted domain; subdomain content requires that exact accepted scope.
 
-Domain acceptance approves its boundary and purpose. It does not bulk-accept every candidate subdomain. Required subdomains and any other scopes explicitly included in the transition become accepted; unrelated candidates may remain proposed. Universal content requires accepted domain status. Subdomain content also requires that exact subdomain to be accepted.
+An explicit request for an existing proposed registered target authorizes acceptance of its unchanged definition after independent fit research. Additions, definition changes, deprecations, reactivations, and protected-intent changes require exact human decisions. Rename, reframe, replace, split, and merge compose those transition classes rather than bypassing them.
 
-An explicit request for an existing registered target authorizes acceptance of that unchanged target after research confirms fit. A separate review sidecar and approval stop are unnecessary because they add no new human judgment. New, renamed, merged, materially rescoped, or protected-intent-changing taxonomy still requires an exact human decision.
+A stable negative decision must not remain `proposed`. Deprecate it with human approval and keep rationale in version history, the pull request, or the issue. Deprecated scopes have no current corpus file. Before deprecation, move surviving principles to accepted scopes with IDs preserved or retire them and remove their headings; a proposal with no content needs no migration.
 
-Deprecated scopes have no current corpus file. Before deprecation, move surviving principles to accepted scopes while preserving IDs or retire them and remove their current headings; version history retains the former wording.
+## Protected intent and definitions
 
-## Human intent
+Protected intent comprises the domain `description` (purpose), required subdomains and their definitions, priorities, exclusions, and scope notes. An agent may challenge it but may not silently remove, deprecate, rename, merge, or materially rescope it. Required scopes cannot be deprecated while still required.
 
-Manifests record required subdomains, priorities, exclusions, and scope notes. The manifest `description` field is the protected domain-purpose field; required scopes are protected as well.
+Every subdomain has a canonical `description`; title is display text, while ID/code are stable metadata. A sufficient definition communicates the semantic center and, where useful, inclusions/exclusions, neighboring distinctions, intentional overlap, and domain-specific interpretation. It need not use a fixed checklist, but a title-substitution formula is insufficient. A title-only change is a rename; a material description change is a reframe and requires review even if ID/title stay fixed.
 
-An agent must not silently remove, deprecate, rename, merge, or materially rescope protected intent. It may identify problems and propose a reviewed change. Required scopes must not be deprecated while they remain required.
+Registered and inherited taxonomy is current-state context, not admission evidence. Independently read the evidence landscape and assess source fitness, stronger alternatives, disagreement, durability, neighboring ownership, and existing corpus placement under [Research](research.md) and [Sources](sources.md).
 
-## Admission test
+## Admission, boundaries, and overlap
 
-A subdomain should have distinct decisions or behaviors, distinct evidence emphasis, enough durable content, a clear boundary, and meaningful value for humans or context retrieval. Do not create scopes for symmetry.
+A subdomain needs materially distinct decisions or behaviors, a distinct evidence emphasis, sufficient durable content, a clear boundary, and useful human or retrieval value. Do not add scopes for symmetry.
 
-## Overlap
+Persistent duplication without distinct practice/evidence, absorption by a clearer scope, insufficient durable actionable content, lost retrieval value, obsolescence, or departure from domain purpose can justify deprecation. Temporary thinness, incomplete research, or ordinary topical overlap cannot. Evaluate each scope explicitly and preserve protected intent and surviving principles.
 
-Overlap is permitted when context materially changes meaning, practices, goals, evidence, scope, or importance. Flat sibling domains remain acceptable. A centralized ontology is not required.
+Overlap is valid when context materially changes meaning, rationale, decision, practice, applicability, goals, importance, evidence, or provenance. A universal principle may recur in a subdomain that materially develops it; cross-domain recurrence may retain separate identities and later be grouped as a derived theme. Similar wording does not prove duplication, and different wording does not prove distinctness.
 
-## Naming and codes
+Consolidate accidental same-scope duplicates. Sibling scopes need clear ownership; substantially identical guidance with no contextual development supports narrowing, merge, or deprecation. Across domains, preserve recurrence unless it adds no domain-specific information. Flat sibling domains remain valid; no centralized ontology or universal singleton principle is required.
 
-Directories and files use lowercase kebab-case. Domain and subdomain codes are stable taxonomy metadata. They do not determine principle identity.
+## Operations
 
-Domain IDs and domain codes are unique repository-wide. Subdomain IDs and subdomain codes are unique within their containing domain; reuse across domains is allowed because the manifest provides the namespace.
+Stable taxonomy IDs are never silently repurposed.
 
-Principles use repository-wide location-independent IDs governed by `config/content-policy.yaml`, `config/identity-policy.yaml`, and `config/identity-ledger.yaml`.
+- **Add:** prepare the exact definition as proposed; after exact approval, a final trusted diff may contain it accepted without a ceremonial proposed-only merge.
+- **Accept:** move a reviewed proposal to accepted. This is agent-authorized only for an explicitly requested unchanged registered target after independent fit research; otherwise it is a human gate.
+- **Rename:** preserve ID and description; a boundary change is a reframe.
+- **Reframe:** preserve ID only while semantic identity remains and review the changed description.
+- **Deprecate:** retain ID as deprecated after content migration and approval.
+- **Reactivate:** move deprecated directly to accepted after approval, never back to proposed.
+- **Replace:** deprecate the old ID and add a new proposed replacement.
+- **Split:** deprecate the original and add at least two proposed children.
+- **Merge:** preserve a suitable accepted survivor and deprecate absorbed scopes, or add a new proposal if no identity survives.
 
-## Moving, splitting, and merging principles
+Trusted-baseline validation may receive explicit unchanged-target authorization and classify that transition accordingly, but the flag proves neither fit nor approval. It may also first observe an approved new scope as accepted while still reporting `taxonomy-addition`; a separate intermediate merge would add no judgment.
 
-- Moves preserve the principle ID.
-- Splits allocate new IDs and record `derived_from` relationships.
-- Merges preserve one surviving ID and record replaced IDs with `replaced_by` relationships.
+## Names and principle identity
+
+Directories/files use lowercase kebab-case. Domain IDs/codes are repository-wide unique; subdomain IDs/codes are unique within a domain. Codes are taxonomy metadata, not principle identity.
+
+Principle IDs are repository-wide and location-independent:
+
+- Moves preserve IDs and create no relationship.
+- Splits retire the original, allocate at least two children, and record `derived_from`.
+- Merges preserve one survivor and record each retired ID with `replaced_by`.
 - Retired IDs are never reused.
 
-The ledger retains numerically ordered, contiguous all-time allocations; retirement never removes an allocation. Splits retire the original and relate at least two new children to it with `derived_from`; merges retire non-survivors and relate each to the survivor with `replaced_by`; moves create no relationship. Relationships use allocated endpoints and reject duplicates, self-relations, and cycles.
+The ledger retains contiguous all-time allocations and prior relationships. Relationships require allocated endpoints and are directed, unique, non-self, and acyclic. Trusted-base transitions are monotonic; split children are new, while a merge survivor pre-exists and remains active. Without a trusted baseline, transition validity is `not_evaluated`. `config/identity-policy.yaml` and `config/identity-ledger.yaml` own exact rules.
 
-Trusted-base transitions are monotonic and preserve prior relationships; split children are new in that transition, while a merge survivor pre-exists and remains active. Without the baseline, transition validation is `not_evaluated`. `config/identity-ledger.yaml` and `config/identity-policy.yaml` are authoritative for exact executable invariants.
+## Review and approval boundaries
 
-## Validation and approval
-
-Deterministic validation checks schema, lifecycle combinations, uniqueness, required-scope status, registration, path agreement, and trusted-baseline persistence and changes. Semantic evaluation judges boundary quality, distinctness, and duplication. Human approval is required for new or materially changed taxonomy and protected intent, but not for accepting an unchanged existing scope explicitly named as the requested outcome. Lifecycle records the result without pretending software proved semantic fitness or approval.
+Deterministic validation checks schema, lifecycle combinations, uniqueness, registration, required-scope state, path agreement, definitions, identity, and trusted transitions. Semantic review judges independent research, source fitness, boundaries, distinctness, overlap, placement, and duplication. Humans decide additions, definition changes, deprecations, reactivations, protected intent, and acceptance without explicit unchanged-target authorization. Lifecycle records the outcome; software proves neither semantic fitness nor approval.

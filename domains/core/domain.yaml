@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: core
 code: COR
 title: Core
@@ -14,35 +14,42 @@ subdomains:
 - id: problem-solving
   code: PSV
   title: Problem Solving
+  description: "Covers Problem Solving as part of cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: simplicity
   code: SIM
   title: Simplicity
+  description: "Covers Simplicity as part of cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: decision-making
   code: DEC
   title: Decision Making
+  description: "Covers Decision Making as part of cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: quality
   code: QUA
   title: Quality
+  description: "Covers Quality as part of cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: communication
   code: COM
   title: Communication
+  description: "Covers Communication as part of cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: ethics
   code: ETH
   title: Ethics
+  description: "Covers Ethics as part of cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: responsibility
   code: RES
   title: Responsibility
+  description: "Covers Responsibility as part of cross-domain principles for judgment, learning, quality, communication, ethics, and responsibility, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

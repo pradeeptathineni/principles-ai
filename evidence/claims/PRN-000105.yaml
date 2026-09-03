@@ -1,0 +1,54 @@
+schema_version: 4
+entry_id: PRN-000105
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: bd1d3b7e9f59ea8b57cafd5ef6a91a470a8963a94aada566c6e38500e0dde2bd
+  sources:
+  - source_id: SRC-000075
+    locators: [Planning decommissioning, Decommissioning assets, Post decommissioning]
+  - source_id: SRC-000076
+    locators: [Consider user needs, Telling your users, Make a plan to redirect traffic, Protecting information]
+  outcome: strong
+- role: why-1
+  claim_sha256: 5938fbb58ac5f5b627b1510c6d2ca852f870cca568aea031c516fcb1545b8c9a
+  sources:
+  - source_id: SRC-000075
+    locators: [What is decommissioning?, Asset discovery and valuation]
+  - source_id: SRC-000076
+    locators: [Consider user needs, Telling your users]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 8edbf4b56bb026ddb739f5a89221fe91225d968b4b9f5a51dce57b0f7c7f8417
+  sources:
+  - source_id: SRC-000075
+    locators: [Asset discovery and valuation, Post decommissioning]
+  outcome: strong
+- role: practice-2
+  claim_sha256: 48632117d5b2e0b8fc546f794e57cdc559d60ef20616a7c363e1c0cb1bed71c9
+  sources:
+  - source_id: SRC-000075
+    locators: ['Backup, archiving and recovery plans', Decommissioning assets]
+  - source_id: SRC-000076
+    locators: [Telling your users, Make a plan to redirect traffic, Protecting information]
+  outcome: strong
+- role: practice-3
+  claim_sha256: 1a42c88d7fd93a43a93619f78d539b2c899eff9927346909f36a7fe06f14d35f
+  sources:
+  - source_id: SRC-000075
+    locators: [Decommissioning assets, Post decommissioning]
+  outcome: strong
+- role: applicability-1
+  claim_sha256: 124ece74c7fa8db86a2a9cb1fa8319789e2082138192c24c846163b4755e1856
+  sources:
+  - source_id: SRC-000075
+    locators: ['Backup, archiving and recovery plans', Decommissioning assets]
+  - source_id: SRC-000076
+    locators: [Telling your users, Protecting information]
+  outcome: strong

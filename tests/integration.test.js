@@ -23,12 +23,11 @@ test('identical trusted state evaluates transition checks without claiming snaps
   assert.equal(result.transitionStatus, 'evaluated')
 })
 
-test('an empty baseline cannot prove accepted domain taxonomy transitions', () => {
+test('an accepted new domain can finish one reviewed outcome while retaining its human gate', () => {
   const baseline = mkdtempSync(join(tmpdir(), 'principles-empty-baseline-'))
   const result = validateRepository(root, { baselineRoot: baseline })
-  const taxonomyErrors = result.bag.items.filter((item) => item.code === 'TAXONOMY_NEW_DOMAIN_STATUS')
-  assert.ok(taxonomyErrors.length > 0)
-  assert.equal(result.bag.errorCount, taxonomyErrors.length, result.bag.items.map((item) => `${item.path} ${item.code} ${item.message}`).join('\n'))
+  assert.equal(result.bag.errorCount, 0, result.bag.items.map((item) => `${item.path} ${item.code} ${item.message}`).join('\n'))
+  assert.ok(result.humanGates.includes('taxonomy-addition'))
   assert.equal(result.transitionStatus, 'evaluated')
   rmSync(baseline, { recursive: true, force: true })
 })

@@ -1,5 +1,6 @@
 .local/
 node_modules/
+.principles-write.lock
 .DS_Store
 **/.DS_Store
 generated/*

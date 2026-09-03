@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000062
+title: OpenGitOps GitOps Principles v1.0.0
+publisher: OpenGitOps project, Cloud Native Computing Foundation
+evidence_kind: community-guidance
+canonical_url: https://opengitops.dev/
+url_aliases: []
+published_or_version: v1.0.0
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

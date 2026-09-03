@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: engineering
 code: ENG
 title: Engineering
@@ -14,70 +14,84 @@ subdomains:
 - id: requirements
   code: REQ
   title: Requirements
+  description: "Covers Requirements as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: problem-framing
   code: PFR
   title: Problem Framing
+  description: "Covers Problem Framing as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: design
   code: DES
   title: Design
+  description: "Covers Design as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: architecture
   code: ARC
   title: Architecture
+  description: "Covers Architecture as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: systems-thinking
   code: SYS
   title: Systems Thinking
+  description: "Covers Systems Thinking as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: tradeoffs-constraints
   code: TRD
   title: Tradeoffs & Constraints
+  description: "Covers Tradeoffs & Constraints as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: testing-validation
   code: TST
   title: Testing & Validation
+  description: "Covers Testing & Validation as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: reliability
   code: REL
   title: Reliability
+  description: "Covers Reliability as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
+  description: "Covers Security as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: performance-efficiency
   code: PER
   title: Performance & Efficiency
+  description: "Covers Performance & Efficiency as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: maintainability
   code: MAI
   title: Maintainability
+  description: "Covers Maintainability as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
+  description: "Covers Documentation as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: collaboration
   code: COL
   title: Collaboration
+  description: "Covers Collaboration as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: stakeholders
   code: STK
   title: Stakeholders
+  description: "Covers Stakeholders as part of understanding problems, designing systems, making tradeoffs, validating outcomes, and practicing responsible engineering, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

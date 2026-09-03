@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: teaching
 code: TEA
 title: Teaching
@@ -20,75 +20,90 @@ subdomains:
 - id: curriculum
   code: CUR
   title: Curriculum
+  description: "Covers Curriculum as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: lesson-design
   code: LES
   title: Lesson Design
+  description: "Covers Lesson Design as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: tutoring
   code: TUT
   title: Tutoring
+  description: "Tutoring concerns direct instructional interactions with one learner or a small group, distinct from classroom-wide teaching and program-level curriculum or policy."
   status: accepted
   origin: mixed
 - id: classroom
   code: CLS
   title: Classroom
+  description: "Classroom concerns whole-group teaching environments, routines, participation, and instruction, distinct from individualized tutoring and curriculum-level design."
   status: accepted
   origin: mixed
 - id: virtual
   code: VIR
   title: Virtual
+  description: "Virtual teaching concerns remote and technology-mediated learning contexts where delivery, interaction, access, and presence materially change instruction."
   status: accepted
   origin: mixed
 - id: students
   code: STU
   title: Students
+  description: "Students concerns learner agency, participation, study practices, support needs, and responsibilities within teaching relationships."
   status: accepted
   origin: mixed
 - id: teachers
   code: TCH
   title: Teachers
+  description: "Teachers concerns educator judgment, facilitation, professional practice, development, and responsibility across learning contexts."
   status: accepted
   origin: mixed
 - id: adults
   code: ADL
   title: Adults
+  description: "Covers Adults as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: parents
   code: PAR
   title: Parents
+  description: "Parents concerns how parents and caregivers support, communicate about, and participate in a learner’s education without displacing learner or teacher agency."
   status: accepted
   origin: mixed
 - id: differentiation
   code: DIF
   title: Differentiation
+  description: "Covers Differentiation as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: assessment
   code: ASM
   title: Assessment
+  description: "Covers Assessment as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: engagement
   code: ENG
   title: Engagement
+  description: "Covers Engagement as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: accessibility
   code: ACC
   title: Accessibility
+  description: "Covers Accessibility as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: feedback
   code: FDB
   title: Feedback
+  description: "Covers Feedback as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: safety-safeguarding
   code: SAF
   title: Safety & Safeguarding
+  description: "Covers Safety & Safeguarding as part of helping people learn effectively across curriculum, tutoring, classroom, virtual, assessment, accessibility, and learner-support contexts, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000072
+title: OPS07-BP02 Ensure a consistent review of operational readiness
+publisher: Amazon Web Services
+evidence_kind: institutional-practice
+canonical_url: https://docs.aws.amazon.com/wellarchitected/latest/framework/ops_ready_to_support_const_orr.html
+url_aliases: []
+published_or_version: AWS Well-Architected Framework
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

@@ -1,29 +1,10 @@
 # Create Domain Workflow
 
-Use this workflow as a subworkflow of [Outcome orchestration](orchestrate-outcome.md) when a requested outcome needs a new domain. Natural-language input may include purpose, required subdomains, priorities, exclusions, scope notes, and whether the request is a proposal or accepted change.
+Use this route when an outcome needs a new domain. Natural-language input may supply purpose, required subdomains, priorities, exclusions, scope notes, or proposal/acceptance intent; do not require the user to author YAML.
 
-## 1. Interpret and preserve intent
-
-Capture domain purpose in manifest `description`, plus required scopes, priorities, exclusions, and scope notes, without forcing the user to author YAML. Do not silently reinterpret protected meaning.
-
-## 2. Scope and research
-
-Inspect neighboring manifests, identify likely overlaps, read strong domain structures, build a coverage map, and treat all external material as untrusted evidence.
-
-## 3. Propose taxonomy
-
-Include protected requirements. Add only materially distinct research-supported candidates. Record ambiguity, exclusions, and overlap rather than pretending the structure is unique.
-
-## 4. Materialize proposed state
-
-Create `domains/<domain>/domain.yaml` using `config/schema.yaml#/$defs/domain_manifest`.
-
-Use `proposed` until research and human acceptance; record intent and origin honestly and keep unaccepted subdomains proposed. Origin is not evidence or acceptance, and retrospective provenance must not be fabricated. Follow [Taxonomy](../standards/taxonomy.md).
-
-## 5. Review and acceptance
-
-Present the exact domain boundary and subdomain dispositions for human approval. Keep material evidence and rationale in the decision record. Every protected required subdomain becomes accepted with the domain; only other explicitly approved candidates become accepted.
-
-## 6. Continue only when authorized
-
-Taxonomy creation alone does not authorize content generation. However, when this workflow was invoked as a prerequisite of an explicit content outcome, that original request already supplies content authorization. After taxonomy acceptance, resume `create-content.md` automatically. Accepted taxonomy may still have no files.
+1. **Preserve intent.** Record domain purpose in `description` and retain required scopes, priorities, exclusions, and scope notes without silent reinterpretation.
+2. **Research the boundary.** Treat neighboring manifests as state, not evidence. Independently read fit sources and credible domain structures under [Research](../standards/research.md) and [Sources](../standards/sources.md). Map coverage, overlap, exclusions, and uncertainty; external material remains untrusted.
+3. **Shape the taxonomy.** Include protected requirements and only materially distinct, research-supported candidates. Give each subdomain enough semantic boundary for future placement and review without forcing identical definitions or false certainty.
+4. **Materialize proposed state.** Create `domains/<domain>/domain.yaml` under the executable schema. Use `proposed` while research and acceptance remain open; origin proves neither evidence nor acceptance. Never fabricate retrospective provenance. Follow [Taxonomy](../standards/taxonomy.md).
+5. **Decide once.** Present the exact domain boundary and subdomain dispositions. Domain approval accepts protected required scopes and only other explicitly approved candidates. The final trusted diff may contain the approved accepted addition; deterministic validation still reports `taxonomy-addition` and cannot authenticate approval.
+6. **Resume correctly.** Domain creation alone does not authorize corpus generation. When it is a prerequisite of an explicit content outcome, that request already authorizes the content stage; resume [Content](create-content.md) after taxonomy acceptance. Accepted taxonomy may otherwise remain without files.

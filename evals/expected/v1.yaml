@@ -6,4 +6,53 @@ expectations:
     classification: unsupported
   - fixture_id: preserve-material-disagreement
     classification: preserve-exception
-
+  - fixture_id: inherited-taxonomy-is-not-evidence
+    classification: independent-review-required
+  - fixture_id: stable-title-can-hide-material-reframe
+    classification: material-reframe
+  - fixture_id: preserve-contextual-cross-domain-overlap
+    classification: preserve-contextual-overlap
+  - fixture_id: preserve-cross-domain-recurrence
+    classification: preserve-meaningful-recurrence
+  - fixture_id: remove-same-scope-semantic-duplicate
+    classification: remove-semantic-duplicate
+  - fixture_id: preserve-developed-universal-recurrence
+    classification: preserve-meaningful-recurrence
+  - fixture_id: generation-shaped-uniform-domain
+    classification: generation-shaped-review-required
+  - fixture_id: preserve-subject-shaped-similarity
+    classification: subject-shaped-similarity
+  - fixture_id: premature-two-principle-convergence
+    classification: premature-convergence
+  - fixture_id: narrow-two-principle-selection-is-sufficient
+    classification: justified-narrow-selection
+  - fixture_id: reject-count-driven-candidate-inflation
+    classification: reject-candidate-inflation
+  - fixture_id: justified-larger-principle-set
+    classification: justified-broad-selection
+  - fixture_id: concentration-alone-is-not-defect
+    classification: strongest-fit-retained
+  - fixture_id: portable-claim-needs-independent-challenge
+    classification: concentration-review-signal
+  - fixture_id: composed-workflow-misses-parent-resumption
+    classification: missing-prerequisite
+  - fixture_id: unchanged-target-asks-for-confirmation-again
+    classification: remove-ceremonial-gate
+  - fixture_id: consequential-gate-is-automated
+    classification: human-gate-required
+  - fixture_id: opaque-hash-is-the-approval-question
+    classification: responsibility-inversion
+  - fixture_id: prose-capability-has-no-path
+    classification: authority-or-implementation-gap
+  - fixture_id: semantic-fit-encoded-as-boolean
+    classification: responsibility-inversion
+  - fixture_id: deterministic-routing-left-to-ai
+    classification: responsibility-inversion
+  - fixture_id: mandatory-bootstrap-context-after-bootstrap
+    classification: context-bloat
+  - fixture_id: natural-language-outcome-has-no-route
+    classification: outcome-unresolved
+  - fixture_id: active-domain-refinement-collapses-to-furnishing-no-op
+    classification: outcome-unresolved
+  - fixture_id: state-owner-is-unclear
+    classification: outcome-unresolved

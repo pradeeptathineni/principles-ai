@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: coding
 code: COD
 title: Coding
@@ -14,65 +14,78 @@ subdomains:
 - id: design
   code: DES
   title: Design
+  description: "Code and component design shape how software is understood, changed, implemented, and verified."
   status: accepted
   origin: research
 - id: readability
   code: REA
   title: Readability
+  description: "Readability concerns how source code communicates local intent and behavior to people who must inspect or change it."
   status: accepted
   origin: research
 - id: maintainability
   code: MAI
   title: Maintainability
+  description: "Maintainability concerns preserving the ability to understand, diagnose, test, and modify code throughout its useful life."
   status: accepted
   origin: research
 - id: modularity
   code: MOD
   title: Modularity
-  status: proposed
+  description: "Modularity concerns organizing code into cohesive units with explicit responsibilities, boundaries, dependencies, and reasons to change."
+  status: deprecated
   origin: research
 - id: testing
   code: TST
   title: Testing
+  description: "Testing concerns selecting and executing checks that provide useful evidence about code behavior and risk."
   status: accepted
   origin: research
 - id: debugging
   code: DBG
   title: Debugging
+  description: "Debugging concerns reproducing failures, locating their causes, correcting defects, and verifying the result."
   status: accepted
   origin: research
 - id: error-handling
   code: ERR
   title: Error Handling
+  description: "Error handling concerns detecting failures, preserving valid state, communicating them safely, and choosing an appropriate recovery or termination response."
   status: accepted
   origin: research
 - id: security
   code: SEC
   title: Security
+  description: "Coding security concerns preventing, detecting, and containing vulnerabilities introduced through source code and its construction environment."
   status: accepted
   origin: research
 - id: performance
   code: PER
   title: Performance
+  description: "Performance concerns meeting explicit resource and responsiveness objectives without sacrificing correctness or maintainability blindly."
   status: accepted
   origin: research
 - id: dependencies
   code: DEP
   title: Dependencies
+  description: "Dependency management concerns selecting, constraining, recording, updating, and removing external software incorporated into code or its build."
   status: accepted
   origin: research
 - id: version-control
   code: VCS
   title: Version Control
+  description: "Version control concerns creating an inspectable, attributable, and recoverable history of code and related artifacts."
   status: accepted
   origin: research
 - id: code-review
   code: CRV
   title: Code Review
+  description: "Code review concerns independent examination of a proposed change for behavior, design, risk, maintainability, and shared understanding."
   status: accepted
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
+  description: "Documentation concerns preserving the knowledge that code alone cannot reliably communicate to its users, maintainers, and operators."
   status: accepted
   origin: research

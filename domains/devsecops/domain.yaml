@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: devsecops
 code: DSC
 title: DevSecOps
@@ -14,95 +14,114 @@ subdomains:
 - id: culture-shared-responsibility
   code: CUL
   title: Culture & Shared Responsibility
+  description: "Covers Culture & Shared Responsibility as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: threat-modeling
   code: THR
   title: Threat Modeling
+  description: "Covers Threat Modeling as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: secure-sdlc
   code: SDL
   title: Secure SDLC
+  description: "Covers Secure SDLC as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: identity-secrets
   code: IAM
   title: Identity & Secrets
+  description: "Covers Identity & Secrets as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: source-control
   code: SRC
   title: Source Control
+  description: "Covers Source Control as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: pipeline-security
   code: PIP
   title: Pipeline Security
+  description: "Covers Pipeline Security as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: dependencies-sbom
   code: SBOM
   title: Dependencies & SBOM
+  description: "Covers Dependencies & SBOM as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: software-supply-chain
   code: SUP
   title: Software Supply Chain
+  description: "Covers Software Supply Chain as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: artifact-container-security
   code: ART
   title: Artifact & Container Security
+  description: "Covers Artifact & Container Security as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: infrastructure-as-code-security
   code: IAC
   title: Infrastructure as Code Security
+  description: "Covers Infrastructure as Code Security as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: cloud-security
   code: CLD
   title: Cloud Security
+  description: "Covers Cloud Security as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: policy-as-code
   code: PAC
   title: Policy as Code
+  description: "Covers Policy as Code as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: testing-scanning
   code: TST
   title: Testing & Scanning
+  description: "Covers Testing & Scanning as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: vulnerability-management
   code: VUL
   title: Vulnerability Management
+  description: "Covers Vulnerability Management as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: observability-detection
   code: DET
   title: Observability & Detection
+  description: "Covers Observability & Detection as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: incident-response
   code: INC
   title: Incident Response
+  description: "Covers Incident Response as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: compliance-governance
   code: GOV
   title: Compliance & Governance
+  description: "Covers Compliance & Governance as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: risk-exceptions
   code: RSK
   title: Risk & Exceptions
+  description: "Covers Risk & Exceptions as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: documentation
   code: DOC
   title: Documentation
+  description: "Covers Documentation as part of integrating security, risk reduction, verification, and shared responsibility throughout software delivery and operations, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

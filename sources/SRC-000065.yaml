@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000065
+title: Performance Efficiency Pillar
+publisher: Amazon Web Services
+evidence_kind: institutional-practice
+canonical_url: https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/welcome.html
+url_aliases: []
+published_or_version: November 2024
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

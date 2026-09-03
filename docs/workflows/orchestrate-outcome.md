@@ -1,13 +1,13 @@
 # Outcome Orchestration
 
-Users name outcomes, not internal workflow sequences. The selected outcome workflow owns inspection, prerequisites, research, draft state, validation, repair, and resumption after gates.
+The requested outcome is the unit of work. Its workflow owns state inspection, prerequisite discovery, research, drafting, validation, repair, gates, and resumption. `config/validation.yaml` owns executable outcome, action, gate, and route identifiers; AI resolves natural-language and compound intent.
 
-Route a request to fully furnish one registered domain through [Domain furnishing](furnish-domain.md). It expands the domain outcome into its accepted scope set and delegates each corpus target to the existing content workflow.
+Use [Domain furnishing and refinement](furnish-domain.md) for either a complete registered domain or an explicit full-domain semantic reassessment. Ordinary furnishing completes missing/draft targets and is a no-op when all are valid and active. Refinement revisits selection in every universal and accepted-subdomain file; do not infer it from a furnishing rerun or localized maintenance request.
 
-An outcome request authorizes ordinary reversible work needed to reach it. It does not preapprove exact unseen principles, new or materially changed taxonomy, protected-intent changes, unresolved value-laden disagreement, or policy/governance changes.
+An outcome request authorizes reversible work needed to reach it, including acceptance of an explicitly requested unchanged proposed registered target after independent fit research. It does not preapprove unseen principle meaning, taxonomy additions or definition changes, deprecations, reactivations, protected intent, unresolved material disagreement, or policy/governance changes.
 
-Inspect current state before acting. Reuse matching sources, IDs, drafts, and evidence. Allocate identities only when materializing their records. An existing active target may be a validated no-op; a draft is repaired rather than recreated.
+Inspect current canonical state before acting. Reuse matching sources, IDs, drafts, and evidence; allocate identities only when materializing records. Repair drafts rather than recreating them, and treat a valid active target as a no-op unless the outcome explicitly requires renewed selection.
 
-Stop only at a genuine human decision or blocker. Present the exact decision, evidence, tradeoffs, and consequences, then automatically resume the original outcome after the decision. Do not ask the user to invoke a prerequisite workflow or reconfirm already-granted authorization.
+Stop only at a genuine named human decision or external blocker. Present the exact decision, evidence, tradeoffs, and consequences, then resume automatically. By default, agents own prerequisites and mutation, AI or humans perform semantic review, and humans own consequential decisions. Every modeled route must reach `outcome-satisfied` or a genuine gate; repair returns to the failed stage and then resumes.
 
 Keep deterministic validation, operational checks, semantic review, and human approval separate. Tooling reports facts and transition classes; it never claims semantic truth or approval.

@@ -7,7 +7,7 @@ type: subdomain
 subdomain: security
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 549a5c0dddeb95e94e54908a40a28590b4447b74b4b7e80fa787ea5589adb62b
+reviewed_content_sha256: e8759f3c1646d021b702df1aa30e28ec22c064471c5e5b9d671aed272905ec6f
 ---
 
 # Coding Security
@@ -29,18 +29,17 @@ Generic checklists cannot determine which failures matter most in a particular s
 - Map untrusted inputs, sensitive outputs, privileged operations, and external dependencies at each changed boundary. [1]
 - Record mitigations and justified exceptions with the security requirement or risk they address. [1]
 
-### PRN-000034 — Validate at the trust boundary
+### PRN-000034 — Validate input and encode output
 
-Validate untrusted data and authorize requested actions at the boundary where trust changes, using safe representations for downstream use. [1]
+Validate inputs and properly encode outputs using secure coding practices appropriate to the language and execution environment. [1]
 
 #### Why
 
-Assumptions made by upstream interfaces can be bypassed or become stale. Boundary validation and output handling prevent malformed or adversarial data from reaching operations that interpret it with greater privilege. [1]
+Input validation and output encoding are construction practices that NIST identifies for preventing vulnerabilities in released software. Their correct form depends on how the program and its downstream consumers interpret data. [1]
 
 #### Practices
 
-- Check type, range, structure, size, and authorization against an allowlist appropriate to the operation. [1]
-- Use parameterized or context-aware APIs for interpreters, queries, markup, paths, and other injection-sensitive sinks. [1]
+- Apply input validation and output encoding consistently at relevant interfaces, using mechanisms designed for the language and execution environment. [1]
 
 ### PRN-000035 — Fail closed without hiding the failure
 
@@ -54,6 +53,10 @@ Permissive fallback turns errors and outages into control bypasses. Silent denia
 
 - Define the denied state for unavailable identity, policy, dependency, or validation services before implementing fallback behavior. [1], [2]
 - Test security-control error paths and verify that external messages disclose no sensitive internals. [2]
+
+#### Applicability
+
+Fail-closed behavior applies to a protected action whose authorization or safety cannot be established. Other failures may have a valid recovery or degraded mode when that behavior is part of the reviewed contract. [1], [2]
 
 ### PRN-000036 — Use independent security checks
 

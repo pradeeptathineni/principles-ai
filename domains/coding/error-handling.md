@@ -7,7 +7,7 @@ type: subdomain
 subdomain: error-handling
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 7cddaab87370a8b30a37d026ef2b87679ea8e112d184ff2d63168c2ab506cca2
+reviewed_content_sha256: 28b01fa5be6467b47175d7ee1dcbf13b3057afd0b4aab2f0c8506e15da25e15f
 ---
 
 # Coding Error Handling
@@ -40,7 +40,7 @@ Failure can occur after only part of a multi-step operation completes. Without e
 #### Practices
 
 - Establish cleanup, rollback, and commit behavior before performing irreversible effects. [4]
-- Test failure injection at each meaningful step, including failures in cleanup and reporting paths. [3], [4]
+- Exercise representative failure points and verify that cleanup, state guarantees, and reporting still hold. [3], [4]
 
 ### PRN-000032 — Separate user-safe errors from diagnostic detail
 

@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000053
+title: NIST SP 800-34 Rev. 1, Contingency Planning Guide for Federal Information Systems
+publisher: National Institute of Standards and Technology
+evidence_kind: normative-authority
+canonical_url: https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-34r1.pdf
+url_aliases: []
+published_or_version: May 2010, updated November 2010
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

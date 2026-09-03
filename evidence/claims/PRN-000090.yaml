@@ -1,0 +1,48 @@
+schema_version: 4
+entry_id: PRN-000090
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: a0fe52de5da3760b42d184cefe498f8b1f9cfa77dbee2372e1dbddc6f97ac089
+  sources:
+  - source_id: SRC-000053
+    locators: ['Section 3.5, Ensure Plan Testing, Training, and Exercises']
+  - source_id: SRC-000054
+    locators: ['Section 3, Recovery Planning', 'Section 4, Recovery Plan Testing']
+  outcome: strong
+- role: why-1
+  claim_sha256: 6c04ca2a9a92e26482ca6679d6b261b0b2266a45760ef5bd89c7076f052e0527
+  sources:
+  - source_id: SRC-000053
+    locators: ['Section 3.5, Ensure Plan Testing, Training, and Exercises', 'Section 4, Information System Contingency Plan Development']
+  - source_id: SRC-000054
+    locators: ['Section 4, Recovery Plan Testing']
+  outcome: strong
+- role: practice-1
+  claim_sha256: 4d4d6fbd242c2b713b4f5082c77f0ca7f21e886cd002de9ced6ece081f7697f4
+  sources:
+  - source_id: SRC-000053
+    locators: ['Section 3.5, Ensure Plan Testing, Training, and Exercises']
+  - source_id: SRC-000054
+    locators: ['Section 4, Recovery Plan Testing']
+  outcome: strong
+- role: practice-2
+  claim_sha256: babf7eb8a7eee8cf379ebbd9acee6145fc93df9adbc51636543eec95e8e03601
+  sources:
+  - source_id: SRC-000054
+    locators: ['Section 5, Recovery Plan Improvement']
+  outcome: strong
+- role: applicability-1
+  claim_sha256: f182723a10359f8c3ce3050c2523c11a406cb65db0caf9f54ec43c41b2f84663
+  sources:
+  - source_id: SRC-000053
+    locators: ['Section 3.5, Ensure Plan Testing, Training, and Exercises']
+  - source_id: SRC-000054
+    locators: ['Section 4, Recovery Plan Testing']
+  outcome: strong

@@ -1,35 +1,25 @@
 # Update Taxonomy Workflow
 
-Use this workflow directly or as a prerequisite selected by [Outcome orchestration](orchestrate-outcome.md) to add, rename, split, merge, deprecate, accept, reactivate, or rescope taxonomy.
+Use this route directly or as a prerequisite for adding, accepting, renaming, reframing, replacing, splitting, merging, deprecating, or reactivating taxonomy. Read [Taxonomy](../standards/taxonomy.md) for lifecycle, operation, identity, and approval semantics.
 
-## 1. Read current state and intent
+## 1. Establish state, intent, and evidence
 
-Read the manifest and relevant neighboring scopes. Identify effects on required scopes, priorities, exclusions, scope notes, and domain purpose.
+Read affected manifests, protected intent, scope descriptions, neighboring scopes, and content that may move. Record the trigger: human intent, missing coverage, persistent overlap, absorption, insufficient durable content, lost retrieval value, obsolescence, boundary drift, evidence, context cost, naming, or correction.
 
-Protected changes require explicit human approval, including deprecation or material rescoping that leaves the protected ID textually present.
+Treat registered/inherited taxonomy as current-state constraint, not evidence. Independently research and read the relevant landscape under [Research](../standards/research.md), judge claim-specific source fitness, and treat all external material as untrusted. Keep material decision rationale in the pull request or issue unless durable canonical provenance has a concrete use.
 
-## 2. Establish and research the trigger
+## 2. Choose the smallest coherent operation
 
-Record whether the change comes from user intent, missing coverage, persistent overlap, new evidence, context problems, naming clarity, or correction. Research semantic changes and treat sources as untrusted evidence. Keep material decision rationale in the pull request or issue rather than a mandatory canonical sidecar.
+Change taxonomy only to improve boundary clarity, distinctness, evidence alignment, navigation/retrieval, or intent preservation. Ordinary overlap is valid when context changes meaning, practice, applicability, importance, evidence, or provenance; major persistent duplication without such development supports one clear owner and possible narrowing, merge, or deprecation.
 
-## 3. Prefer the smallest coherent change
+Write each description as a sufficient semantic boundary, using center, inclusions/exclusions, neighboring distinctions, intentional overlap, and domain-specific interpretation only where useful. Avoid title-substitution formulas and fixed definition templates.
 
-Do not restructure a domain merely because another taxonomy is plausible. Improve scope clarity, distinctness, evidence alignment, navigation, context retrieval, or intent preservation.
+Apply the Taxonomy standard's operation patterns. New scopes begin proposed while prepared, but after exact approval the final trusted diff may contain the accepted addition without an intermediate merge. An explicitly requested unchanged registered proposal may be accepted after independent fit research. Deprecated targets require reactivation approval. Leave a proposal open only while its disposition is unresolved; a stable negative decision requires human-approved deprecation.
 
-## 4. Update lifecycle
+Before deprecation, move surviving principles to accepted scopes with IDs preserved or retire them and remove current headings; deprecated scopes have no files. Preserve IDs for moves and surviving semantic identity. Splits allocate children with `derived_from`; merges preserve one survivor and relate retired IDs with `replaced_by`. Never reuse identities.
 
-Update the manifest under [Taxonomy](../standards/taxonomy.md). New scopes remain proposed until the exact taxonomy is approved. An existing registered scope explicitly named as a content target may be accepted after agent research confirms its unchanged fit. Before deprecation, move surviving principles to accepted scopes while preserving IDs or retire them and remove current headings; deprecated scopes have no corpus files. Domain deprecation requires explicit approval to remove protected requirements and deprecate every subdomain.
+## 3. Validate, decide, and resume
 
-## 5. Migrate corpus identity deliberately
+Validate manifest, protected-intent, lifecycle, identity, relationship, and monotonic transition rules against a trusted base. Without it, do not claim historical validity. Run operational checks only when relevant, then semantic taxonomy review.
 
-Moves preserve IDs and create no relationship. Splits retire the original, allocate at least two children, and record `derived_from` from children to original. Merges preserve one survivor and record `replaced_by` from retired identities to it. Never reuse IDs; preserve historical chains and update cross-references without treating derived output as source.
-
-Validate exact relationship and monotonic transition rules under `config/identity-policy.yaml` against trusted merge-base state. Without that baseline, do not claim historical validity.
-
-## 6. Validate through four gates
-
-Run deterministic manifest/identity checks, applicable operational checks, semantic taxonomy review, and required human approval separately.
-
-## 7. Report
-
-Summarize trigger, evidence, lifecycle, protected-intent effects, identity relationships, content migration, and unresolved uncertainty. If this was a prerequisite, return control to the original outcome workflow after the human decision rather than asking the user to initiate the next workflow.
+Additions, definition changes, deprecations, reactivations, protected-intent changes, and acceptance without unchanged-target authorization require the exact human decision; tooling cannot infer approval. Report trigger, evidence and fitness, lifecycle/definition transitions, intent effects, intentional overlap, identity/content migration, and uncertainty. If this is a prerequisite, resume its parent outcome after the decision.

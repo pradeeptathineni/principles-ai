@@ -1,0 +1,40 @@
+schema_version: 4
+entry_id: PRN-000053
+reviewed_at: '2026-09-02'
+reviewer:
+  type: ai
+  identity: OpenAI Codex interactive evidence review
+  configuration:
+    configuration_ref: evals/configurations/corpus-claim-review-v1.yaml
+    configuration_sha256: a331e2351b4ab2ca18b520631ae91ac9afdef571026a2b3619ba0f3fa4aec7fc
+claims:
+- role: statement
+  claim_sha256: 64d659844769a56881ab0c9c2023ea6d3749e4ca10aa2588db03429864de6ccc
+  sources:
+  - source_id: SRC-000001
+    locators: ['Software Design KA, sections 2.1 and 3.1, page 3-6']
+  - source_id: SRC-000033
+    locators: [Introduction, 'Using a Mutex: Accessing Shared Data']
+  outcome: strong
+- role: why-1
+  claim_sha256: 09710e78daf4952eab5ad6261ffa82d774ea415c8927f9f27ea2910dfb2970ac
+  sources:
+  - source_id: SRC-000001
+    locators: ['Software Design KA, section 3.1, page 3-6']
+  - source_id: SRC-000033
+    locators: [Invariants, Deadlocks involving only mutexes, Starvation]
+  outcome: strong
+- role: practice-1
+  claim_sha256: 697f985df21b5c162b7893272202e92f7d1caf9f1d6880c959cd304ccf48cd7b
+  sources:
+  - source_id: SRC-000033
+    locators: ['Using a Mutex: Accessing Shared Data', Invariants]
+  outcome: strong
+- role: practice-2
+  claim_sha256: 31be40ac5bd30a38b96bdf8ad3df36107bc05c8045768162ffc351b926cd5673
+  sources:
+  - source_id: SRC-000001
+    locators: ['Software Design KA, sections 2.1 and 3.1 to 3.2, page 3-6']
+  - source_id: SRC-000033
+    locators: ['Using a Condition Variable: Scheduling Shared Resources', Deadlock, Using Alert]
+  outcome: strong

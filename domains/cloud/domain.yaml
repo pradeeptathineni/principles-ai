@@ -1,4 +1,4 @@
-schema_version: 5
+schema_version: 6
 id: cloud
 code: CLD
 title: Cloud
@@ -14,105 +14,126 @@ subdomains:
 - id: architecture
   code: ARC
   title: Architecture
+  description: "Covers Architecture as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: service-selection
   code: SVC
   title: Service Selection
+  description: "Covers Service Selection as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: shared-responsibility
   code: SHR
   title: Shared Responsibility
+  description: "Covers Shared Responsibility as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: identity-access
   code: IAM
   title: Identity & Access
+  description: "Covers Identity & Access as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: networking
   code: NET
   title: Networking
+  description: "Covers Networking as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: compute
   code: CMP
   title: Compute
+  description: "Covers Compute as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: storage
   code: STO
   title: Storage
+  description: "Covers Storage as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: data
   code: DAT
   title: Data
+  description: "Covers Data as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: infrastructure-as-code
   code: IAC
   title: Infrastructure as Code
+  description: "Covers Infrastructure as Code as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: automation
   code: AUT
   title: Automation
+  description: "Covers Automation as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: security
   code: SEC
   title: Security
+  description: "Covers Security as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: observability
   code: OBS
   title: Observability
+  description: "Covers Observability as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: reliability
   code: REL
   title: Reliability
+  description: "Covers Reliability as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: disaster-recovery
   code: DR
   title: Disaster Recovery
+  description: "Covers Disaster Recovery as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: performance-scalability
   code: PER
   title: Performance & Scalability
+  description: "Covers Performance & Scalability as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: cost-finops
   code: CST
   title: Cost & FinOps
+  description: "Covers Cost & FinOps as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: governance
   code: GOV
   title: Governance
+  description: "Covers Governance as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: migration-modernization
   code: MIG
   title: Migration & Modernization
+  description: "Covers Migration & Modernization as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: hybrid-multicloud
   code: HYB
   title: Hybrid & Multicloud
+  description: "Covers Hybrid & Multicloud as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: sustainability
   code: SUS
   title: Sustainability
+  description: "Covers Sustainability as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research
 - id: operations
   code: OPS
   title: Operations
+  description: "Covers Operations as part of vendor-neutral principles for designing, securing, operating, governing, scaling, and optimizing cloud systems, with ownership where this context materially changes decisions, evidence, or application."
   status: proposed
   origin: research

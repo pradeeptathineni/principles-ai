@@ -12,4 +12,103 @@ fixtures:
     dimension: disagreement
     claim: A disputed recommendation should retain its material exception.
     source_excerpt: The recommendation applies generally, but the stated safety exception remains unresolved.
-
+  - id: inherited-taxonomy-is-not-evidence
+    dimension: taxonomy-evidence
+    claim: The registered candidate should be accepted because it already exists in the manifest.
+    source_excerpt: No independent evidence or source-fitness analysis is supplied.
+  - id: stable-title-can-hide-material-reframe
+    dimension: taxonomy-reframe
+    claim: A scope remains unchanged whenever its title and ID remain unchanged.
+    source_excerpt: The proposed description expands the scope from code-level design to organization-wide architecture governance.
+  - id: preserve-contextual-cross-domain-overlap
+    dimension: taxonomy-overlap
+    claim: Security guidance may remain in Coding when coding context materially changes practices and evidence emphasis.
+    source_excerpt: The neighboring security domain addresses broader governance, while this scope addresses implementation-level coding decisions.
+  - id: preserve-cross-domain-recurrence
+    dimension: recurrence-duplication
+    claim: Reversibility may remain a distinct principle in Coding and DevOps when each domain changes the decisions, practices, and authoritative evidence.
+    source_excerpt: Coding applies reversibility to source-level change isolation; DevOps applies it to deployment and production recovery, with different practices and sources.
+  - id: remove-same-scope-semantic-duplicate
+    dimension: recurrence-duplication
+    claim: Two principles in one scope should remain because their titles use different words.
+    source_excerpt: The statements, rationales, practices, applicability, and evidence express the same decision without additional scope-specific information.
+  - id: preserve-developed-universal-recurrence
+    dimension: recurrence-duplication
+    claim: A reliability subdomain may develop a higher-order resilience principle without sharing its identity.
+    source_excerpt: The universal entry establishes the durable decision; the subdomain adds workload-specific indicators, operating limits, and evidence.
+  - id: generation-shaped-uniform-domain
+    dimension: generation-shape
+    claim: Identical counts and sentence forms across unrelated files prove the content is well calibrated.
+    source_excerpt: Every file has exactly two principles, one rationale, two practices, no Applicability, and the same taxonomy-description formula despite materially different subjects.
+  - id: preserve-subject-shaped-similarity
+    dimension: generation-shape
+    claim: Similar structures must be varied whenever an evaluator detects a repeated pattern.
+    source_excerpt: The two claims address genuinely parallel requirements and each independently needs the same number of evidence-backed actions; wording changes would be cosmetic.
+  - id: premature-two-principle-convergence
+    dimension: principle-selection
+    claim: A broad subdomain is adequately represented once its first two well-supported themes have been drafted.
+    source_excerpt: The research landscape also provides strong, distinct guidance on failure handling, lifecycle, feedback, security, maintainability, team effects, and operational constraints, but those dimensions were never developed into or compared as candidate themes.
+  - id: narrow-two-principle-selection-is-sufficient
+    dimension: principle-selection
+    claim: A narrow scope must add more principles because two is suspiciously small.
+    source_excerpt: The review checked the relevant source families and subject dimensions; only two durable decisions remained, while every other plausible theme was an implementation detail, a duplicate, weakly supported, or clearly owned by a neighboring scope.
+  - id: reject-count-driven-candidate-inflation
+    dimension: principle-selection
+    claim: Every one of ten explored themes should be retained so the final file demonstrates breadth.
+    source_excerpt: Three themes are important, distinct, durable, and strongly supported; the rest are tool-specific tips, narrow practices, repetitions, or themes outside the target scope.
+  - id: justified-larger-principle-set
+    dimension: principle-selection
+    claim: A broader file should compress its seven selected principles to two for concision.
+    source_excerpt: Each selected theme addresses a different consequential decision, has fit supporting evidence, belongs in the target scope, and would lose material rationale or applicability if merged with another.
+  - id: concentration-alone-is-not-defect
+    dimension: source-concentration
+    claim: A corpus fails whenever one publisher supplies more than half of its citations.
+    source_excerpt: The concentrated sources are the strongest direct normative authorities for the narrow claims, and no material generalization or credible contradicting authority is identified.
+  - id: portable-claim-needs-independent-challenge
+    dimension: source-concentration
+    claim: One company's operating practice can be stated as a portable universal principle without checking independent authorities.
+    source_excerpt: The claim extends beyond the source organization's context, and credible independent evidence could materially test its scope and tradeoffs.
+  - id: composed-workflow-misses-parent-resumption
+    dimension: architecture-prerequisite
+    claim: A content outcome is complete when its taxonomy prerequisite finishes, even if the parent content workflow is never resumed.
+    source_excerpt: The requested content remains absent after taxonomy acceptance, and no resumption edge exists.
+  - id: unchanged-target-asks-for-confirmation-again
+    dimension: architecture-gate
+    claim: An unchanged requested target should require a second confirmation after independent fit research.
+    source_excerpt: The original request already authorizes the unchanged registered target and no new consequential choice is presented.
+  - id: consequential-gate-is-automated
+    dimension: architecture-gate
+    claim: A validator may approve a new governance policy when all syntax checks pass.
+    source_excerpt: The policy changes human authority and approval boundaries but is structurally valid.
+  - id: opaque-hash-is-the-approval-question
+    dimension: architecture-gate
+    claim: A human activation gate may present only path and hash values because the hashes identify the exact draft.
+    source_excerpt: The fingerprint binds reviewed state, but the human has not been shown the semantic changes, affected evidence, limitations, or the activation decision in meaningful terms.
+  - id: prose-capability-has-no-path
+    dimension: architecture-authority
+    claim: The repository supports architecture review because one historical audit mentions it.
+    source_excerpt: No canonical route, current workflow, implementation owner, or eval covers architecture review.
+  - id: semantic-fit-encoded-as-boolean
+    dimension: architecture-boundary
+    claim: A deterministic scope-name comparison proves taxonomy fitness.
+    source_excerpt: Fitness depends on evidence, distinct decisions, durable content, and contextual overlap.
+  - id: deterministic-routing-left-to-ai
+    dimension: architecture-boundary
+    claim: AI should rediscover existing workflow filenames and gate identifiers on every run.
+    source_excerpt: Canonical route and identifier registries can supply those exact mappings deterministically.
+  - id: mandatory-bootstrap-context-after-bootstrap
+    dimension: architecture-context
+    claim: Every architecture review must load the completed bootstrap implementation phases.
+    source_excerpt: The current decision concerns workflow composition; the bootstrap phase plan adds no relevant constraint beyond current architecture and policy.
+  - id: natural-language-outcome-has-no-route
+    dimension: architecture-outcome
+    claim: A request to review repository architecture is supported even though no canonical route or terminal condition exists.
+    source_excerpt: The router lists content, taxonomy, and tooling changes only, and ownership of architecture review is undefined.
+  - id: active-domain-refinement-collapses-to-furnishing-no-op
+    dimension: architecture-outcome
+    claim: A request to reassess principle coverage across an active domain is complete because ordinary furnishing reports every file active.
+    source_excerpt: Active status records a prior review but does not prove that every existing scope received renewed candidate discovery under the current selection process; the requested domain-wide refinement has no route that includes active files.
+  - id: state-owner-is-unclear
+    dimension: architecture-outcome
+    claim: A workflow transition is complete without identifying who decides it or who applies it.
+    source_excerpt: The transition changes governance state, but decision and mutation ownership are not assigned.

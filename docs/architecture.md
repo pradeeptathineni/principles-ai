@@ -1,143 +1,104 @@
 # Architecture
 
-## Design principle
+## Design and authority
 
-The repository should carry the durable intelligence required to maintain itself while keeping different kinds of authority explicit.
+The repository carries the durable intelligence needed to maintain an evidence-grounded corpus while keeping authority explicit:
 
-- Humans own intent and governance.
+- Humans own protected intent, consequential judgment, and governance.
 - `docs/` owns semantic policy and workflow.
-- `config/` owns executable structure and deterministic constraints.
-- Canonical content, taxonomy, source identity, and retained review provenance remain separate from derived outputs.
+- `config/` owns executable syntax and deterministic contracts.
+- Domain manifests, corpus files, source records, evidence records, and eval assets own their respective canonical state.
+- Generated reports and context artifacts are derived unless explicitly designated otherwise.
 
-## Layers
+`AGENTS.md` is a router and compact invariant set, not a second standards library. Natural-language requests select outcome workflows; routes progressively disclose target state, detailed standards, executable policy, and evidence only when needed.
 
-```text
-Human intent and governance
-        │
-        ▼
-AGENTS.md router
-        │
-        ├──► docs/                 semantics, standards, workflows, security
-        ├──► config/               executable schemas, deterministic rules, ledgers
-        ├──► domains/              taxonomy state and canonical corpus
-        ├──► sources/              stable source identity and lifecycle
-        ├──► evidence/             optional claim-review provenance
-        └──► evals/                versioned semantic fixtures and evaluator setup
-                 │
-                 ▼
-        Agent and tooling workflow
-                 │
-                 ├── deterministic validation
-                 ├── operational checks
-                 ├── semantic evaluation
-                 └── human approval
-                 │
-                 ▼
-        generated/                 disposable derived artifacts
-```
+## Precedence and compatibility
 
-## Policy precedence
+Executable fields, types, enums, patterns, and deterministic configuration come from `config/`; semantic meaning, rationale, research judgment, workflow, and governance come from `docs/`. Prose references exact executable rules instead of copying them. If the two disagree, correct the inconsistency rather than choosing silently.
 
-`config/` is authoritative for executable syntax, required fields, types, enums, patterns, and deterministic configuration. `docs/` is authoritative for semantic meaning, rationale, workflow, research judgment, and governance.
+Schemas use Draft 2020-12 with asserted formats and closed fields unless explicitly extensible. Unsupported versions, unknown policy fields, silent coercion, and implicit migration fail. Version changes require an explicit migration and human approval; intentional loss requires recorded rationale. See [Schema and policy versions](schema-versions.md).
 
-Prose should link to executable rules instead of duplicating exact patterns or enum lists. If prose and executable configuration conflict, stop and correct both; do not silently choose one.
+Historical-transition claims use trusted merge-base policy and state. Without that baseline, snapshot validation may run, but identity, source, taxonomy, protected-intent, and corpus transitions are `not_evaluated`; snapshot success never proves historical non-reuse, valid moves, or append-only history.
 
-Schemas use JSON Schema Draft 2020-12 with asserted formats and reject unknown fields unless explicitly extensible. Schema and policy versions are compatibility boundaries: unsupported versions, unknown policy fields, silent coercion, and implicit migration fail. Version changes require an explicit migration and human approval; intentional information loss requires a recorded rationale. See [Schema and policy versions](schema-versions.md).
+## Canonical and derived state
 
-Permanent identity, source, and policy-history rules include transition properties. Pull-request validation compares proposed state with trusted merge-base state. Without that baseline, snapshot validation may run, but transition checks are `not_evaluated` and must not be reported as proof of historical non-reuse, valid moves, or append-only history.
+Canonical state consists of:
 
-## Canonical data
+- `docs/` and `config/` for semantic and executable contracts;
+- `domains/*/domain.yaml` for taxonomy lifecycle, scope definitions, and protected intent;
+- `domains/**/*.md` for corpus content;
+- `sources/*.yaml` for stable source identity and lifecycle;
+- `evidence/claims/*.yaml` for retained claim-review provenance;
+- `evals/` for versioned semantic fixtures, calibration, and evaluator configuration;
+- `config/identity-ledger.yaml` for all-time principle/source allocation, retirement, and relationships.
 
-- `AGENTS.md` — routing and universal invariants.
-- `docs/` and `config/` — semantic policy and executable contracts, respectively.
-- `domains/*/domain.yaml` and `domains/**/*.md` — taxonomy/protected intent and corpus content.
-- `sources/*.yaml` and `evidence/claims/*.yaml` — stable source records and retained claim-review provenance.
-- `evals/` — versioned semantic fixtures, calibration, and evaluator configurations.
-- `config/identity-ledger.yaml` — all-time identity allocation, retirement, and relationships.
+Historical reviews are evidence about earlier observations, not current policy.
 
-Historical reviews under `docs/reviews/` are not canonical policy.
+Derived outputs include aggregated taxonomy, parsed models, indexes, embeddings, context packs, citation graphs, preparation reports, run checkpoints, activation packages/views, freshness reports, and quality reports. They are reproducible, disposable, and uncommitted by default. Publication requires a concrete consumer, explicit source revision and input hashes, and injected generation metadata. Pure generators do not read implicit time. Deterministic discovery replaces hand-maintained inventories.
 
-## Derived data
+Derived coverage reports file presence and draft/active state; neither proves taxonomy acceptance or semantic adequacy.
 
-Examples include aggregated taxonomy, parsed JSON, search indexes, embeddings, context packs, citation graphs, freshness reports, and quality reports.
+## Taxonomy and protected intent
 
-Derived outputs are disposable, reproducible from canonical inputs, and not committed by default. A concrete consumer may justify publication with explicit source revision, input hashes, and injected generation metadata. Pure generators do not read implicit wall-clock state. File discovery is deterministic; manual inventories are not architectural state.
+`config/taxonomy-policy.yaml` defines executable lifecycle rules; manifests define local boundaries and intent. `proposed` means genuinely unresolved candidate, `accepted` means active reviewed scope, and `deprecated` retains inactive history. Registration, inheritance, and origin are context, not evidence or acceptance. A completed negative decision should not remain proposed indefinitely.
 
-The derived taxonomy reports each corpus path together with its draft/active status and semantic hash. File presence remains coverage, not taxonomy acceptance or semantic approval.
+Every subdomain has a reviewable description, not merely a title. Admission depends on distinct durable decisions or behavior, evidence emphasis, boundary clarity, and human/retrieval value. Ordinary topical overlap is allowed. Major persistent duplication, absorption, obsolescence, insufficient durable content, lost retrieval value, or departure from the domain boundary may justify deprecation after semantic review and human approval.
 
-## Taxonomy architecture
+Domain purpose, required scopes, priorities, exclusions, and scope notes are protected. An explicit content request may accept an unchanged registered proposal after independent fit research. Additions, definition changes, deprecations, reactivations, and protected-intent changes require an exact human decision. See [Taxonomy](standards/taxonomy.md).
 
-`config/taxonomy-policy.yaml` governs executable rules; each domain manifest records local lifecycle, state, and protected intent. Lifecycle distinguishes unaccepted `proposed` candidates, human-approved `accepted` taxonomy, and retained inactive `deprecated` state. Origin records provenance, not quality or acceptance. Content coverage is derived independently from validated files.
+## Corpus semantics and shape
 
-Domain purpose, required subdomains, priorities, exclusions, and scope notes are protected. They cannot be silently removed, deprecated, or materially redefined. Protected required scopes of an accepted domain are accepted. An explicit content request may accept an unchanged registered target after fit research; new or materially changed taxonomy still requires human approval. The lifecycle combinations are in [Taxonomy](standards/taxonomy.md).
+Corpus files combine YAML frontmatter with a closed GFM body. `config/content-policy.yaml` owns exact AST, ordering, bibliography, and path/frontmatter/title projections. Templates add no grammar and show only the minimum parseable shape. They establish no preferred counts for entries, claims, practices, goals, tags, sources, citations, or optional sections; scaffolding begins only after semantic selection and must be expanded or replaced to fit the subject.
 
-## Corpus architecture
+Every entry has one stable identity and cited statement. Each top-level Why paragraph, Practice item, and Applicability paragraph is also a cited claim unit. Introductions remain editorial scope and cannot hide external claims. Applicability preserves conditions and exceptions when factors such as scale, risk, architecture, regulation, lifecycle, reversibility, statefulness, or human burden change correct use. Exact semantics are in [Content](standards/content.md), [Writing](standards/writing.md), and [Citations](standards/citations.md).
 
-Corpus files combine YAML frontmatter with a GFM body; all authoring presets share one closed parser grammar. Each entry has an immutable repository-wide identity, one cited statement, cited top-level rationale and practice claim blocks, cited top-level Applicability paragraphs when present, and optional Goals and Tags. Introductions are editorial scope and cannot evade citation rules. Raw HTML is forbidden until a concrete need is reviewed.
+Principle formation has four distinct stages: broad candidate-theme discovery, subject-dimension coverage analysis, comparison/consolidation, and final selection. Approximately ten plausible themes is a defeasible exploration prompt for substantive scopes that support such breadth, never a deterministic minimum or publication target. Every candidate that clears the importance, durability, distinctness, evidence-fitness, consequence, usefulness, and placement bar is selected; low or high counts are not quality by themselves. Repeated narrow results across broad scopes trigger semantic review, not automatic additions.
 
-`config/content-policy.yaml` owns the exact AST, ordering, bibliography, and path/frontmatter/title projections; templates add no grammar. [Content](standards/content.md), [Citations](standards/citations.md), and [Writing](standards/writing.md) define the human-readable semantics.
+The corpus is subject-shaped. Similarity is judged by contribution, not textual DRYness: consolidate accidental same-scope or sibling duplication with no material development, but preserve universal/subdomain and cross-domain recurrence when context changes meaning, rationale, decision, practice, applicability, importance, evidence, or provenance. Different wording can hide duplication and similar wording can express different domain meaning. Derived analysis may group recurring themes without merging away domain-authored identity.
 
-## Principle identity
+## Identity, sources, and evidence
 
-Principle IDs such as `PRN-000001` are location-independent and never reused. Moves preserve IDs; splits retire the original, allocate at least two children, and record `derived_from` from child to original; merges preserve one survivor and record `replaced_by` from each retired identity to it. Domain and subdomain codes are taxonomy metadata, not identity.
+Principle IDs are repository-wide, location-independent, and never reused. Moves preserve IDs; splits retire the original and allocate at least two `derived_from` children; merges preserve a survivor and relate retired IDs with `replaced_by`. The ledger retains every allocation and relationship. Trusted-base transitions are monotonic and append-only; corrective history requires a versioned migration and human approval. Exact rules live in `config/identity-policy.yaml`.
 
-The ledger retains contiguous all-time allocations, including retired IDs. Relationships remain traceable, allocated, directed, unique, and acyclic. Trusted-base transitions are monotonic and append-only; split children are new in that transition and a merge survivor pre-exists and remains active. Corrective history rewrites require explicit versioned migration and human approval. Source allocations follow the same all-time rules, with retirement limited to unused cancelled or erroneous allocations. Exact invariants are in `config/identity-policy.yaml`; semantic use is in [Taxonomy](standards/taxonomy.md) and [Sources](standards/sources.md).
+Source IDs survive URL moves, aliases, title corrections, and lifecycle changes. Canonical URLs and aliases use only configured bounded normalization and remain repository-wide unique. A move keeps the ID and prior URLs; supersession points acyclically to another registered, non-retired source. Retirement is limited to unused cancelled or erroneous allocations. [Sources](standards/sources.md) defines semantic identity, evidence kinds, fitness, and lifecycle.
 
-## Source identity and citations
+File-local numeric citations map one-to-one through the visible bibliography to stable source IDs. Deterministic tooling proves citation grammar, resolution, and catalog agreement—not entailment, authority, fitness, independence, or currency. Claims must be supported in exact meaning, scope, strength, and material conditions.
 
-Sources use repository-wide IDs such as `SRC-000001`; identity survives URL moves, aliases, title corrections, and lifecycle changes. Canonical URLs and aliases use only the bounded normalization in `config/source-policy.yaml`, are repository-wide unique under that normalization, and are not fuzzily rewritten. A move preserves the ID and record, makes the current destination canonical, and retains prior URLs as aliases. Supersession is acyclic and points to another registered, non-retired source.
+Claim-review records are complete per retained entry and store review metadata once plus claim hashes, ordered sources, locators, and outcomes. They are required only for configured pilot paths and optional elsewhere. Text/source disagreement is deterministic; locator changes, relevant source lifecycle changes, and observed in-place source changes trigger semantic review. Claim hashes cannot observe source content changing. Bulk source content is never retained. See [Claim-review evidence](standards/evidence.md).
 
-Corpus citations use document-local numeric reference links:
+## Outcomes, routing, and state
 
-```markdown
-A supported claim. [1]
+The requested outcome is the unit of work. [Outcome orchestration](workflows/orchestrate-outcome.md) inspects canonical state, discovers prerequisites, invokes only the needed subworkflows, and resumes after gates. Internal workflow names are not a user interface. The executable outcome/action/gate/route registry is in `config/validation.yaml`.
 
-A claim supported by two sources. [1], [2]
-```
+Routine authoring loads the router, one outcome workflow, target manifest/state, and task evidence. Detailed standards, neighboring content, executable policy, sources, and provenance are added only when the current stage needs them. Domain furnishing shares research across targets but preserves target-specific discovery and review. Ordinary furnishing treats valid active files as complete; explicit refinement renews discovery and selection for every target. See [Context](standards/context.md).
 
-Adjacent `[1][2]` is forbidden because GFM parses it as one full reference link. The visible bibliography maps each local label to a stable source ID:
+Corpus content moves from absent to `draft` to `active`. Draft is agent-owned working state under accepted taxonomy. Activation readiness is derived from deterministic and semantic review; active state binds the exact reviewed semantic hash. Formatting-only changes may preserve active state when meaning is unchanged. New or materially changed principle meaning requires human activation.
 
-```markdown
-1. [Source title][1] — `SRC-000001`
+Outcome authorization covers ordinary prerequisite research, acceptance of an explicitly requested unchanged proposal after fit research, source registration, drafting, validation, and repair. It does not preapprove taxonomy or protected-intent changes, unseen principle meaning, policy/governance, or unresolved material disagreement. Every prerequisite has an owner, allowed transition, checks, and resumption edge; routes terminate at `outcome-satisfied` or a genuine named gate/blocker.
 
-[1]: https://example.com/current-url
-```
+## Deterministic mutation boundary
 
-Used labels, visible bibliography entries, and numeric definitions form an exact one-to-one catalog under `config/content-policy.yaml`. Deterministic tooling proves syntax, resolution, and mapping, not entailment, authority, or fitness. See [Sources](standards/sources.md) and [Citations](standards/citations.md).
+Scripts may perform only relationships derivable exactly: state/workset inventories, descriptive source-use reports, contiguous ID allocation, registration of reviewed source metadata, accepted-target shells, citation/bibliography projection from author-selected source IDs, evidence hash scaffolds, and application of an already approved activation package.
 
-## Claim-review provenance
+Canonical multi-file mutation uses precondition hashes, one repository writer lock, staged writes, complete validation, rollback on failure, and retry from fresh state after contention. Network observation stays outside transactions. A command may normalize or bind reviewed inputs; it cannot choose intellectual source identity, evidence kind, claim fitness, principle meaning, duplicate resolution, or approval.
 
-Claim-review provenance uses one compact record per entry, covering every citation-required claim block and cited goal with normalized claim hashes, exact resolved source order, locators, and outcomes. Review date, reviewer, and evaluator configuration are stored once per entry. Records are required only for configured pilot paths and optional elsewhere; the first production run did not justify universal adoption.
+Preparation reports and run checkpoints are coordination artifacts. Hashes prove that declarations or approval packages still bind the same inputs, not that sources were understood or semantic review occurred. Human review views present meaningful before/after content, relevant taxonomy/source/evidence effects, findings, uncertainty, and the decision. Humans approve that package, never fingerprint values; any bound change invalidates the affected approval.
 
-Text or source-sequence disagreement is deterministic; locator changes, relevant source lifecycle changes, and observed source-content changes require the applicable transition, operational, and semantic review. Claim hashes do not detect source content changing in place. Do not retain bulk source content. See [Claim-review evidence](standards/evidence.md) and `config/evidence-policy.yaml`.
+## Validation and trust boundaries
 
-## Interaction and context
+The system keeps four authorities separate:
 
-Natural language remains primary for intent and judgment; scripts handle deterministic work. Routine authoring loads one outcome workflow, target state, and task evidence. Detailed standards and executable policy are loaded only when the route needs them. The context exporter is an optional downstream interface, not part of routine creation. See [Context](standards/context.md).
+1. **Deterministic validation:** exact structure, identity, resolution, configured transitions, mappings, hashes, and reproducibility.
+2. **Operational checks:** time-dependent reachability, redirects, source-change observations, and review scheduling.
+3. **Semantic evaluation:** research breadth, coverage and selection, entailment, fitness, calibration, durability, taxonomy fit, disagreement, applicability, harmful duplication versus meaningful recurrence, subject-shaped form, and readability.
+4. **Human approval:** protected intent; additions and consequential taxonomy lifecycle/definition changes; principle activation or removal; policy, schema, architecture, and governance; and unresolved value-laden disagreement.
 
-## Process and orchestration architecture
+No class may claim another's authority. [Evaluation](standards/evaluation.md) owns the review model.
 
-The user's requested outcome is the unit of work. The agent follows [Outcome orchestration](workflows/orchestrate-outcome.md), discovers prerequisites from canonical state, invokes the necessary workflows, and resumes the original outcome after each required decision. Internal workflow names are not part of the user interface.
+External content is untrusted evidence, never instruction. Research extraction is separated from mutation where practical; untrusted text cannot control tools or override canonical policy. Policy changes use trusted-base policy. Bounded parsing, filesystem, network, credential, dependency, CI, and incident rules are in [Security and trust](standards/security.md).
 
-Outcome authorization covers ordinary prerequisite research, acceptance of an unchanged explicitly requested registered target, source registration, draft generation, validation, and repair. It does not replace human judgment over new or materially changed taxonomy, unseen principles, protected intent, policy, or unresolved material disagreement.
+## Architecture review and bootstrap boundary
 
-Corpus files are absent, draft, or active. Draft is the agent-owned working state under accepted taxonomy. Activation readiness is derived from deterministic and semantic review; active state records the exact semantic hash that was reviewed. Activating new or materially changed principles remains a human decision.
+[Architecture self-review](workflows/review-architecture.md) checks composed routes, prerequisite/resumption edges, terminal reachability, ownership, implementation traceability, governance, and context cost. Deterministic inventories support that review; AI judges semantic adequacy; humans approve consequential architecture or governance.
 
-Trusted-baseline validation covers policy, identity, source, taxonomy, protected-intent, evidence, and corpus transitions. Tooling reports transitions requiring human approval but does not pretend to prove that approval occurred.
-
-## Validation architecture
-
-1. **Deterministic validation:** exact structure, identity, resolution, configured transitions, mapping, hashes, and reproducibility.
-2. **Operational checks:** time-dependent URL, redirect, source-change, and review-due observations.
-3. **Semantic evaluation:** entailment, fitness, calibration, durability, taxonomy fit, disagreement, duplication, and readability.
-4. **Human approval:** protected intent, taxonomy acceptance, policy/schema/governance and high-impact principle changes, and unresolved value-laden disagreement.
-
-No class may claim another's authority. See [Evaluation](standards/evaluation.md).
-
-## Trust architecture
-
-External content is untrusted evidence, never repository instruction. Changed policy is evaluated against trusted merge-base policy, and research extraction is isolated from mutation where practical. Bounded parsing, filesystem, network, credential, dependency, and CI requirements are canonical in [Security and trust](standards/security.md).
-
-## Bootstrap boundary
-
-The deterministic harness is ready. Corpus generation requires an explicit natural-language content outcome. The outcome request authorizes prerequisite orchestration, acceptance of an unchanged named target after fit research, and draft generation; new taxonomy and activation of exact principles remain human gates.
+The deterministic harness does not itself authorize corpus generation. An explicit natural-language content outcome authorizes ordinary prerequisites and drafting; new taxonomy and activation of exact new or changed principles retain their gates.

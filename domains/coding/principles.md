@@ -6,7 +6,7 @@ domain: coding
 type: principles
 status: active
 last_reviewed: '2026-09-02'
-reviewed_content_sha256: 516ef19b2ffc66fb71539b3e497b5a624e49eb13568f3a67b14d3833310f420f
+reviewed_content_sha256: 906c9069300bbc9b1bede38f27c2c6eb5285f614de59721137821854f7aeca2b
 ---
 
 # Coding Principles
@@ -41,31 +41,35 @@ Testing can reveal defects and reduce operational risk, but it cannot prove that
 - Define observable acceptance conditions before or while coding, then test normal, boundary, failure, and interaction behavior according to risk. [1], [3]
 - Keep tests and other verification artifacts with the change so reviewers can judge both the implementation and its evidence. [2], [3]
 
-### PRN-000012 — Change code in coherent, reversible steps
+### PRN-000012 — Separate independent engineering decisions
 
-Prefer small, self-contained changes that remain understandable, verifiable, and recoverable on their own. [4], [5]
-
-#### Why
-
-Smaller logical changes are easier to review thoroughly, test independently, inspect later, merge, and reverse. Size is contextual: the unit should preserve a complete idea and enough context to judge its implications. [4], [5]
-
-#### Practices
-
-- Separate unrelated refactoring, formatting, dependency, and behavior changes when each can stand independently. [2], [4]
-- Ensure each published step is internally consistent and passes the checks required for its risk. [5]
-
-### PRN-000013 — Treat safety constraints as part of correctness
-
-Implement security, failure behavior, resource limits, and other safety constraints as requirements of the code rather than cleanup after functional completion. [1], [6]
+Separate decisions that can be understood, verified, and reversed independently; combine work only when separation would leave an incomplete change. [4], [5]
 
 #### Why
 
-Defects outside nominal functionality can expose data, bypass controls, corrupt state, or make recovery impossible. Addressing these risks during design and construction reduces both vulnerability exposure and later remediation cost. [1], [6]
+Isolating one decision preserves causal information and limits the work that must be reconsidered when evidence fails. The useful unit is a complete idea, not an arbitrary line count. [4], [5]
 
 #### Practices
 
-- Identify relevant abuse cases, failure modes, data sensitivities, and operational limits before committing to an implementation shape. [6]
-- Use language, compiler, analysis, review, and testing controls appropriate to the risk, and track discovered issues to resolution. [1], [6]
+- Split work into self-contained outcomes that reviewers can understand and verify without relying on unfinished future work. [4]
+- For dependent outcomes, order the steps so each completed step keeps the system working and carries the context needed to understand the next. [4]
+
+#### Applicability
+
+A complete change may be large when its parts cannot work or be evaluated independently; splitting must not create misleading or broken intermediate states. [4]
+
+### PRN-000013 — Correctness includes adverse conditions
+
+Define security, failure behavior, resource limits, and other quality constraints as part of expected behavior before implementation. [1], [6]
+
+#### Why
+
+Nominal output is not correct when the same code bypasses controls, corrupts state after failure, or violates required operating limits. Treating those conditions as requirements lets design and verification address them before release. [1], [6]
+
+#### Practices
+
+- State the adverse inputs, failure modes, protected data, and operating limits that can change whether the result is acceptable. [1], [6]
+- Choose construction and verification controls that exercise those constraints in proportion to their consequences. [1], [6]
 
 ## References
 
