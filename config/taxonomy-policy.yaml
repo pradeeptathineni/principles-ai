@@ -1,4 +1,4 @@
-version: 8
+version: 9
 
 manifests:
   glob: domains/*/domain.yaml
@@ -54,6 +54,13 @@ operations:
   rename:
     preserve_id: true
     change_fields: [title]
+    proposed_domain_identifier_correction:
+      allowed: true
+      from_status: proposed
+      to_statuses: [proposed, accepted]
+      identity_match_field: code
+      remaining_changes_follow_normal_transition_rules: true
+      classification: taxonomy-definition-change
   reframe:
     preserve_id_when_semantic_identity_remains: true
     change_fields: [description]

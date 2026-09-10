@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000095
+title: MLPerf Inference Benchmark Suite
+publisher: MLCommons
+evidence_kind: community-guidance
+canonical_url: https://docs.mlcommons.org/inference/index_gh/
+url_aliases: []
+published_or_version: MLPerf Inference v6.1, 2026
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000092
+title: Finetuned Language Models Are Zero-Shot Learners
+publisher: arXiv
+evidence_kind: academic-evidence
+canonical_url: https://arxiv.org/abs/2109.01652
+url_aliases: []
+published_or_version: arXiv:2109.01652, 2021
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

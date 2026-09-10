@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000097
+title: Improving Reproducibility in Machine Learning Research
+publisher: Journal of Machine Learning Research
+evidence_kind: academic-evidence
+canonical_url: https://www.jmlr.org/papers/v22/20-303.html
+url_aliases: []
+published_or_version: JMLR 22(164), 2021
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

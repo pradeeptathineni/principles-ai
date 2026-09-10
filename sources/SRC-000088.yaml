@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000088
+title: "Data Cards: Purposeful and Transparent Dataset Documentation for Responsible AI"
+publisher: Google Research
+evidence_kind: academic-evidence
+canonical_url: https://research.google/pubs/data-cards-purposeful-and-transparent-dataset-documentation-for-responsible-ai/
+url_aliases: []
+published_or_version: ACM FAccT, 2022
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

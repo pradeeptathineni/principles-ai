@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000087
+title: Model Cards for Model Reporting
+publisher: Google Research
+evidence_kind: academic-evidence
+canonical_url: https://research.google/pubs/model-cards-for-model-reporting/
+url_aliases: []
+published_or_version: FAT*, 2019
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000091
+title: "The Prompt Report: A Systematic Survey of Prompting Techniques"
+publisher: arXiv
+evidence_kind: expert-synthesis
+canonical_url: https://arxiv.org/abs/2406.06608
+url_aliases: []
+published_or_version: arXiv:2406.06608, 2024
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

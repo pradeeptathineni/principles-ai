@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000096
+title: Energy and Policy Considerations for Deep Learning in NLP
+publisher: arXiv
+evidence_kind: academic-evidence
+canonical_url: https://arxiv.org/abs/1906.02243
+url_aliases: []
+published_or_version: arXiv:1906.02243, 2019
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

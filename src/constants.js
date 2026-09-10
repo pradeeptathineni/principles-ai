@@ -13,8 +13,8 @@ export const SUPPORTED = Object.freeze({
     'evidence-policy': 4,
     'identity-policy': 2,
     'source-policy': 6,
-    'taxonomy-policy': 8,
-    validation: 12
+    'taxonomy-policy': 9,
+    validation: 13
   })
 })
 

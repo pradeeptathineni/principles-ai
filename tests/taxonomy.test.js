@@ -152,3 +152,36 @@ test('required subdomain definition changes also classify protected intent', () 
   assert.ok(gates.has('taxonomy-definition-change'))
   assert.ok(gates.has('protected-intent-change'))
 })
+
+test('a proposed domain identifier correction composes with ordinary taxonomy transitions', () => {
+  const before = manifest()
+  const corrected = structuredClone(before)
+  corrected.id = 'software-coding'
+  corrected.title = 'Software Coding'
+  const bag = new DiagnosticBag()
+  const gates = validateTaxonomyTransition([{ value: before }], [{ value: corrected }], bag)
+  assert.equal(bag.errorCount, 0)
+  assert.deepEqual([...gates], ['taxonomy-definition-change'])
+  assert.ok(bag.items.some((item) => item.code === 'TAXONOMY_PROPOSED_DOMAIN_IDENTIFIER_CORRECTED'))
+
+  const acceptedCorrection = structuredClone(corrected)
+  acceptedCorrection.taxonomy_status = 'accepted'
+  acceptedCorrection.description = 'A revised coding boundary.'
+  acceptedCorrection.subdomains[0].status = 'accepted'
+  acceptedCorrection.subdomains[0].description = 'A revised design boundary.'
+  const acceptedBag = new DiagnosticBag()
+  const acceptedGates = validateTaxonomyTransition([{ value: before }], [{ value: acceptedCorrection }], acceptedBag)
+  assert.equal(acceptedBag.errorCount, 0)
+  assert.ok(acceptedGates.has('taxonomy-acceptance'))
+  assert.ok(acceptedGates.has('taxonomy-definition-change'))
+  assert.ok(acceptedGates.has('protected-intent-change'))
+  assert.ok(!acceptedGates.has('taxonomy-addition'))
+
+  const acceptedBefore = manifest({ taxonomy_status: 'accepted' })
+  acceptedBefore.subdomains[0].status = 'accepted'
+  const forbiddenCorrection = structuredClone(acceptedBefore)
+  forbiddenCorrection.id = 'software-coding'
+  const forbiddenBag = new DiagnosticBag()
+  validateTaxonomyTransition([{ value: acceptedBefore }], [{ value: forbiddenCorrection }], forbiddenBag)
+  assert.ok(forbiddenBag.items.some((item) => item.code === 'TAXONOMY_DOMAIN_REMOVED'))
+})

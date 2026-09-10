@@ -44,7 +44,7 @@ Derived coverage reports file presence and draft/active state; neither proves ta
 
 Every subdomain has a reviewable description, not merely a title. Admission depends on distinct durable decisions or behavior, evidence emphasis, boundary clarity, and human/retrieval value. Ordinary topical overlap is allowed. Major persistent duplication, absorption, obsolescence, insufficient durable content, lost retrieval value, or departure from the domain boundary may justify deprecation after semantic review and human approval.
 
-Domain purpose, required scopes, priorities, exclusions, and scope notes are protected. An explicit content request may accept an unchanged registered proposal after independent fit research. Additions, definition changes, deprecations, reactivations, and protected-intent changes require an exact human decision. See [Taxonomy](standards/taxonomy.md).
+Domain purpose, required scopes, priorities, exclusions, and scope notes are protected. An explicit content request may accept an unchanged registered proposal after independent fit research. Additions, definition changes, deprecations, reactivations, and protected-intent changes require an exact human decision. A proposed domain identifier may be corrected before acceptance by retaining its unique domain code; any composed acceptance, definition, subdomain, or protected-intent changes still follow their ordinary gates. Accepted and deprecated identifiers remain immutable. See [Taxonomy](standards/taxonomy.md).
 
 ## Corpus semantics and shape
 

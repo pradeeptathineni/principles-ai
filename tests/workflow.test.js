@@ -92,13 +92,13 @@ test('domain furnishing inventories only universal, accepted, and required scope
 test('domain furnishing carries required scopes through a pending unchanged domain acceptance', () => {
   const workflowState = {
     manifests: [{ value: {
-      id: 'ai', taxonomy_status: 'proposed',
+      id: 'artificial-intelligence', taxonomy_status: 'proposed',
       human_intent: { required_subdomains: ['safety'] },
       subdomains: [{ id: 'safety', title: 'Safety', status: 'proposed' }]
     } }],
     corpus: { documents: [] }
   }
-  const result = inspectDomainFurnishingWorkflow(workflowState, 'ai')
+  const result = inspectDomainFurnishingWorkflow(workflowState, 'artificial-intelligence')
   assert.equal(result.next_action, 'research-target-fit-and-accept-unchanged-requested-domain')
   assert.equal(result.content.targets.find((target) => target.scope === 'safety').taxonomy_status, 'pending-required-domain-acceptance')
   assert.deepEqual(result.taxonomy.proposed_candidates, [])

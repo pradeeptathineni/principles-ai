@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000078
+title: "Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile"
+publisher: National Institute of Standards and Technology
+evidence_kind: normative-authority
+canonical_url: https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence
+url_aliases: []
+published_or_version: NIST AI 600-1, July 2024
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

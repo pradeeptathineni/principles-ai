@@ -16,6 +16,8 @@ Write each description as a sufficient semantic boundary, using center, inclusio
 
 Apply the Taxonomy standard's operation patterns. New scopes begin proposed while prepared, but after exact approval the final trusted diff may contain the accepted addition without an intermediate merge. An explicitly requested unchanged registered proposal may be accepted after independent fit research. Deprecated targets require reactivation approval. Leave a proposal open only while its disposition is unresolved; a stable negative decision requires human-approved deprecation.
 
+A naming correction may change a proposed domain identifier only under the Taxonomy standard's narrow invariant-preserving rule. Do not use it to bypass replacement, lifecycle, boundary, protected-intent, or accepted-identity rules.
+
 Before deprecation, move surviving principles to accepted scopes with IDs preserved or retire them and remove current headings; deprecated scopes have no files. Preserve IDs for moves and surviving semantic identity. Splits allocate children with `derived_from`; merges preserve one survivor and relate retired IDs with `replaced_by`. Never reuse identities.
 
 ## 3. Validate, decide, and resume

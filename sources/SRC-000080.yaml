@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000080
+title: "Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations"
+publisher: National Institute of Standards and Technology
+evidence_kind: normative-authority
+canonical_url: https://csrc.nist.gov/pubs/ai/100/2/e2025/final
+url_aliases: []
+published_or_version: NIST AI 100-2e2025, March 2025
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

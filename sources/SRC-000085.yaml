@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000085
+title: "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction"
+publisher: Google Research
+evidence_kind: academic-evidence
+canonical_url: https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/
+url_aliases: []
+published_or_version: IEEE Big Data, 2017
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

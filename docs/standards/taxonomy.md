@@ -42,11 +42,11 @@ Consolidate accidental same-scope duplicates. Sibling scopes need clear ownershi
 
 ## Operations
 
-Stable taxonomy IDs are never silently repurposed.
+Stable taxonomy IDs are never silently repurposed. Before acceptance, an explicitly approved naming correction may change a proposed domain ID when the replacement retains its unique domain code and finishes proposed or accepted. Trusted validation pairs those records as one identity correction, then evaluates every accompanying lifecycle, definition, subdomain, and protected-intent change normally. Accepted and deprecated domain IDs remain immutable.
 
 - **Add:** prepare the exact definition as proposed; after exact approval, a final trusted diff may contain it accepted without a ceremonial proposed-only merge.
 - **Accept:** move a reviewed proposal to accepted. This is agent-authorized only for an explicitly requested unchanged registered target after independent fit research; otherwise it is a human gate.
-- **Rename:** preserve ID and description; a boundary change is a reframe.
+- **Rename:** preserve ID and description; a boundary change is a reframe. The only ID-changing exception is the proposed-domain naming correction above.
 - **Reframe:** preserve ID only while semantic identity remains and review the changed description.
 - **Deprecate:** retain ID as deprecated after content migration and approval.
 - **Reactivate:** move deprecated directly to accepted after approval, never back to proposed.

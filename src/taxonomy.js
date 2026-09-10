@@ -80,6 +80,12 @@ function addTransitionGate(gates, onGate, gate, path) {
   onGate?.(gate, path)
 }
 
+function isProposedDomainIdentifierCorrection(before, after) {
+  return before.taxonomy_status === 'proposed' &&
+    ['proposed', 'accepted'].includes(after.taxonomy_status) &&
+    before.code === after.code
+}
+
 function classifyLifecycleTransition(before, after, gates, bag, path, label, target, definitionUnchanged, acceptanceAuthorized, routineTransitions, onGate) {
   if (before === after) return
   if (after === 'proposed' && before !== 'proposed') {
@@ -102,15 +108,33 @@ export function validateTaxonomyTransition(baselineManifests, proposedManifests,
   const onGate = options.onGate
   const before = new Map(baselineManifests.map((item) => [item.value.id, item.value]))
   const after = new Map(proposedManifests.map((item) => [item.value.id, item.value]))
+  const correctedDomainIds = new Map()
+  const correctedAfterIds = new Set()
+  for (const [oldId, oldDomain] of before) {
+    if (after.has(oldId)) continue
+    const candidates = [...after.entries()].filter(([newId, next]) =>
+      !before.has(newId) &&
+      !correctedAfterIds.has(newId) &&
+      isProposedDomainIdentifierCorrection(oldDomain, next)
+    )
+    if (candidates.length !== 1) continue
+    const [[newId]] = candidates
+    correctedDomainIds.set(oldId, newId)
+    correctedAfterIds.add(newId)
+    const domainPath = `domains/${newId}/domain.yaml`
+    bag.info('TAXONOMY_PROPOSED_DOMAIN_IDENTIFIER_CORRECTED', `Proposed domain identifier ${oldId} changed to ${newId}; other changes are evaluated through the ordinary lifecycle, definition, and protected-intent transition rules.`, domainPath)
+    addTransitionGate(gates, onGate, WORKFLOW_GATES.taxonomyDefinitionChange, domainPath)
+  }
   for (const [id, oldDomain] of before) {
-    const next = after.get(id)
+    const nextId = correctedDomainIds.get(id) ?? id
+    const next = after.get(nextId)
     if (!next) {
       bag.error('TAXONOMY_DOMAIN_REMOVED', `Domain ${id} was removed; retain it as deprecated.`, `domains/${id}/domain.yaml`)
       continue
     }
     const domainDefinitionChanged = !equal({ code: oldDomain.code, title: oldDomain.title, description: oldDomain.description }, { code: next.code, title: next.title, description: next.description })
-    const domainPath = `domains/${id}/domain.yaml`
-    classifyLifecycleTransition(oldDomain.taxonomy_status, next.taxonomy_status, gates, bag, domainPath, `Domain ${id}`, id, !domainDefinitionChanged, authorizedAcceptances.has(id), routineTransitions, onGate)
+    const domainPath = `domains/${nextId}/domain.yaml`
+    classifyLifecycleTransition(oldDomain.taxonomy_status, next.taxonomy_status, gates, bag, domainPath, `Domain ${nextId}`, nextId, !domainDefinitionChanged, authorizedAcceptances.has(nextId), routineTransitions, onGate)
     if (domainDefinitionChanged) addTransitionGate(gates, onGate, WORKFLOW_GATES.taxonomyDefinitionChange, domainPath)
     if (!equal(oldDomain.description, next.description) || !equal(oldDomain.human_intent, next.human_intent)) addTransitionGate(gates, onGate, WORKFLOW_GATES.protectedIntentChange, domainPath)
     const oldSubs = new Map((oldDomain.subdomains ?? []).map((item) => [item.id, item]))
@@ -127,8 +151,8 @@ export function validateTaxonomyTransition(baselineManifests, proposedManifests,
       )
       const protectedBefore = new Set(oldDomain.human_intent?.required_subdomains ?? [])
       const protectedAfter = new Set(next.human_intent?.required_subdomains ?? [])
-      const acceptanceAuthorized = authorizedAcceptances.has(`${id}/${subId}`) || (authorizedAcceptances.has(id) && (protectedBefore.has(subId) || protectedAfter.has(subId)))
-      classifyLifecycleTransition(oldSub.status, nextSub.status, gates, bag, domainPath, `Subdomain ${id}/${subId}`, `${id}/${subId}`, !definitionChanged, acceptanceAuthorized, routineTransitions, onGate)
+      const acceptanceAuthorized = authorizedAcceptances.has(`${nextId}/${subId}`) || (authorizedAcceptances.has(nextId) && (protectedBefore.has(subId) || protectedAfter.has(subId)))
+      classifyLifecycleTransition(oldSub.status, nextSub.status, gates, bag, domainPath, `Subdomain ${nextId}/${subId}`, `${nextId}/${subId}`, !definitionChanged, acceptanceAuthorized, routineTransitions, onGate)
       if (definitionChanged) {
         addTransitionGate(gates, onGate, WORKFLOW_GATES.taxonomyDefinitionChange, domainPath)
         if (protectedBefore.has(subId) || protectedAfter.has(subId)) addTransitionGate(gates, onGate, WORKFLOW_GATES.protectedIntentChange, domainPath)
@@ -141,7 +165,7 @@ export function validateTaxonomyTransition(baselineManifests, proposedManifests,
     }
   }
   for (const [id, next] of after) {
-    if (!before.has(id)) {
+    if (!before.has(id) && !correctedAfterIds.has(id)) {
       addTransitionGate(gates, onGate, WORKFLOW_GATES.taxonomyAddition, `domains/${id}/domain.yaml`)
     }
   }

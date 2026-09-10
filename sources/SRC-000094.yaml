@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000094
+title: Summary Analysis of Responses Regarding Security Considerations for AI Agents
+publisher: National Institute of Standards and Technology
+evidence_kind: normative-authority
+canonical_url: https://www.nist.gov/publications/summary-analysis-responses-request-information-regarding-security-considerations-ai
+url_aliases: []
+published_or_version: NIST AI 800-5, May 2026
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

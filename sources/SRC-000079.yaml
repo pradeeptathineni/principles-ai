@@ -1,0 +1,12 @@
+schema_version: 4
+id: SRC-000079
+title: NIST SP 800-218A, Secure Software Development Practices for Generative AI and Dual-Use Foundation Models
+publisher: National Institute of Standards and Technology
+evidence_kind: normative-authority
+canonical_url: https://doi.org/10.6028/NIST.SP.800-218A
+url_aliases: []
+published_or_version: NIST SP 800-218A, July 2024
+first_retrieved: 2026-09-02
+last_reviewed: 2026-09-02
+status: active
+superseded_by: null

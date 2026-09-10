@@ -1,0 +1,133 @@
+schema_version: 6
+id: artificial-intelligence
+code: AI
+title: Artificial Intelligence
+taxonomy_status: accepted
+description: Principles for framing, building, evaluating, operating, securing, and
+  responsibly using AI systems.
+human_intent:
+  required_subdomains: []
+  priorities: []
+  exclusions: []
+  scope_notes: []
+subdomains:
+- id: problem-framing
+  code: PFR
+  title: Problem Framing
+  description: "Covers whether AI is appropriate; intended users, benefits, harms, alternatives, constraints, success criteria, and failure costs before choosing data or models."
+  status: accepted
+  origin: research
+- id: data
+  code: DAT
+  title: Data
+  description: "Covers collection, rights, labeling, quality, representativeness, lineage, splitting, access, retention, and drift; excludes model design and runtime retrieval."
+  status: accepted
+  origin: research
+- id: models
+  code: MOD
+  title: Models
+  description: "Covers model architecture, capability behavior, assumptions, limitations, interpretability, composition, and artifact documentation; excludes candidate selection and weight adaptation."
+  status: accepted
+  origin: research
+- id: model-selection
+  code: SEL
+  title: Model Selection
+  description: "Covers build, buy, or reuse decisions and comparison of candidates against quality, risk, deployability, latency, cost, licensing, and exit requirements."
+  status: accepted
+  origin: research
+- id: training-fine-tuning
+  code: TRN
+  title: Training & Fine-Tuning
+  description: "Covers objectives, optimization, adaptation, hyperparameters, validation discipline, reproducibility, checkpoints, and training-resource controls; excludes prompting and runtime context."
+  status: accepted
+  origin: research
+- id: prompting
+  code: PRM
+  title: Prompting
+  description: "Covers designing, testing, and versioning inference-time instructions, examples, output contracts, and model or tool interaction; excludes retrieval and weight updates."
+  status: accepted
+  origin: research
+- id: context-rag
+  code: RAG
+  title: Context & RAG
+  description: "Covers runtime knowledge selection, retrieval, grounding, freshness, provenance, permissions, chunking, and context assembly; excludes base-model training."
+  status: accepted
+  origin: research
+- id: agents
+  code: AGT
+  title: Agents
+  description: "Covers goal-directed AI that plans, maintains state, invokes tools, and coordinates steps, including authority limits, checkpoints, and failure containment."
+  status: accepted
+  origin: research
+- id: evaluation
+  code: EVAL
+  title: Evaluation
+  description: "Covers context-specific testing, evaluation, verification, and validation across models, systems, human outcomes, metrics, datasets, adversarial tests, and uncertainty."
+  status: accepted
+  origin: research
+- id: reliability
+  code: REL
+  title: Reliability
+  description: "Covers predictable behavior under uncertainty and change, including robustness, fallbacks, graceful degradation, recovery, and uncertainty handling; excludes telemetry and adversarial security."
+  status: accepted
+  origin: research
+- id: safety
+  code: SAF
+  title: Safety
+  description: "Covers prevention and mitigation of accidental, foreseeable, or misuse-enabled harm to people, society, and the environment through hazard analysis and safeguards."
+  status: accepted
+  origin: research
+- id: security-privacy
+  code: SEC
+  title: Security & Privacy
+  description: "Covers adversarial threats, access control, confidentiality, integrity, privacy, and attacks across data, models, prompts, retrieval, tools, and supply chains."
+  status: accepted
+  origin: research
+- id: human-in-the-loop
+  code: HITL
+  title: Human in the Loop
+  description: "Covers allocation of authority and work between humans and AI, including meaningful oversight, review, escalation, contestability, calibration, and operator burden."
+  status: accepted
+  origin: research
+- id: observability
+  code: OBS
+  title: Observability
+  description: "Covers privacy-aware metrics, logs, traces, feedback, and lineage for inputs, context, outputs, tool calls, versions, and quality shifts; provides evidence for other scopes without owning remediation."
+  status: accepted
+  origin: research
+- id: infrastructure
+  code: INF
+  title: Infrastructure
+  description: "Covers compute, accelerators, storage, networking, scheduling, serving platforms, capacity, isolation, and portability; excludes performance objectives and financial governance."
+  status: accepted
+  origin: research
+- id: performance
+  code: PER
+  title: Performance
+  description: "Covers end-to-end latency, throughput, concurrency, quality-resource tradeoffs, profiling, and representative benchmarking; excludes budgets and procurement policy."
+  status: accepted
+  origin: research
+- id: cost
+  code: CST
+  title: Cost
+  description: "Covers lifecycle economics, usage forecasting, unit costs, budgets, experimentation spend, vendor commitments, and value-versus-cost decisions."
+  status: accepted
+  origin: research
+- id: governance
+  code: GOV
+  title: Governance
+  description: "Covers accountability, policies, roles, inventories, risk classification, impact assessment, documentation, compliance, audit, suppliers, incidents, and retirement."
+  status: accepted
+  origin: research
+- id: research-experimentation
+  code: RND
+  title: Research & Experimentation
+  description: "Covers hypotheses, baselines, controls, statistical validity, reproducibility, negative results, uncertainty, and transition from exploration to actionable evidence."
+  status: accepted
+  origin: research
+- id: production
+  code: PRD
+  title: Production
+  description: "Covers versioning, packaging, integration, rollout, rollback, change control, ownership, feedback and retraining workflows, and retirement of operational AI systems."
+  status: accepted
+  origin: research

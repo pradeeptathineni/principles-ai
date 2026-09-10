@@ -10,7 +10,7 @@ const expectedShapeFingerprints = Object.freeze({
   'evidence-policy': '6d5f35136f0bc5284c8b6a27a24badc3fa769e7bc0d4955f26e53bace016a94d',
   'identity-policy': 'd403ff29ce9411c31c0d38ce93599a32231ef8b808cfc1969052d66bbc7eee54',
   'source-policy': '813a8b4a41ff7aa2fd5f21f1d07caff10853f6aeffc3f67548109246bc3075fe',
-  'taxonomy-policy': 'ebf86644a227d05fccc7f9ff09888a2fe210a61fd015ca88657d758f1be01040',
+  'taxonomy-policy': '0cfb54ed4cffbf3d3bac69e0b8b45ce02949ba64ec3f2bd751b025f05da0b739',
   validation: '7ac64c47aa99632fc7ca396d4412796901c8ad74371b170e99e70ae5cf82ca87'
 })
 
@@ -19,8 +19,8 @@ const expectedValueFingerprints = Object.freeze({
   'evidence-policy': 'b2a65d438c149786121c144837aa177f4186fcc6f813af0dc7f3dba8640c356b',
   'identity-policy': 'ee88ae4bd1264d34a97535457856a04b353627ebd81a17bc95f7aefbf7882279',
   'source-policy': 'b9c6e773909c98001d30f90e0a07d378f6b06ac07e3f3564f9006d8be4e1e78d',
-  'taxonomy-policy': '2e56153c93a822d12cf7af995e03686332a2ff59403926974ea6fee08ee62ca0',
-  validation: '5c5c575b1a123762d97f6093832f13715a49e8d6bc4606ddc74430d7a7850901'
+  'taxonomy-policy': '6f4e5cb7c3d01e5f14bb8a7373bffdbb09c5765443f5b3c7eac21a1c06ce2681',
+  validation: '19a312572e02de929c54f4035f140fc44ad0ff082d5a359f688f9a6c5fbeccf2'
 })
 
 const shapes = {

@@ -1,4 +1,4 @@
-version: 12
+version: 13
 
 schema_validation:
   draft: '2020-12'
@@ -43,8 +43,8 @@ policy_loading:
     evidence-policy: 4
     identity-policy: 2
     source-policy: 6
-    taxonomy-policy: 8
-    validation: 12
+    taxonomy-policy: 9
+    validation: 13
 
 trusted_baseline:
   pull_request_source: merge_base_with_trusted_target_branch
