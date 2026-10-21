@@ -79,7 +79,7 @@ function writeOutput(root, destination, content) {
 }
 
 function usage() {
-  return `principles commands:\n  validate [--json] [--baseline-ref REF] [--authorized-taxonomy-target DOMAIN[/SUBDOMAIN]]\n  workflow [--outcome OUTCOME] [--target domains/<domain>/<file>.md | --domain <domain>] [--json]\n  prepare --domain DOMAIN [--baseline-ref REF] [--output PATH]\n  run checkpoint --domain DOMAIN --input DECLARATIONS.yaml [--output PATH]\n  run checkpoint --check CHECKPOINT.json [--json]\n  identity allocate --kind principle --count N [--baseline-ref REF] [--json]\n  source register --input PLAN.yaml|- [--baseline-ref REF] [--json]\n  content scaffold --target domains/<domain>/<file>.md [--output PATH]\n  content materialize --input PLAN.yaml|- [--baseline-ref REF] [--json]\n  citations sync (--target domains/<domain>/<file>.md | --domain DOMAIN) [--apply] [--output PATH]\n  evidence scaffold --entry PRN-...... [--output PATH]\n  activation package [--domain DOMAIN] [--baseline-ref REF] [--output PATH] [--review-output PATH]\n  activation manifest --input PACKAGE.json --reviewed-at YYYY-MM-DD (--all | --target PATH...) [--output PATH]\n  activation apply --input MANIFEST.yaml [--baseline-ref REF] [--json]\n  taxonomy [--output PATH] [--check PATH]\n  parse [--output PATH]\n  context --profile PROFILE (--file ID|PATH | --principle PRN-......) --revision REV [--generated-at ISO] [--output PATH]\n  links external [--domain DOMAIN | --source SRC-......] [--baseline PATH] [--as-of YYYY-MM-DD] [--snapshot-output PATH] [--json]\n`
+  return `principles commands:\n  validate [--json] [--baseline-ref REF] [--authorized-taxonomy-target DOMAIN[/SUBDOMAIN]]\n  workflow [--outcome OUTCOME] [--target domains/<domain>/<file>.md | --domain <domain>] [--json]\n  prepare --domain DOMAIN [--baseline-ref REF] [--output PATH]\n  run checkpoint --domain DOMAIN --input DECLARATIONS.yaml [--output PATH]\n  run checkpoint --check CHECKPOINT.json [--json]\n  identity allocate --kind principle --count N [--baseline-ref REF] [--json]\n  source register --input PLAN.yaml|- [--baseline-ref REF] [--json]\n  content scaffold --target domains/<domain>/<file>.md [--output PATH]\n  content materialize --input PLAN.yaml|- [--baseline-ref REF] [--json]\n  citations sync (--target domains/<domain>/<file>.md | --domain DOMAIN) [--apply] [--output PATH]\n  evidence scaffold --entry PRN-...... [--output PATH]\n  activation package [--domain DOMAIN] [--baseline-ref REF] [--output PATH] [--review-output PATH]\n  activation manifest --input PACKAGE.json --reviewed-at YYYY-MM-DD (--all | --target PATH...) [--output PATH]\n  activation apply --input MANIFEST.yaml [--baseline-ref REF] [--json]\n  taxonomy [--output PATH] [--check PATH]\n  parse [--output PATH]\n  context --profile PROFILE (--file ID|PATH | --principle PRN-......) --revision REV [--expected-input-sha256 SHA256] [--generated-at ISO] [--output PATH]\n  links external [--domain DOMAIN | --source SRC-......] [--baseline PATH] [--as-of YYYY-MM-DD] [--snapshot-output PATH] [--json]\n`
 }
 
 export async function main(args) {
@@ -87,7 +87,7 @@ export async function main(args) {
     process.stdout.write(usage())
     return 0
   }
-  const knownOptions = new Set(['--root', '--offline', '--json', '--apply', '--all', '--baseline-ref', '--authorized-taxonomy-target', '--output', '--review-output', '--reviewed-at', '--input', '--entry', '--kind', '--count', '--check', '--profile', '--file', '--principle', '--source', '--revision', '--generated-at', '--baseline', '--as-of', '--snapshot-output', '--target', '--domain', '--outcome'])
+  const knownOptions = new Set(['--root', '--offline', '--json', '--apply', '--all', '--baseline-ref', '--authorized-taxonomy-target', '--output', '--review-output', '--reviewed-at', '--input', '--entry', '--kind', '--count', '--check', '--profile', '--file', '--principle', '--source', '--revision', '--expected-input-sha256', '--generated-at', '--baseline', '--as-of', '--snapshot-output', '--target', '--domain', '--outcome'])
   const unknown = args.find((argument) => argument.startsWith('--') && !knownOptions.has(argument))
   if (unknown) {
     process.stderr.write(`Unknown option ${unknown}\n`)
@@ -296,6 +296,7 @@ export async function main(args) {
           fileIds: options(args, '--file'),
           principleIds: options(args, '--principle'),
           revision: option(args, '--revision'),
+          expectedInputSha256: option(args, '--expected-input-sha256', null),
           generatedAt: option(args, '--generated-at')
         })
         writeOutput(root, option(args, '--output', '-'), `${JSON.stringify(context, null, 2)}\n`)

@@ -34,3 +34,9 @@ Repository validation treats JSON Schema Draft 2020-12 `format` as an assertion.
 ## Progressive disclosure
 
 Current supported versions and exact transition rules live in executable configuration. Completed migration rationale is retained in [Schema and policy version history](schema-version-history.md). Load that history only when a new change depends on a prior migration or when auditing old compatibility decisions; routine schema/policy work uses this contract, the affected configuration/code, canonical records, and tests.
+
+## Derived context export version 2
+
+Context exports use derived `schema_version: 2` for explicit lifecycle, source-input bindings, profile omissions, reference-only minimal output, and a cross-profile selection digest with optional expected-digest checking. The semantic owner and digest procedure are in [Context](standards/context.md); `src/context.js`, the CLI, and context fixtures implement the contract.
+
+This replaces lossy derived version 1 output. Existing exports are disposable and must be regenerated from canonical inputs; do not silently relabel or upgrade a version 1 artifact. No canonical record or policy version changes, no canonical data migration, and no selection or activation policy change are part of this extension. A consumer must explicitly support version 2 before accepting it; real Context integration remains a separate consumer gate.
