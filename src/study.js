@@ -59,6 +59,9 @@ export function loadStudyCatalog({ root, revision }) {
     }
     records.set(id, { id, title: entry.title, eligible: true, file_id: document.frontmatter.id, file_path: document.path, status: 'active', last_reviewed: document.frontmatter.last_reviewed, input_sha256: digest(canonicalize(binding)), source_revision: revision, ...binding })
   }
+  for (const id of state.ledger.principles.retired) {
+    if (!records.has(id)) records.set(id, { id, eligible: false, status: 'retired' })
+  }
   return { schema_version: 1, source_revision: revision, records }
 }
 
