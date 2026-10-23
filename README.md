@@ -1,5 +1,7 @@
 # Principles
 
+For standalone private recall practice using accepted active principles, see [Private principle practice](docs/study.md). Sessions and personal attempts live outside the public corpus.
+
 An AI-assisted, evidence-grounded knowledge system for durable principles, actionable practices, rationales, and optional personal-growth goals across professional and technical domains.
 
 It is a human learning resource, a curated source of considered guidance, structured context for AI-assisted work, and a maintainable corpus improved through research and review.
