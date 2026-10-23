@@ -37,6 +37,8 @@ The private directory is created mode 0700 and `sessions.json` mode 0600. Writes
 
 Session export includes personal explanations/examples and saved sources. Only configure such an export for consumers you intend to receive those notes. No arbitrary filesystem discovery is involved. The Deep host should own configuration of source/store paths and keep those paths out of client-supplied requests.
 
+Signals display metadata is bounded (title 500, summary 2000, qualification 1000 characters) while exact content stays complete. Records over 2 MB or an envelope over 10 MB fail explicitly; use the standalone session export for larger histories. No source content is silently shortened to satisfy an integration limit.
+
 ## Verification and fixtures
 
 Run `node --test tests/study.test.js` and the normal offline repository checks. The focused tests cover explanation-before-reveal, immutable attempts, restart/reopen, explicit date history, source refresh/change/inactive/missing/unavailable paths, store privacy boundaries, malformed versions, symlinks, concurrent writers, exact Signals digests, and real native source selection. These demonstrate mechanics, not human benefit.

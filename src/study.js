@@ -226,7 +226,9 @@ export function createStudyService({ root, store = null, revision, clock = () =>
     knowledgeExport(instanceId, { includeSessions = false } = {}) {
       const records = service.list().principles.map((record) => knowledgeRecord('principle', record.id, record.title, record.context.entries[0].statement.text, record.last_reviewed, 'Accepted taxonomy; active reviewed principle. Source status and applicability remain in exact content.', record))
       if (includeSessions) for (const session of readStore(paths()).sessions) { const exported = view(session, true); records.push(knowledgeRecord('study-session', session.id, session.name, session.cards.map((card) => card.cue).join(' | '), session.updated_at, QUALIFICATION, exported)) }
-      return { schema_version: '1.0', owner: 'principles-ai', instance_id: required(instanceId, 'Explicit owner instance ID', 200), source_revision: revision, exported_at: clock(), freshness: 'Frozen export; underlying source and private store are not observed until explicitly exported again.', records }
+      const envelope = { schema_version: '1.0', owner: 'principles-ai', instance_id: required(instanceId, 'Explicit owner instance ID', 200), source_revision: revision, exported_at: clock(), freshness: 'Frozen export; underlying source and private store are not observed until explicitly exported again.', records }
+      if (Buffer.byteLength(`${JSON.stringify(envelope, null, 2)}\n`) > 10000000) throw new Error('Knowledge export exceeds the consumer 10 MB limit; omit private sessions or use standalone session exports')
+      return envelope
     }
   }
   return service
@@ -234,8 +236,10 @@ export function createStudyService({ root, store = null, revision, clock = () =>
 
 function knowledgeRecord(kind, id, title, summary, updatedAt, qualification, record) {
   const content = canonicalize(record)
+  if (Buffer.byteLength(content) > 2000000) throw new Error(`Knowledge record ${id} exceeds the consumer 2 MB exact-content limit; use the standalone session export`)
   const sha = digest(content)
-  return { ref: { owner: 'principles-ai', kind, id, revision: `sha256:${sha}`, digest: sha }, title, summary, updated_at: updatedAt, qualification, content }
+  const display = (text, maximum) => text.slice(0, maximum).replace(/[\uD800-\uDBFF]$/u, '')
+  return { ref: { owner: 'principles-ai', kind, id, revision: `sha256:${sha}`, digest: sha }, title: display(title, 500), summary: display(summary, 2000), updated_at: updatedAt, qualification: display(qualification, 1000), content }
 }
 
 export function renderStudyNotes(session) {

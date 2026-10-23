@@ -129,6 +129,7 @@ test('private store rejects corpus paths, symlink escapes, concurrent writers, c
 test('Signals export is explicit, exact, deterministic and excludes private sessions by default', (t) => {
   const f = fixture(t)
   const session = f.service.start({ name: 'Private synthetic study', principleIds: ['PRN-000001'] })
+  f.service.cue(session.id, 'PRN-000001', 'A'.repeat(3000))
   const first = f.service.knowledgeExport('synthetic-owner')
   assert.equal(first.records.length, 1)
   assert.equal(first.exported_at, '2026-10-23T12:00:00.000Z')
@@ -138,6 +139,8 @@ test('Signals export is explicit, exact, deterministic and excludes private sess
   assert.equal(all.records.length, 2)
   assert.equal(all.records[1].ref.kind, 'study-session')
   assert.equal(all.records[1].ref.id, session.id)
+  assert.equal(all.records[1].summary.length, 2000)
+  assert.equal(JSON.parse(all.records[1].content).cards[0].cue.length, 3000)
   for (const record of all.records) {
     const sha = createHash('sha256').update(record.content, 'utf8').digest('hex')
     assert.equal(record.ref.digest, sha)
