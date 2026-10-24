@@ -199,12 +199,15 @@ export function createStudyService({ root, store = null, revision, clock = () =>
       const source = card.source_history[card.source_index]
       const sourceStatus = sourceState(card, catalog, error)
       const matching = path.completions.filter((item) => item.step_id === step.id && item.step_sha256 === stepDigest(step) && item.source_sha256 === source.input_sha256 && item.source_index === card.source_index)
-      const validRecord = sourceStatus.status === 'current' && matching.find((item) => item.definition_revision <= path.revision && step.prerequisites.every((id) => statuses.get(id) === 'recorded'))
+      const validRecord = ['current', 'unavailable'].includes(sourceStatus.status) && matching.find((item) => {
+        const attempt = item.attempt_id && card.attempts.find((saved) => saved.id === item.attempt_id)
+        return (!item.attempt_id || attempt?.cue === step.prompt) && item.definition_revision <= path.revision && step.prerequisites.every((id) => statuses.get(id) === 'recorded')
+      })
       const staleRecord = path.completions.some((item) => item.step_id === step.id)
       const blockedBy = step.prerequisites.filter((id) => statuses.get(id) !== 'recorded')
       const status = validRecord ? 'recorded' : blockedBy.length ? 'blocked' : sourceStatus.status !== 'current' ? 'unavailable' : staleRecord ? 'review' : 'available'
       statuses.set(step.id, status)
-      const related = sourceStatus.status === 'current' ? card.attempts.filter((attempt) => attempt.rating && attempt.revealed_at && attempt.source_index === card.source_index) : []
+      const related = sourceStatus.status === 'current' ? card.attempts.filter((attempt) => attempt.rating && attempt.revealed_at && attempt.cue === step.prompt && attempt.source_index === card.source_index) : []
       return { ...copy(step), status, ...(blockedBy.length ? { blocked_by: blockedBy } : {}), source_state: sourceStatus, evidence: validRecord ? { id: validRecord.id, at: validRecord.at, observation: validRecord.observation, attempt_id: validRecord.attempt_id } : null, prior_evidence: staleRecord ? path.completions.filter((item) => item.step_id === step.id).map(copy) : [], available_attempt_ids: related.map((attempt) => attempt.id) }
     })
     return { goal: path.goal, revision: path.revision, definitions: copy(path.definitions), steps, completions: copy(path.completions), qualification: 'Private learning path and learner-reported evidence; not mastery, verified execution, or corpus evidence.' }
@@ -269,6 +272,23 @@ export function createStudyService({ root, store = null, revision, clock = () =>
       })
     },
     pathView(id) { const session = sessionIn(readStore(paths()), id); if (!session.learning_path) throw new Error('Study session has no learning path'); const source = current(); return pathViewFor(session, source.catalog, source.error) },
+    pathAttempt(id, stepId, { expected_revision, text }) {
+      required(text, 'Explanation')
+      return mutate(id, (_, session, now) => {
+        const path = session.learning_path
+        if (!path) throw new Error('Study session has no learning path')
+        if (expected_revision !== path.revision) throw new Error(`Stale learning path revision; current revision is ${path.revision}`)
+        const step = path.definitions.at(-1).steps.find((item) => item.id === stepId)
+        if (!step) throw new Error(`Unknown learning step ${stepId}`)
+        const source = current()
+        const state = pathViewFor(session, source.catalog, source.error).steps.find((item) => item.id === stepId)
+        if (!['available', 'review'].includes(state.status)) throw new Error(`Learning step ${stepId} is ${state.status}${state.blocked_by ? `; blocked by ${state.blocked_by.join(', ')}` : ''}`)
+        const card = cardIn(session, step.principle_id)
+        if (card.attempts.some((attempt) => !attempt.rating)) throw new Error('Complete the pending attempt before starting another')
+        if (state.source_state.status !== 'current') throw new Error('Saved source is changed, inactive, missing, or unavailable; explicitly refresh an eligible source before a new attempt')
+        card.attempts.push({ id: required(idFactory(), 'Attempt ID', 200), explanation: text.trim(), cue: step.prompt, source_index: card.source_index, created_at: now, revealed_at: null, rating: null, example: null, revisit_on: null, rated_at: null })
+      })
+    },
     revisePath(id, { expected_revision, goal, steps }) {
       return mutate(id, (_, session, now) => {
         const path = session.learning_path
@@ -297,11 +317,11 @@ export function createStudyService({ root, store = null, revision, clock = () =>
         if (step.kind === 'explain') {
           if (!attempt_id) throw new Error('Explanation completion must reference a finished, revealed, and rated attempt for this principle')
           const attempt = attemptIn(card, attempt_id)
-          if (!attempt.rating || !attempt.revealed_at || attempt.source_index !== card.source_index || state.source_state.status !== 'current') throw new Error('Explanation evidence must be a finished attempt bound to the current saved source snapshot')
+          if (!attempt.rating || !attempt.revealed_at || attempt.cue !== step.prompt || attempt.source_index !== card.source_index || state.source_state.status !== 'current') throw new Error('Explanation evidence must be a finished attempt for this exact step prompt and current saved source snapshot')
         } else if (observation === null) throw new Error('Application completion must include the learner-reported observation')
         if (attempt_id) {
           const attempt = attemptIn(card, attempt_id)
-          if (!attempt.rating || !attempt.revealed_at || attempt.source_index !== card.source_index || state.source_state.status !== 'current') throw new Error('Linked attempt must be finished and bound to the current saved source snapshot')
+          if (!attempt.rating || !attempt.revealed_at || attempt.cue !== step.prompt || attempt.source_index !== card.source_index || state.source_state.status !== 'current') throw new Error('Linked attempt must be finished for this exact step prompt and bound to the current saved source snapshot')
         }
         const note = step.kind === 'apply' ? required(observation, 'Learner-reported observation', 4000) : ''
         path.completions.push({ id: required(idFactory(), 'Evidence ID', 200), step_id: step.id, definition_revision: path.revision, step_sha256: stepDigest(step), source_sha256: card.source_history[card.source_index].input_sha256, source_index: card.source_index, attempt_id, observation: note, at: now })

@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, renameSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -33,12 +33,20 @@ test('private learning path records rated explanation and learner-reported appli
   assert.deepEqual(path.learning_path.steps.map((step) => step.status), ['available', 'blocked', 'available'])
   assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: 'fake' }), /Unknown attempt/)
   assert.throws(() => f.service.recordPathStep(path.id, 'apply-one', { expected_revision: 1, observation: 'did it' }), /blocked/)
-  const attempt = f.service.attempt(path.id, 'PRN-000001', 'My explanation before reveal.')
-  const attemptId = attempt.cards.find((card) => card.principle_id === 'PRN-000001').attempts[0].id
-  assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: attemptId }), /finished attempt bound/)
+  const generic = f.service.attempt(path.id, 'PRN-000001', 'Generic explanation before reveal.')
+  const genericId = generic.cards[0].attempts[0].id
+  assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: genericId }), /finished attempt/)
+  f.service.reveal(path.id, 'PRN-000001', genericId)
+  f.service.rate(path.id, 'PRN-000001', genericId, { rating: 'partial', example: 'My generic practice example.', revisitOn: '2026-10-30' })
+  assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: genericId }), /exact step prompt/)
+  assert.deepEqual(f.service.pathView(path.id).steps[0].available_attempt_ids, [])
+  const attempt = f.service.pathAttempt(path.id, 'explain-one', { expected_revision: 1, text: 'My explanation before reveal.' })
+  const attemptId = attempt.cards[0].attempts.at(-1).id
+  assert.equal(attempt.cards[0].attempts.at(-1).cue, steps[0].prompt)
   f.service.reveal(path.id, 'PRN-000001', attemptId)
   f.service.rate(path.id, 'PRN-000001', attemptId, { rating: 'partial', example: 'My own example.', revisitOn: '2026-10-30' })
   f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: attemptId })
+  assert.throws(() => f.service.recordPathStep(path.id, 'explain-two', { expected_revision: 1, attempt_id: attemptId }), /exact step prompt/)
   assert.deepEqual(f.service.pathView(path.id).steps.map((step) => step.status), ['recorded', 'available', 'available'])
   f.service.recordPathStep(path.id, 'apply-one', { expected_revision: 1, observation: 'I used a disposable restore preview and retained an unrelated file.' })
   const reopened = createStudyService(f.options).pathView(path.id)
@@ -51,7 +59,7 @@ test('private learning path records rated explanation and learner-reported appli
 test('revisions reject stale writes, retain old evidence, and changed step meaning needs review', (t) => {
   const f = fixture(t)
   const path = f.service.createPath({ name: 'Revision test', goal: 'Explain the principle', principleIds: ['PRN-000001'], steps: [steps[0]] })
-  const attempt = f.service.attempt(path.id, 'PRN-000001', 'Explanation')
+  const attempt = f.service.pathAttempt(path.id, 'explain-one', { expected_revision: 1, text: 'Explanation' })
   const attemptId = attempt.cards[0].attempts[0].id
   f.service.reveal(path.id, 'PRN-000001', attemptId)
   f.service.rate(path.id, 'PRN-000001', attemptId, { rating: 'comfortable', example: 'My example', revisitOn: '2026-10-30' })
@@ -61,17 +69,27 @@ test('revisions reject stale writes, retain old evidence, and changed step meani
   assert.equal(revised.learning_path.revision, 2)
   assert.equal(revised.learning_path.steps[0].status, 'review')
   assert.equal(revised.learning_path.steps[0].prior_evidence.length, 1)
+  assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 2, attempt_id: attemptId }), /exact step prompt/)
+  const beforeNewAttempt = readFileSync(join(f.store, 'sessions.json'), 'utf8')
+  assert.throws(() => f.service.pathAttempt(path.id, 'explain-one', { expected_revision: 1, text: 'Stale prompt' }), /Stale learning path revision/)
+  assert.equal(readFileSync(join(f.store, 'sessions.json'), 'utf8'), beforeNewAttempt)
+  const newAttempt = f.service.pathAttempt(path.id, 'explain-one', { expected_revision: 2, text: 'Explanation of the changed prompt' })
+  const newAttemptId = newAttempt.cards[0].attempts.at(-1).id
+  f.service.reveal(path.id, 'PRN-000001', newAttemptId)
+  f.service.rate(path.id, 'PRN-000001', newAttemptId, { rating: 'partial', example: 'My updated example', revisitOn: '2026-10-30' })
+  f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 2, attempt_id: newAttemptId })
+  assert.equal(f.service.pathView(path.id).steps[0].status, 'recorded')
   const before = readFileSync(join(f.store, 'sessions.json'), 'utf8')
   assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: attemptId }), /Stale learning path revision/)
   assert.equal(readFileSync(join(f.store, 'sessions.json'), 'utf8'), before)
   assert.throws(() => f.service.revisePath(path.id, { expected_revision: 2, goal: 'bad', steps: [{ ...steps[0], prerequisites: ['later'] }] }), /earlier existing steps/)
-  assert.equal(f.service.exportSession(path.id).learning_path.completions.length, 1)
+  assert.equal(f.service.exportSession(path.id).learning_path.completions.length, 2)
 })
 
 test('changed source keeps path evidence historical until explicit source refresh and repetition', (t) => {
   const f = fixture(t)
   const path = f.service.createPath({ name: 'Source binding', goal: 'Explain current source', principleIds: ['PRN-000001'], steps: [steps[0]] })
-  const attempt = f.service.attempt(path.id, 'PRN-000001', 'My first explanation.')
+  const attempt = f.service.pathAttempt(path.id, 'explain-one', { expected_revision: 1, text: 'My first explanation.' })
   const attemptId = attempt.cards[0].attempts[0].id
   f.service.reveal(path.id, 'PRN-000001', attemptId)
   f.service.rate(path.id, 'PRN-000001', attemptId, { rating: 'partial', example: 'My example', revisitOn: '2026-10-30' })
@@ -83,6 +101,27 @@ test('changed source keeps path evidence historical until explicit source refres
   assert.equal(changed.prior_evidence.length, 1)
   f.service.refresh(path.id, 'PRN-000001')
   assert.equal(f.service.pathView(path.id).steps[0].status, 'review')
+})
+
+test('unavailable source preserves already recorded progress but refuses new path actions', (t) => {
+  const f = fixture(t)
+  const path = f.service.createPath({ name: 'Offline source', goal: 'Explain then apply', principleIds: ['PRN-000001'], steps })
+  const attempt = f.service.pathAttempt(path.id, 'explain-one', { expected_revision: 1, text: 'My explanation.' })
+  const attemptId = attempt.cards[0].attempts[0].id
+  f.service.reveal(path.id, 'PRN-000001', attemptId)
+  f.service.rate(path.id, 'PRN-000001', attemptId, { rating: 'again', example: 'My own report.', revisitOn: '2026-10-30' })
+  f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: attemptId })
+  renameSync(f.root, `${f.root}-offline`)
+  const offline = f.service.pathView(path.id)
+  assert.equal(offline.steps[0].status, 'recorded')
+  assert.equal(offline.steps[0].evidence.attempt_id, attemptId)
+  assert.equal(offline.steps[0].source_state.status, 'unavailable')
+  assert.equal(offline.steps[1].status, 'unavailable')
+  assert.deepEqual(offline.steps[1].blocked_by, undefined)
+  assert.equal(offline.steps[2].status, 'unavailable')
+  assert.throws(() => f.service.pathAttempt(path.id, 'explain-two', { expected_revision: 1, text: 'Cannot start offline.' }), /unavailable/)
+  assert.throws(() => f.service.recordPathStep(path.id, 'apply-one', { expected_revision: 1, observation: 'Cannot record offline.' }), /unavailable/)
+  assert.match(f.service.exportSession(path.id, 'markdown'), /My explanation/)
 })
 
 test('standalone CLI creates, reads, and reopens a path in separate processes', (t) => {
@@ -97,7 +136,7 @@ test('standalone CLI creates, reads, and reopens a path in separate processes', 
   assert.equal(reopened.goal, 'Explain and apply a principle')
   assert.equal(reopened.steps[0].status, 'available')
   const args = ['--session', created.id, '--principle', 'PRN-000001']
-  const attempt = run('attempt', [...args, '--text', 'CLI explanation before reveal.'])
+  const attempt = run('path-attempt', ['--session', created.id, '--step', 'explain-one', '--expected-revision', '1', '--text', 'CLI explanation before reveal.'])
   const attemptId = attempt.cards[0].attempts[0].id
   run('reveal', [...args, '--attempt', attemptId])
   run('rate', [...args, '--attempt', attemptId, '--rating', 'partial', '--example', 'CLI learner example.', '--revisit', '2026-10-30'])
