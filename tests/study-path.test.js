@@ -86,6 +86,41 @@ test('revisions reject stale writes, retain old evidence, and changed step meani
   assert.equal(f.service.exportSession(path.id).learning_path.completions.length, 2)
 })
 
+test('dependent application evidence binds the exact prerequisite completion it followed', (t) => {
+  const f = fixture(t)
+  const path = f.service.createPath({ name: 'Bound progression', goal: 'Explain then apply', principleIds: ['PRN-000001'], steps: steps.slice(0, 2) })
+  const completeExplanation = (text) => {
+    const attempt = f.service.pathAttempt(path.id, 'explain-one', { expected_revision: f.service.pathView(path.id).revision, text })
+    const attemptId = attempt.cards[0].attempts.at(-1).id
+    f.service.reveal(path.id, 'PRN-000001', attemptId)
+    f.service.rate(path.id, 'PRN-000001', attemptId, { rating: 'partial', example: 'My explanation example.', revisitOn: '2026-10-30' })
+    f.service.recordPathStep(path.id, 'explain-one', { expected_revision: f.service.pathView(path.id).revision, attempt_id: attemptId })
+  }
+  completeExplanation('First explanation.')
+  f.service.recordPathStep(path.id, 'apply-one', { expected_revision: 1, observation: 'I applied the first explanation in a disposable case.' })
+  const first = f.service.pathView(path.id)
+  const firstA = first.steps[0].evidence.id
+  const oldB = first.steps[1].evidence.id
+  assert.deepEqual(first.completions.find((item) => item.id === oldB).prerequisite_bindings, [{
+    step_id: 'explain-one', completion_id: firstA,
+    step_sha256: first.completions.find((item) => item.id === firstA).step_sha256,
+    source_sha256: first.completions.find((item) => item.id === firstA).source_sha256
+  }])
+  const changedSteps = [{ ...steps[0], prompt: 'Explain the decision again under a changed condition.' }, steps[1]]
+  f.service.revisePath(path.id, { expected_revision: 1, goal: 'Explain and apply again', steps: changedSteps })
+  completeExplanation('Second explanation.')
+  const afterA = f.service.pathView(path.id)
+  assert.equal(afterA.steps[0].status, 'recorded')
+  assert.equal(afterA.steps[1].status, 'review')
+  assert.equal(afterA.steps[1].evidence, null)
+  assert.equal(afterA.steps[1].prior_evidence[0].id, oldB)
+  f.service.recordPathStep(path.id, 'apply-one', { expected_revision: 2, observation: 'I repeated the application after the changed explanation.' })
+  const completed = f.service.pathView(path.id)
+  assert.equal(completed.steps[1].status, 'recorded')
+  assert.equal(completed.steps[1].prior_evidence.length, 2)
+  assert.equal(completed.completions.find((item) => item.id === completed.steps[1].evidence.id).prerequisite_bindings[0].completion_id, completed.steps[0].evidence.id)
+})
+
 test('changed source keeps path evidence historical until explicit source refresh and repetition', (t) => {
   const f = fixture(t)
   const path = f.service.createPath({ name: 'Source binding', goal: 'Explain current source', principleIds: ['PRN-000001'], steps: [steps[0]] })
