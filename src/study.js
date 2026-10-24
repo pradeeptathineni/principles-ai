@@ -8,6 +8,8 @@ import { safeResolve } from './repository.js'
 import { loadState } from './validator.js'
 
 const MAX_BYTES = 16 * 1024 * 1024
+const MAX_PATH_STEPS = 32
+const MAX_PATH_REVISIONS = 32
 const QUALIFICATION = 'Personal practice notes and self-ratings; not measured mastery or empirical efficacy.'
 const digest = (value) => createHash('sha256').update(value, 'utf8').digest('hex')
 const copy = (value) => structuredClone(value)
@@ -78,7 +80,7 @@ function validStore(value) {
   if (!ownKeys(value, ['schema_version', 'sessions']) || value.schema_version !== 1 || !Array.isArray(value.sessions)) fail()
   const ids = new Set()
   for (const session of value.sessions) {
-    if (!ownKeys(session, ['schema_version', 'id', 'name', 'created_at', 'updated_at', 'qualification', 'cards']) || session.schema_version !== 1 || !Array.isArray(session.cards) || !session.cards.length || ids.has(session.id)) fail()
+    if (!ownKeys(session, ['schema_version', 'id', 'name', 'created_at', 'updated_at', 'qualification', 'cards', 'learning_path']) || session.schema_version !== 1 || !Array.isArray(session.cards) || !session.cards.length || ids.has(session.id)) fail()
     for (const key of ['id', 'name', 'created_at', 'updated_at', 'qualification']) if (typeof session[key] !== 'string' || !session[key]) fail()
     ids.add(session.id)
     const cards = new Set()
@@ -105,8 +107,57 @@ function validStore(value) {
       }
       if (unfinished > 1 || (unfinished && card.attempts.at(-1)?.rating !== null)) fail()
     }
+    if (session.learning_path) validatePath(session.learning_path, cards, session)
   }
   return value
+}
+
+function stepDigest(step) { return digest(canonicalize(step)) }
+function validateSteps(goal, steps, selected) {
+  required(goal, 'Learning goal', 4000)
+  if (!Array.isArray(steps) || !steps.length || steps.length > MAX_PATH_STEPS) throw new Error(`A learning path needs 1–${MAX_PATH_STEPS} steps`)
+  const ids = new Set()
+  for (const step of steps) {
+    if (!ownKeys(step, ['id', 'title', 'kind', 'principle_id', 'prompt', 'prerequisites'])) throw new Error('Each learning step needs id, title, kind, principle_id, prompt, and prerequisites')
+    required(step.id, 'Step ID', 100); required(step.title, 'Step title', 300); required(step.prompt, 'Step prompt', 4000)
+    if (ids.has(step.id)) throw new Error(`Duplicate learning step ID ${step.id}`)
+    if (!['explain', 'apply'].includes(step.kind)) throw new Error(`Step ${step.id} kind must be explain or apply`)
+    if (!selected.has(step.principle_id)) throw new Error(`Step ${step.id} must name a selected principle`)
+    if (!Array.isArray(step.prerequisites) || new Set(step.prerequisites).size !== step.prerequisites.length) throw new Error(`Step ${step.id} prerequisites must be unique earlier step IDs`)
+    if (step.prerequisites.some((id) => !ids.has(id))) throw new Error(`Step ${step.id} prerequisites must name earlier existing steps`)
+    ids.add(step.id)
+  }
+}
+
+function validatePath(path, selected, session) {
+  if (!ownKeys(path, ['goal', 'revision', 'definitions', 'completions']) || !Number.isInteger(path.revision) || path.revision < 1 || !Array.isArray(path.definitions) || !path.definitions.length || path.definitions.length > MAX_PATH_REVISIONS || !Array.isArray(path.completions)) throw new Error('Malformed learning path history')
+  for (const [index, definition] of path.definitions.entries()) {
+    if (!ownKeys(definition, ['revision', 'goal', 'steps', 'at']) || definition.revision !== index + 1 || typeof definition.at !== 'string' || !Array.isArray(definition.steps)) throw new Error('Malformed learning path definition')
+    validateSteps(definition.goal, definition.steps, selected)
+  }
+  if (path.definitions.at(-1).revision !== path.revision || path.goal !== path.definitions.at(-1).goal) throw new Error('Learning path current revision does not match its definition history')
+  const evidenceIds = new Set()
+  const previousEvidence = new Map()
+  for (const record of path.completions) {
+    if (!ownKeys(record, ['id', 'step_id', 'definition_revision', 'step_sha256', 'source_sha256', 'source_index', 'attempt_id', 'observation', 'at', 'prerequisite_bindings']) || typeof record.id !== 'string' || typeof record.step_id !== 'string' || !Number.isInteger(record.definition_revision) || !Number.isInteger(record.source_index) || typeof record.step_sha256 !== 'string' || typeof record.source_sha256 !== 'string' || (record.attempt_id !== null && typeof record.attempt_id !== 'string') || typeof record.observation !== 'string' || typeof record.at !== 'string') throw new Error('Malformed learning path evidence history')
+    if (evidenceIds.has(record.id)) throw new Error('Duplicate learning path evidence ID')
+    evidenceIds.add(record.id)
+    const definition = path.definitions.find((item) => item.revision === record.definition_revision)
+    const step = definition?.steps.find((item) => item.id === record.step_id)
+    const card = session.cards.find((item) => item.principle_id === step?.principle_id)
+    if (!step || !card || stepDigest(step) !== record.step_sha256 || card.source_history[record.source_index]?.input_sha256 !== record.source_sha256) throw new Error('Learning path evidence does not match its saved definition and source')
+    if (step.kind === 'explain' && !record.attempt_id || step.kind === 'apply' && !record.observation.trim()) throw new Error('Learning path evidence lacks its required attempt or observation')
+    if (record.attempt_id && !card.attempts.some((attempt) => attempt.id === record.attempt_id && attempt.rating && attempt.revealed_at && attempt.source_index === record.source_index)) throw new Error('Learning path evidence references no matching finished attempt')
+    if (record.prerequisite_bindings !== undefined) {
+      if (!Array.isArray(record.prerequisite_bindings) || record.prerequisite_bindings.length !== step.prerequisites.length) throw new Error('Learning path evidence has invalid prerequisite bindings')
+      for (const [index, binding] of record.prerequisite_bindings.entries()) {
+        if (!ownKeys(binding, ['step_id', 'completion_id', 'step_sha256', 'source_sha256']) || binding.step_id !== step.prerequisites[index] || typeof binding.completion_id !== 'string' || !/^[a-f0-9]{64}$/.test(binding.step_sha256) || !/^[a-f0-9]{64}$/.test(binding.source_sha256)) throw new Error('Learning path evidence has malformed prerequisite bindings')
+        const prior = previousEvidence.get(binding.completion_id)
+        if (!prior || prior.step_id !== binding.step_id || prior.step_sha256 !== binding.step_sha256 || prior.source_sha256 !== binding.source_sha256) throw new Error('Learning path evidence prerequisite binding does not match earlier evidence')
+      }
+    }
+    previousEvidence.set(record.id, record)
+  }
 }
 
 function storePaths(root, directory, create) {
@@ -141,10 +192,41 @@ export function createStudyService({ root, store = null, revision, clock = () =>
   function attemptIn(card, id) { const attempt = card.attempts.find((item) => item.id === id); if (!attempt) throw new Error(`Unknown attempt ${id}`); return attempt }
   function view(session, full = false) {
     const now = current()
-    return { schema_version: 1, id: session.id, name: session.name, created_at: session.created_at, updated_at: session.updated_at, qualification: session.qualification, cards: session.cards.map((card) => {
+    const result = { schema_version: 1, id: session.id, name: session.name, created_at: session.created_at, updated_at: session.updated_at, qualification: session.qualification, cards: session.cards.map((card) => {
       const saved = card.source_history[card.source_index]
       return { principle_id: card.principle_id, title: saved.title, cue: card.cue, cue_history: copy(card.cue_history), revisit_on: card.revisit_on, revisit_history: copy(card.revisit_history), source_state: sourceState(card, now.catalog, now.error), saved_source: { id: saved.id, title: saved.title, source_revision: saved.source_revision, input_sha256: saved.input_sha256 }, ...(full ? { source_history: copy(card.source_history), source_index: card.source_index } : {}), attempts: card.attempts.map((attempt) => ({ ...copy(attempt), ...(full || attempt.revealed_at ? { source: copy(card.source_history[attempt.source_index]) } : {}) })) }
     }) }
+    if (session.learning_path) result.learning_path = pathViewFor(session, now.catalog, now.error)
+    return result
+  }
+  function pathViewFor(session, catalog, error) {
+    const path = session.learning_path
+    const definition = path.definitions.at(-1)
+    const cards = new Map(session.cards.map((card) => [card.principle_id, card]))
+    const statuses = new Map()
+    const validEvidence = new Map()
+    const steps = definition.steps.map((step) => {
+      const card = cards.get(step.principle_id)
+      const source = card.source_history[card.source_index]
+      const sourceStatus = sourceState(card, catalog, error)
+      const matching = path.completions.filter((item) => item.step_id === step.id && item.step_sha256 === stepDigest(step) && item.source_sha256 === source.input_sha256 && item.source_index === card.source_index)
+      const prerequisites = step.prerequisites.map((id) => validEvidence.get(id))
+      const prerequisitesRecorded = prerequisites.every(Boolean)
+      const prerequisiteBindings = prerequisitesRecorded ? prerequisites.map((item) => ({ step_id: item.step_id, completion_id: item.id, step_sha256: item.step_sha256, source_sha256: item.source_sha256 })) : []
+      const validRecord = ['current', 'unavailable'].includes(sourceStatus.status) && matching.find((item) => {
+        const attempt = item.attempt_id && card.attempts.find((saved) => saved.id === item.attempt_id)
+        const boundPrerequisites = item.prerequisite_bindings ?? (step.prerequisites.length ? null : [])
+        return prerequisitesRecorded && canonicalize(boundPrerequisites) === canonicalize(prerequisiteBindings) && (!item.attempt_id || attempt?.cue === step.prompt) && item.definition_revision <= path.revision
+      })
+      const staleRecord = path.completions.some((item) => item.step_id === step.id)
+      const blockedBy = step.prerequisites.filter((id) => statuses.get(id) !== 'recorded')
+      const status = validRecord ? 'recorded' : blockedBy.length ? 'blocked' : sourceStatus.status !== 'current' ? 'unavailable' : staleRecord ? 'review' : 'available'
+      statuses.set(step.id, status)
+      if (validRecord) validEvidence.set(step.id, validRecord)
+      const related = sourceStatus.status === 'current' ? card.attempts.filter((attempt) => attempt.rating && attempt.revealed_at && attempt.cue === step.prompt && attempt.source_index === card.source_index) : []
+      return { ...copy(step), status, ...(blockedBy.length ? { blocked_by: blockedBy } : {}), source_state: sourceStatus, evidence: validRecord ? { id: validRecord.id, at: validRecord.at, observation: validRecord.observation, attempt_id: validRecord.attempt_id } : null, prior_evidence: staleRecord ? path.completions.filter((item) => item.step_id === step.id).map(copy) : [], available_attempt_ids: related.map((attempt) => attempt.id) }
+    })
+    return { goal: path.goal, revision: path.revision, definitions: copy(path.definitions), steps, completions: copy(path.completions), qualification: 'Private learning path and learner-reported evidence; not mastery, verified execution, or corpus evidence.' }
   }
   function mutate(id, update) {
     const p = paths(true)
@@ -187,6 +269,84 @@ export function createStudyService({ root, store = null, revision, clock = () =>
         }) }
         data.sessions.push(session)
         return session
+      })
+    },
+    createPath({ name, goal, principleIds, steps }) {
+      required(name, 'Path name', 300)
+      if (!Array.isArray(principleIds) || !principleIds.length || principleIds.length > 100 || new Set(principleIds).size !== principleIds.length) throw new Error('Choose one or more unique accepted active principle IDs (maximum 100)')
+      const source = catalog()
+      const selected = principleIds.map((id) => { const record = source.records.get(id); if (!record?.eligible) throw new Error(`Principle ${id} is missing or inactive; select accepted active principles`); return record })
+      validateSteps(goal, steps, new Set(principleIds))
+      return mutate(null, (data, _, now) => {
+        const cards = selected.map((record) => {
+          const cue = `Explain “${record.title}” in your own words. When would you apply it, and what limits matter?`
+          return { principle_id: record.id, cue, cue_history: [{ text: cue, at: now }], source_history: [copy(record)], source_index: 0, attempts: [], revisit_on: null, revisit_history: [] }
+        })
+        const session = { schema_version: 1, id: required(idFactory(), 'Session ID', 200), name: name.trim(), created_at: now, updated_at: now, qualification: QUALIFICATION, cards, learning_path: { goal: goal.trim(), revision: 1, definitions: [{ revision: 1, goal: goal.trim(), steps: copy(steps), at: now }], completions: [] } }
+        data.sessions.push(session)
+        return session
+      })
+    },
+    pathView(id) { const session = sessionIn(readStore(paths()), id); if (!session.learning_path) throw new Error('Study session has no learning path'); const source = current(); return pathViewFor(session, source.catalog, source.error) },
+    pathAttempt(id, stepId, { expected_revision, text }) {
+      required(text, 'Explanation')
+      return mutate(id, (_, session, now) => {
+        const path = session.learning_path
+        if (!path) throw new Error('Study session has no learning path')
+        if (expected_revision !== path.revision) throw new Error(`Stale learning path revision; current revision is ${path.revision}`)
+        const step = path.definitions.at(-1).steps.find((item) => item.id === stepId)
+        if (!step) throw new Error(`Unknown learning step ${stepId}`)
+        const source = current()
+        const state = pathViewFor(session, source.catalog, source.error).steps.find((item) => item.id === stepId)
+        if (!['available', 'review'].includes(state.status)) throw new Error(`Learning step ${stepId} is ${state.status}${state.blocked_by ? `; blocked by ${state.blocked_by.join(', ')}` : ''}`)
+        const card = cardIn(session, step.principle_id)
+        if (card.attempts.some((attempt) => !attempt.rating)) throw new Error('Complete the pending attempt before starting another')
+        if (state.source_state.status !== 'current') throw new Error('Saved source is changed, inactive, missing, or unavailable; explicitly refresh an eligible source before a new attempt')
+        card.attempts.push({ id: required(idFactory(), 'Attempt ID', 200), explanation: text.trim(), cue: step.prompt, source_index: card.source_index, created_at: now, revealed_at: null, rating: null, example: null, revisit_on: null, rated_at: null })
+      })
+    },
+    revisePath(id, { expected_revision, goal, steps }) {
+      return mutate(id, (_, session, now) => {
+        const path = session.learning_path
+        if (!path) throw new Error('Study session has no learning path')
+        if (expected_revision !== path.revision) throw new Error(`Stale learning path revision; current revision is ${path.revision}`)
+        if (path.revision >= MAX_PATH_REVISIONS) throw new Error(`Learning path history limit is ${MAX_PATH_REVISIONS} definitions`)
+        validateSteps(goal, steps, new Set(session.cards.map((card) => card.principle_id)))
+        path.revision++
+        path.goal = goal.trim()
+        path.definitions.push({ revision: path.revision, goal: path.goal, steps: copy(steps), at: now })
+      })
+    },
+    recordPathStep(id, stepId, { expected_revision, attempt_id = null, observation = null }) {
+      return mutate(id, (_, session, now) => {
+        const path = session.learning_path
+        if (!path) throw new Error('Study session has no learning path')
+        if (expected_revision !== path.revision) throw new Error(`Stale learning path revision; current revision is ${path.revision}`)
+        const definition = path.definitions.at(-1)
+        const step = definition.steps.find((item) => item.id === stepId)
+        if (!step) throw new Error(`Unknown learning step ${stepId}`)
+        const source = current()
+        const currentView = pathViewFor(session, source.catalog, source.error)
+        const state = currentView.steps.find((item) => item.id === stepId)
+        if (!['available', 'review'].includes(state.status)) throw new Error(`Learning step ${stepId} is ${state.status}${state.blocked_by ? `; blocked by ${state.blocked_by.join(', ')}` : ''}`)
+        const card = cardIn(session, step.principle_id)
+        if (step.kind === 'explain') {
+          if (!attempt_id) throw new Error('Explanation completion must reference a finished, revealed, and rated attempt for this principle')
+          const attempt = attemptIn(card, attempt_id)
+          if (!attempt.rating || !attempt.revealed_at || attempt.cue !== step.prompt || attempt.source_index !== card.source_index || state.source_state.status !== 'current') throw new Error('Explanation evidence must be a finished attempt for this exact step prompt and current saved source snapshot')
+        } else if (observation === null) throw new Error('Application completion must include the learner-reported observation')
+        if (attempt_id) {
+          const attempt = attemptIn(card, attempt_id)
+          if (!attempt.rating || !attempt.revealed_at || attempt.cue !== step.prompt || attempt.source_index !== card.source_index || state.source_state.status !== 'current') throw new Error('Linked attempt must be finished for this exact step prompt and bound to the current saved source snapshot')
+        }
+        const prerequisite_bindings = step.prerequisites.map((prerequisiteId) => {
+          const priorStep = currentView.steps.find((item) => item.id === prerequisiteId)
+          const prior = currentView.completions.find((item) => item.id === priorStep?.evidence?.id)
+          if (!prior) throw new Error(`Prerequisite ${prerequisiteId} has no current matching evidence`)
+          return { step_id: prior.step_id, completion_id: prior.id, step_sha256: prior.step_sha256, source_sha256: prior.source_sha256 }
+        })
+        const note = step.kind === 'apply' ? required(observation, 'Learner-reported observation', 4000) : ''
+        path.completions.push({ id: required(idFactory(), 'Evidence ID', 200), step_id: step.id, definition_revision: path.revision, step_sha256: stepDigest(step), source_sha256: card.source_history[card.source_index].input_sha256, source_index: card.source_index, prerequisite_bindings, attempt_id, observation: note, at: now })
       })
     },
     sessions() { return { sessions: readStore(paths()).sessions.map((session) => view(session)) } },
