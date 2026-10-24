@@ -23,6 +23,24 @@ node bin/principles-study.js export --root CORPUS_ROOT --revision SOURCE_REVISIO
 
 Normal session views omit exact source content until an explanation has been recorded and that attempt revealed. The explicit `list` source reader and `export` actions intentionally disclose source content. An export is not an enforced learning protocol or a secrecy mechanism. Personal notes never become canonical corpus evidence.
 
+## Private learning paths
+
+A path adds a learner-authored goal, ordered explain/apply steps, earlier-step prerequisites, and evidence-bound progress to a private study session. It uses the same selected principle snapshots, attempts, and atomic `sessions.json` store. Creation is one write, and each command reloads the store, so paths reopen in another process. Definitions and evidence stay private; neither enters the public corpus.
+
+`path-create` takes a JSON array of steps. Each step has a unique `id`, `title`, `kind` (`explain` or `apply`), selected `principle_id`, learner-authored `prompt`, and `prerequisites` array. Prerequisites may name only earlier steps. The path supports at most 32 steps and 32 retained definitions. `path-revise` requires the current `--expected-revision`; it appends a definition. `path-view` reports `available`, `blocked`, `recorded`, `review`, or `unavailable`, with prerequisite blockers, saved source state, and prior evidence. Independent steps can remain available while another step is blocked.
+
+An explain step can be recorded only by linking a revealed, rated attempt for the selected principle whose source index is the current saved snapshot, while that snapshot still compares as current. Use the existing `attempt`, `reveal`, and `rate` commands first. An apply step requires an explicit `--observation`; it is labeled as the learner's report and is not independently verified. A linked attempt is optional, but must meet the same source and completion conditions. Neither a rating nor a model evaluates the report as correct. Changed step meaning, source snapshot, or prerequisites leaves old records in history and makes the step require review. Old sessions without `learning_path` remain valid.
+
+```sh
+node bin/principles-study.js path-create --root CORPUS_ROOT --revision SOURCE_REVISION --store PRIVATE_DIR --name PATH_NAME --goal 'Explain and apply a decision' --principles PRN-000001 --steps '[{"id":"explain","title":"Explain the principle","kind":"explain","principle_id":"PRN-000001","prompt":"State the decision and its limits.","prerequisites":[]},{"id":"apply","title":"Apply the principle","kind":"apply","principle_id":"PRN-000001","prompt":"Describe an application and what happened.","prerequisites":["explain"]}]'
+node bin/principles-study.js path-view --root CORPUS_ROOT --revision SOURCE_REVISION --store PRIVATE_DIR --session SESSION_ID
+node bin/principles-study.js path-record --root CORPUS_ROOT --revision SOURCE_REVISION --store PRIVATE_DIR --session SESSION_ID --step explain --expected-revision 1 --attempt ATTEMPT_ID
+node bin/principles-study.js path-record --root CORPUS_ROOT --revision SOURCE_REVISION --store PRIVATE_DIR --session SESSION_ID --step apply --expected-revision 1 --observation 'I tried it in a disposable example and noted the result.'
+node bin/principles-study.js path-revise --root CORPUS_ROOT --revision SOURCE_REVISION --store PRIVATE_DIR --session SESSION_ID --expected-revision 1 --goal 'Explain and apply the decision' --steps '[{"id":"explain","title":"Explain the principle","kind":"explain","principle_id":"PRN-000001","prompt":"State the decision and its limits.","prerequisites":[]}]'
+```
+
+Replace placeholders and step JSON with the learner's actual values. `export --format json|markdown` includes the path, definition history, saved evidence, and source qualifications alongside existing session detail. A revision conflict refuses without writing; invalid IDs, selected principles, dependencies, and bounds also fail closed.
+
 ## Reopen and source changes
 
 Each command reads the private store again, so restarting the process needs only the same explicit root, revision, store, and session ID. Saved source material is retained when the live owner is unavailable. Current comparisons report `current`, `changed`, `inactive`, `missing`, or `unavailable`. A changed revision, entry, referenced source input, taxonomy input, or identity ledger binding cannot silently replace a snapshot. `refresh --session ID --principle PRN-ID` explicitly appends the current eligible source and keeps earlier attempts attached to their earlier snapshot. Finish a pending attempt before refreshing. Missing or inactive sources cannot be refreshed or used for new attempts; their notes remain readable.
