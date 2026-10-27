@@ -685,7 +685,7 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       if (operation === 'propose') {
         let proposalInput = input
         if (!proposalInput?.research) {
-          exactObject(proposalInput, ['studyId', 'questionId', 'proposal'], 'Principle proposal request')
+          exactObject(proposalInput, ['studyId', 'questionId', 'proposal', 'supersedes'], 'Principle proposal request')
           if (!researchOwnerReader) throw new Error('Configure the accepted Research study reader first.')
           const research = await researchOwnerReader({
             studyId: required(proposalInput.studyId, 'Research study ID', 120),
