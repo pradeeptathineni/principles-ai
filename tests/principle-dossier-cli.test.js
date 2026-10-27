@@ -83,6 +83,16 @@ test('standalone dossier CLI recovers, revises, succeeds, adopts, activates and 
     return { code: result.status, stdout: result.stdout, stderr: result.stderr, value: result.stdout ? JSON.parse(result.stdout) : undefined }
   }
 
+  const duplicateOption = spawnSync(node, [join(repo, 'bin/principle-dossier.js'), 'list', '--root', syntheticRoot, '--root', syntheticRoot, '--store', store, '--targets', targets], { cwd: repo, encoding: 'utf8' })
+  assert.equal(duplicateOption.status, 2)
+  assert.match(duplicateOption.stderr, /Duplicate option --root/u)
+  const unknownOption = spawnSync(node, [join(repo, 'bin/principle-dossier.js'), 'list', '--root', syntheticRoot, '--store', store, '--targets', targets, '--typo'], { cwd: repo, encoding: 'utf8' })
+  assert.equal(unknownOption.status, 2)
+  assert.match(unknownOption.stderr, /Unknown option/u)
+  const missingRoot = spawnSync(node, [join(repo, 'bin/principle-dossier.js'), 'list', '--store', store, '--targets', targets], { cwd: repo, encoding: 'utf8' })
+  assert.equal(missingRoot.status, 2)
+  assert.match(missingRoot.stderr, /explicit --root/u)
+
   const initial = { proposal: proposal(), research: research('1') }
   const created = call('propose', initial, ids.proposal)
   assert.equal(created.code, 0, created.stderr)
@@ -98,10 +108,22 @@ test('standalone dossier CLI recovers, revises, succeeds, adopts, activates and 
   delete journal.completed_at
   writeFileSync(requestPath, `${JSON.stringify(journal, null, 2)}\n`)
   assert.equal(call('recover', undefined, ids.proposal).value.status, 'confirmed')
-  assert.equal(call('propose', { ...initial, proposal: proposal('Conflicting replay') }, ids.proposal).value.status, 'rejected')
+  const conflict = call('propose', { ...initial, proposal: proposal('Conflicting replay') }, ids.proposal)
+  assert.equal(conflict.value.status, 'rejected')
+  assert.equal(conflict.code, 1)
   const unseen = '12121212-1212-4121-8121-121212121212'
-  assert.equal(call('recover', undefined, unseen).value.status, 'not_seen')
-  assert.equal(call('propose', initial, unseen).value.status, 'not_seen')
+  const fenced = call('recover', undefined, unseen)
+  assert.equal(fenced.value.status, 'not_seen')
+  assert.equal(fenced.code, 1)
+  const fencedReuse = call('propose', initial, unseen)
+  assert.equal(fencedReuse.value.status, 'not_seen')
+  assert.equal(fencedReuse.code, 1)
+
+  const malformed = '13131313-1313-4131-8131-131313131313'
+  writeFileSync(join(store, 'requests', `${malformed}.json`), '{malformed journal\n')
+  const unknown = call('recover', undefined, malformed)
+  assert.equal(unknown.value.status, 'unknown')
+  assert.equal(unknown.code, 3)
 
   const revisedInput = {
     id: ids.proposal,
