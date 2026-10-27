@@ -151,3 +151,51 @@ test('standalone CLI can create and cold-read a contextual decision using the sa
   assert.equal(read.status, 0, read.stderr)
   assert.equal(JSON.parse(read.stdout).currentness.status, 'current')
 })
+
+test('one-claim critique is exact, recoverable and revised against a fresh basis without carrying old wording', (t) => {
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'principle-claim-critique-')))
+  t.after(() => rmSync(temporary, { recursive: true, force: true }))
+  const syntheticRoot = join(temporary, 'corpus')
+  copySyntheticRepository(syntheticRoot)
+  const selected = choicePair(syntheticRoot)
+  const store = join(temporary, 'private-atlas')
+  const entry = createPrincipleAtlasService({ root: syntheticRoot, store, ownerRevision: revision })
+  const shown = entry.show({ entryId: selected.ids[0] }).entry
+  const claim = [shown.statement, ...shown.why, ...shown.practices, ...shown.applicability, ...shown.goals].find((item) => item.sources.some((source) => source.sourceId === selected.sourceId))
+  assert.ok(claim)
+  const critiqueInput = (expectedCorpusRevision, text) => ({
+    title: 'Bounded claim critique', reviewer: 'Synthetic reviewer', context: 'A synthetic exception review.', principleIds: [shown.principleId], expectedCorpusRevision,
+    claimReview: { principleId: shown.principleId, field: claim.field, index: claim.index, claimSha256: claim.claimSha256, claimText: claim.text, sourceIds: claim.sources.map((item) => item.sourceId), category: 'exception', text }
+  })
+  const current = entry.compare({ entryIds: selected.ids }).corpusRevision
+  const firstId = '67676767-6767-4676-8676-676767676767'
+  const firstInput = critiqueInput(current, 'This authored statement needs an exception for the synthetic boundary case.')
+  const saved = entry.createDecision({ requestId: firstId, input: firstInput })
+  assert.equal(saved.status, 'confirmed', saved.message)
+  const oldVersion = saved.result.versions[0]
+  assert.equal(oldVersion.payload.claimReview.claimText, claim.text)
+  assert.equal(oldVersion.payload.applicability, undefined)
+  assert.match(oldVersion.payload.claimReview.qualification, /not external source text/)
+  const cold = createPrincipleAtlasService({ root: syntheticRoot, store, ownerRevision: revision })
+  assert.equal(cold.readDecision({ decisionId: firstId }).currentness.status, 'current')
+  assert.equal(cold.createDecision({ requestId: firstId, input: firstInput }).result.versions[0].sha256, oldVersion.sha256)
+
+  const sourcePath = join(syntheticRoot, `sources/${selected.sourceId}.yaml`)
+  const sourceBefore = readFileSync(sourcePath, 'utf8')
+  writeFileSync(sourcePath, sourceBefore.replace('status: active', 'status: withdrawn'))
+  assert.equal(cold.revisit({ decisionId: firstId }).currentness.status, 'changed')
+  const changedBasis = cold.compare({ entryIds: selected.ids }).corpusRevision
+  const newClaim = cold.show({ entryId: shown.principleId }).entry
+  const reopenedClaim = [newClaim.statement, ...newClaim.why, ...newClaim.practices, ...newClaim.applicability, ...newClaim.goals].find((item) => item.field === claim.field && item.index === claim.index)
+  const successorId = '78787878-7878-4787-8787-787878787878'
+  const successor = cold.createSuccessor({ requestId: successorId, input: {
+    ...critiqueInput(changedBasis, 'A fresh exception critique after source registry status changed.'),
+    claimReview: { principleId: shown.principleId, field: reopenedClaim.field, index: reopenedClaim.index, claimSha256: reopenedClaim.claimSha256, claimText: reopenedClaim.text, sourceIds: reopenedClaim.sources.map((item) => item.sourceId), category: 'exception', text: 'A fresh exception critique after source registry status changed.' },
+    predecessorDecisionId: firstId, acknowledgedChangedBasis: true
+  } })
+  assert.equal(successor.status, 'confirmed')
+  assert.equal(successor.result.versions[0].payload.predecessor.sha256, oldVersion.sha256)
+  assert.equal(successor.result.versions[0].payload.claimReview.text, 'A fresh exception critique after source registry status changed.')
+  assert.notEqual(successor.result.versions[0].payload.claimReview.text, oldVersion.payload.claimReview.text)
+  assert.equal(cold.readDecision({ decisionId: firstId }).decision.versions[0].payload.claimReview.text, 'This authored statement needs an exception for the synthetic boundary case.')
+})

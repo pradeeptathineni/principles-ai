@@ -28,12 +28,17 @@ function sourceIdsFor(entry, document) {
   return [...new Set(entry.claims.flatMap((claim) => claim.citationLabels.map((label) => byLabel.get(label)).filter(Boolean)))].sort()
 }
 
-function claimView(claim, document) {
+function claimView(claim, document, field = null, index = 0) {
+  if (!claim) return null
   const byLabel = new Map(document.references.map((reference) => [reference.label, reference.sourceId]))
+  const sourceIds = [...new Set(claim.citationLabels.map((label) => byLabel.get(label)).filter(Boolean))]
   return {
     role: claim.role,
     text: claim.text,
-    sources: [...new Set(claim.citationLabels.map((label) => byLabel.get(label)).filter(Boolean))].map((id) => ({ sourceId: id }))
+    field,
+    index,
+    claimSha256: digest({ role: claim.role, text: claim.text, sourceIds }),
+    sources: sourceIds.map((id) => ({ sourceId: id }))
   }
 }
 
@@ -118,26 +123,65 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
     if (request.status !== 'not_seen' && (!['decision.create', 'decision.successor'].includes(request.operation) || !SHA256.test(request.inputSha256 ?? ''))) throw new Error('Principles atlas request identity is malformed.')
     return request
   }
+  function normalizeClaimReview(candidate, principleIds) {
+    const fields = ['principleId', 'field', 'index', 'claimSha256', 'claimText', 'sourceIds', 'category', 'text']
+    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) || Object.keys(candidate).some((key) => !fields.includes(key)) || fields.some((key) => !Object.hasOwn(candidate, key))) throw new Error('Claim critique fields do not match the exact binding contract.')
+    if (principleIds.length !== 1 || candidate.principleId !== principleIds[0] || !PRINCIPLE_ID.test(candidate.principleId)) throw new Error('A claim critique must bind exactly one selected principle.')
+    if (!['statement', 'why', 'practice', 'applicability', 'goal'].includes(candidate.field) || !Number.isSafeInteger(candidate.index) || candidate.index < 0 || candidate.index > 15 || !SHA256.test(candidate.claimSha256 ?? '')) throw new Error('Claim critique must name a current field, index, and SHA-256 identity.')
+    const currentEntry = current().entryView(candidate.principleId)
+    const claims = candidate.field === 'statement' ? [currentEntry.statement] : currentEntry[{ why: 'why', practice: 'practices', applicability: 'applicability', goal: 'goals' }[candidate.field]]
+    const claim = claims[candidate.index]
+    if (!claim || claim.field !== candidate.field || claim.index !== candidate.index || claim.claimSha256 !== candidate.claimSha256 || claim.text !== candidate.claimText) throw new Error('The authored claim changed after it was selected; reopen the exact current principle before saving a critique.')
+    if (!Array.isArray(candidate.sourceIds) || candidate.sourceIds.length > 24 || candidate.sourceIds.some((id) => typeof id !== 'string' || !SOURCE_ID.test(id)) || canonicalize(candidate.sourceIds) !== canonicalize(claim.sources.map((item) => item.sourceId))) throw new Error('Claim critique source IDs must exactly match the authored claim citations.')
+    const categories = ['counterexample', 'exception', 'scope-critique', 'challenge']
+    if (!categories.includes(candidate.category)) throw new Error('Choose a supported human critique category.')
+    const text = requiredText(candidate.text, 'Human critique', 2400)
+    return {
+      schema: 'principles.claim-critique/1',
+      principleId: candidate.principleId,
+      field: candidate.field,
+      index: candidate.index,
+      claimSha256: candidate.claimSha256,
+      claimText: claim.text,
+      sourceIds: [...candidate.sourceIds],
+      category: candidate.category,
+      text,
+      qualification: 'Caller-authored critique bound to exact authored claim bytes and registry source identities. Source metadata is not external source text or evidence of entailment.'
+    }
+  }
   function validateDecisionInput(input, { successor = false } = {}) {
-    const expected = ['title', 'reviewer', 'context', 'applicability', 'exceptions', 'valueAssumptions', 'tradeoffs', 'judgment', 'principleIds', 'expectedCorpusRevision', ...(successor ? ['predecessorDecisionId', 'acknowledgedChangedBasis'] : [])]
-    if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).some((key) => !expected.includes(key)) || expected.some((key) => !Object.hasOwn(input, key))) throw new Error('Decision input fields do not match the operation contract.')
+    const shared = ['title', 'reviewer', 'context', 'principleIds', 'expectedCorpusRevision']
+    const contextual = ['applicability', 'exceptions', 'valueAssumptions', 'tradeoffs', 'judgment']
+    const successorFields = successor ? ['predecessorDecisionId', 'acknowledgedChangedBasis'] : []
+    if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Decision input fields do not match the operation contract.')
+    const critique = input.claimReview !== undefined
+    const required = [...shared, ...(critique ? [] : contextual), ...successorFields, ...(critique ? ['claimReview'] : [])]
+    const allowed = [...shared, ...contextual, ...successorFields, 'claimReview']
+    if (Object.keys(input).some((key) => !allowed.includes(key)) || required.some((key) => !Object.hasOwn(input, key)) || (critique && contextual.some((key) => Object.hasOwn(input, key)))) throw new Error('Decision input fields do not match the operation contract.')
     const list = (value, label, maximum, required = false) => {
       if (!Array.isArray(value) || value.length > maximum || (required && !value.length)) throw new Error(`${label} must contain ${required ? '1' : '0'} to ${maximum} entries.`)
       return value.map((item) => requiredText(item, label, 2000))
     }
-    if (!Array.isArray(input.principleIds) || input.principleIds.length < 2 || input.principleIds.length > 8 || new Set(input.principleIds).size !== input.principleIds.length || input.principleIds.some((id) => typeof id !== 'string' || !PRINCIPLE_ID.test(id))) throw new Error('Choose 2 to 8 unique current principle IDs.')
+    const hasClaimReview = critique
+    if (!Array.isArray(input.principleIds) || input.principleIds.length < (hasClaimReview ? 1 : 2) || input.principleIds.length > 8 || new Set(input.principleIds).size !== input.principleIds.length || input.principleIds.some((id) => typeof id !== 'string' || !PRINCIPLE_ID.test(id))) throw new Error(hasClaimReview ? 'A claim critique must select exactly its one bound principle.' : 'Choose 2 to 8 unique current principle IDs.')
+    const claimReview = hasClaimReview ? normalizeClaimReview(input.claimReview, input.principleIds) : null
     const value = {
-      title: requiredText(input.title, 'Decision title', 180), reviewer: requiredText(input.reviewer, 'Human reviewer', 160),
-      context: requiredText(input.context, 'Situation/context', 4000), applicability: requiredText(input.applicability, 'Contextual applicability judgment', 4000),
-      exceptions: list(input.exceptions, 'Exception', 16, true), valueAssumptions: list(input.valueAssumptions, 'Value assumption', 16),
-      tradeoffs: list(input.tradeoffs, 'Trade-off', 16), judgment: requiredText(input.judgment, 'Decision judgment', 4000), principleIds: [...input.principleIds],
-      expectedCorpusRevision: requiredText(input.expectedCorpusRevision, 'Reviewed corpus revision', 64)
+      title: requiredText(input.title, critique ? 'Critique title' : 'Decision title', 180), reviewer: requiredText(input.reviewer, 'Human reviewer', 160),
+      context: requiredText(input.context, 'Situation/context', 4000), principleIds: [...input.principleIds],
+      expectedCorpusRevision: requiredText(input.expectedCorpusRevision, 'Reviewed corpus revision', 64),
+      ...(!critique ? {
+        applicability: requiredText(input.applicability, 'Contextual applicability judgment', 4000),
+        exceptions: list(input.exceptions, 'Exception', 16, true), valueAssumptions: list(input.valueAssumptions, 'Value assumption', 16),
+        tradeoffs: list(input.tradeoffs, 'Trade-off', 16), judgment: requiredText(input.judgment, 'Decision judgment', 4000)
+      } : {})
     }
+    if (claimReview) value.claimReview = claimReview
     if (!SHA256.test(value.expectedCorpusRevision)) throw new Error('Reviewed corpus revision must be a SHA-256 digest.')
     if (successor) {
       if (!UUID.test(input.predecessorDecisionId ?? '') || typeof input.acknowledgedChangedBasis !== 'boolean') throw new Error('Successor requires an exact predecessor and an explicit changed-basis acknowledgment.')
       const predecessor = readDecisionRecord(input.predecessorDecisionId)
       const prior = predecessor.versions.at(-1).payload
+      if (prior.claimReview && (!value.claimReview || value.claimReview.principleId !== prior.claimReview.principleId)) throw new Error('A claim critique successor must bind a fresh authored claim from the same principle; prior critique wording is not carried forward.')
       const currentness = compareBasis(prior.basis, captureBasis(prior.principleIds, { includeSourceIds: prior.basis.sources.map((item) => item.sourceId), allowMissing: true }))
       if (currentness.status !== 'current' && !input.acknowledgedChangedBasis) throw new Error('The predecessor basis changed; acknowledge the fresh basis and author a new judgment.')
       value.predecessor = { decisionId: predecessor.id, version: prior.version, sha256: predecessor.versions.at(-1).sha256 }
@@ -192,11 +236,11 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
         scope: subdomain ? { id: subdomain.id, title: subdomain.title, description: subdomain.description } : { id: document.frontmatter.type, title: document.title, description: null },
         file: { path: document.path, sha256: document.inputSha256, entryContentSha256: digest(semantic) },
         lifecycle: document.frontmatter.status,
-        statement: claimView(entry.statement, document),
-        why: entry.why.map((claim) => claimView(claim, document)),
-        practices: entry.practices.map((claim) => claimView(claim, document)),
-        applicability: entry.applicability.map((claim) => claimView(claim, document)),
-        goals: entry.goals.map((claim) => claimView(claim, document)),
+        statement: claimView(entry.statement, document, 'statement', 0),
+        why: entry.why.map((claim, index) => claimView(claim, document, 'why', index)),
+        practices: entry.practices.map((claim, index) => claimView(claim, document, 'practice', index)),
+        applicability: entry.applicability.map((claim, index) => claimView(claim, document, 'applicability', index)),
+        goals: entry.goals.map((claim, index) => claimView(claim, document, 'goal', index)),
         tags: [...entry.tags],
         sourceIds,
         sources: sourceInputs
@@ -315,7 +359,9 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
     try {
       basis = captureBasis(normalized.principleIds)
       if (basis.corpusRevision !== normalized.expectedCorpusRevision) return { status: 'rejected', requestId, message: 'The canonical corpus changed after comparison. Reopen and compare the current principles before saving.' }
-      comparison = compare({ entryIds: normalized.principleIds })
+      comparison = normalized.claimReview
+        ? { corpusRevision: basis.corpusRevision, structuralSignals: [], qualification: 'Single-claim human critique. No semantic conflict, support, truth, or source entailment is inferred.' }
+        : compare({ entryIds: normalized.principleIds })
       if (comparison.corpusRevision !== basis.corpusRevision || captureBasis(normalized.principleIds).corpusRevision !== basis.corpusRevision) return { status: 'rejected', requestId, message: 'The canonical corpus changed while preparing the decision. Reopen and compare again.' }
     } catch (error) { return { status: 'rejected', requestId, message: error.message } }
     const inputSha256 = digest({ operation, input })
@@ -339,9 +385,10 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
     try {
       const payload = {
         version: 1, title: normalized.title, reviewer: normalized.reviewer, reviewerKind: 'caller_asserted_human',
-        context: normalized.context, applicability: normalized.applicability, exceptions: normalized.exceptions,
-        valueAssumptions: normalized.valueAssumptions, tradeoffs: normalized.tradeoffs, judgment: normalized.judgment,
+        context: normalized.context,
+        ...(!normalized.claimReview ? { applicability: normalized.applicability, exceptions: normalized.exceptions, valueAssumptions: normalized.valueAssumptions, tradeoffs: normalized.tradeoffs, judgment: normalized.judgment } : {}),
         principleIds: normalized.principleIds, basis, reviewedCorpusRevision: normalized.expectedCorpusRevision, comparisonSignals: comparison.structuralSignals,
+        ...(normalized.claimReview ? { claimReview: normalized.claimReview } : {}),
         ...(normalized.predecessor ? { predecessor: normalized.predecessor, acknowledgedChangedBasis: normalized.acknowledgedChangedBasis } : {}),
         qualification: 'Human-authored contextual decision against exact retained Principles identities. This record is not evidence of truth, source entailment, independent support, corpus approval, or activation.',
         createdAt: clock()
@@ -362,7 +409,7 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
   function listDecisions() {
     requireStore()
     const files = readdirSync(decisionsDirectory).filter((name) => UUID.test(name.slice(0, -5)) && name.endsWith('.json')).sort().slice(0, 1000)
-    return envelope({ decisions: files.map((name) => readDecisionRecord(name.slice(0, -5))).map((record) => ({ id: record.id, version: record.versions.length, decisionSha256: record.versions.at(-1).sha256, title: record.versions.at(-1).payload.title, reviewer: record.versions.at(-1).payload.reviewer, createdAt: record.versions.at(-1).payload.createdAt, predecessor: record.versions.at(-1).payload.predecessor ?? null })) })
+    return envelope({ decisions: files.map((name) => readDecisionRecord(name.slice(0, -5))).map((record) => ({ id: record.id, version: record.versions.length, decisionSha256: record.versions.at(-1).sha256, title: record.versions.at(-1).payload.title, reviewer: record.versions.at(-1).payload.reviewer, createdAt: record.versions.at(-1).payload.createdAt, reviewKind: record.versions.at(-1).payload.claimReview ? 'claim-critique' : 'contextual-decision', principleId: record.versions.at(-1).payload.claimReview?.principleId ?? null, predecessor: record.versions.at(-1).payload.predecessor ?? null })) })
   }
 
   function readDecision({ decisionId } = {}) {
