@@ -224,9 +224,14 @@ export function createStudyService({ root, store = null, revision, clock = () =>
       statuses.set(step.id, status)
       if (validRecord) validEvidence.set(step.id, validRecord)
       const related = sourceStatus.status === 'current' ? card.attempts.filter((attempt) => attempt.rating && attempt.revealed_at && attempt.cue === step.prompt && attempt.source_index === card.source_index) : []
-      return { ...copy(step), status, ...(blockedBy.length ? { blocked_by: blockedBy } : {}), source_state: sourceStatus, evidence: validRecord ? { id: validRecord.id, at: validRecord.at, observation: validRecord.observation, attempt_id: validRecord.attempt_id } : null, prior_evidence: staleRecord ? path.completions.filter((item) => item.step_id === step.id).map(copy) : [], available_attempt_ids: related.map((attempt) => attempt.id) }
+      return { ...copy(step), status, ...(blockedBy.length ? { blocked_by: blockedBy } : {}), step_sha256: stepDigest(step), source_state: sourceStatus, evidence: validRecord ? { id: validRecord.id, at: validRecord.at, observation: validRecord.observation, attempt_id: validRecord.attempt_id, step_sha256: validRecord.step_sha256, source_sha256: validRecord.source_sha256 } : null, prior_evidence: staleRecord ? path.completions.filter((item) => item.step_id === step.id).map(copy) : [], available_attempt_ids: related.map((attempt) => attempt.id) }
     })
-    return { goal: path.goal, revision: path.revision, definitions: copy(path.definitions), steps, completions: copy(path.completions), qualification: 'Private learning path and learner-reported evidence; not mastery, verified execution, or corpus evidence.' }
+    const today = clock().slice(0, 10)
+    const selectedPrinciples = new Set(definition.steps.map((step) => step.principle_id))
+    const scheduled = session.cards.filter((card) => selectedPrinciples.has(card.principle_id) && card.revisit_on).map((card) => ({ principle_id: card.principle_id, date: card.revisit_on })).sort((a, b) => a.date.localeCompare(b.date) || a.principle_id.localeCompare(b.principle_id))
+    const counts = Object.fromEntries(['recorded', 'available', 'review', 'blocked', 'unavailable'].map((status) => [status, steps.filter((step) => step.status === status).length]))
+    const remainingSteps = steps.filter((step) => step.status !== 'recorded').map(({ id, title, principle_id, status, blocked_by }) => ({ id, title, principle_id, status, ...(blocked_by ? { blocked_by: copy(blocked_by) } : {}) }))
+    return { goal: path.goal, revision: path.revision, definitions: copy(path.definitions), steps, completions: copy(path.completions), due_summary: { today, next_due_date: scheduled[0]?.date ?? null, scheduled_count: scheduled.length, due_principle_ids: [...new Set(scheduled.filter((item) => item.date <= today).map((item) => item.principle_id))], policy: 'Dates are learner-chosen review reminders; next due is the earliest selected date. No automatic interval or learning score is inferred.' }, remaining_work: { total_steps: steps.length, recorded_steps: counts.recorded, remaining_steps: remainingSteps.length, counts_by_status: counts, steps: remainingSteps }, qualification: 'Private learning path and learner-reported evidence; not mastery, verified execution, or corpus evidence.' }
   }
   function mutate(id, update) {
     const p = paths(true)
