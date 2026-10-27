@@ -691,7 +691,7 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
             studyId: required(proposalInput.studyId, 'Research study ID', 120),
             questionId: required(proposalInput.questionId, 'Research question ID', 180),
           })
-          proposalInput = { proposal: proposalInput.proposal, research }
+          proposalInput = { proposal: proposalInput.proposal, research, ...(proposalInput.supersedes ? { supersedes: proposalInput.supersedes } : {}) }
         }
         nativeResult = await service.propose({ ...proposalInput, requestId, dossierId: requestId })
       } else nativeResult = await service[operation]({
