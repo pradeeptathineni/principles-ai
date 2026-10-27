@@ -77,7 +77,7 @@ function verifyResearchShape(value) {
 }
 
 function validateCandidate(root, candidate, evidenceIds) {
-  exactObject(candidate, ['placement', 'title', 'assertion', 'rationale', 'examples', 'limits', 'valueAssumptions', 'counterevidence', 'selectedEvidenceIds'], 'Principle proposal')
+  exactObject(candidate, ['placement', 'title', 'assertion', 'rationale', 'applicability', 'exceptions', 'examples', 'limits', 'valueAssumptions', 'counterevidence', 'selectedEvidenceIds'], 'Principle proposal')
   exactObject(candidate.placement, ['domain', 'scope'], 'Principle placement')
   const validation = validateRepository(root)
   if (validation.bag.errorCount) throw new Error(`Principles repository does not currently validate: ${validation.bag.sorted().slice(0, 4).map((item) => `${item.path} ${item.code}`).join('; ')}`)
@@ -87,10 +87,12 @@ function validateCandidate(root, candidate, evidenceIds) {
   if (scope !== 'principles' && scope !== 'personal-growth' && !manifest.subdomains.some((item) => item.id === scope && item.status === 'accepted')) throw new Error('Proposal placement must use an accepted corpus scope')
   const examples = list(candidate.examples, 'Examples', 12)
   const limits = list(candidate.limits, 'Limits', 12)
+  const exceptions = list(candidate.exceptions, 'Exceptions', 12, { allowEmpty: false })
   const valueAssumptions = list(candidate.valueAssumptions ?? [], 'Value assumptions', 12)
   const counterevidence = list(candidate.counterevidence, 'Counterevidence', 20)
   examples.forEach((item) => required(item, 'Example', 1000))
   limits.forEach((item) => required(item, 'Limit', 1000))
+  exceptions.forEach((item) => required(item, 'Exception', 1000))
   valueAssumptions.forEach((item) => required(item, 'Value assumption', 1000))
   for (const item of counterevidence) {
     exactObject(item, ['text', 'evidenceIds'], 'Counterevidence item')
@@ -104,11 +106,21 @@ function validateCandidate(root, candidate, evidenceIds) {
     title: required(candidate.title, 'Principle title', 160),
     assertion: required(candidate.assertion, 'Principle assertion', 2000),
     rationale: required(candidate.rationale, 'Rationale', 4000),
+    applicability: required(candidate.applicability, 'Intended applicability', 2000),
+    exceptions: exceptions.map((item) => item.trim()),
     examples: examples.map((item) => item.trim()),
     limits: limits.map((item) => item.trim()),
     valueAssumptions: valueAssumptions.map((item) => item.trim()),
     counterevidence: counterevidence.map((item) => ({ text: item.text.trim(), evidenceIds: [...item.evidenceIds] })),
     selectedEvidenceIds: [...selectedEvidenceIds],
+  }
+}
+
+function versionIdentity(version) {
+  return {
+    proposal: version.proposal,
+    research: version.research,
+    ...(version.supersedes ? { supersedes: version.supersedes } : {}),
   }
 }
 
@@ -121,7 +133,7 @@ function validateRecord(record, expectedId) {
   if (record?.schema !== STORE_SCHEMA || record.id !== expectedId || !Array.isArray(record.versions) || !record.versions.length || !Array.isArray(record.events)) throw new Error('Principle dossier record is malformed')
   for (let index = 0; index < record.versions.length; index += 1) {
     const version = record.versions[index]
-    if (version.version !== index + 1 || digest({ proposal: version.proposal, research: version.research }) !== version.version_sha256) throw new Error('Principle dossier version history failed its digest check')
+    if (version.version !== index + 1 || digest(versionIdentity(version)) !== version.version_sha256) throw new Error('Principle dossier version history failed its digest check')
   }
   let prior = null
   for (let index = 0; index < record.events.length; index += 1) {
@@ -280,7 +292,7 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       : canonical?.fileStatus === 'draft' ? 'canonical_draft'
         : canonical?.fileStatus === 'retired' ? 'canonical_retired'
           : canonical?.fileStatus === 'missing' ? 'canonical_missing' : statusFor(record, version)
-    return { schema: STORE_SCHEMA, id: record.id, version, versionSha256: saved.version_sha256, status: canonicalStatus, canonical, proposal: structuredClone(saved.proposal), research: structuredClone(saved.research), events: structuredClone(record.events.filter((event) => event.version === version)) }
+    return { schema: STORE_SCHEMA, id: record.id, version, versionSha256: saved.version_sha256, status: canonicalStatus, canonical, proposal: structuredClone(saved.proposal), research: structuredClone(saved.research), ...(saved.supersedes ? { supersedes: structuredClone(saved.supersedes) } : {}), events: structuredClone(record.events.filter((event) => event.version === version)) }
   }
 
   function currentnessProjection(answer) {
@@ -383,19 +395,21 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       .map((text) => `${markdownText(text)} ${runFor()}`).join('\n\n')
     const practices = ['Apply the principle only within the reviewed scope and record relevant limits before relying on it.']
       .map((text) => `- ${markdownText(text)} ${runFor()}`).join('\n')
-    const caveats = [
+    const applicability = [
+      ...(proposal.applicability ? [{ text: proposal.applicability, evidenceIds: proposal.selectedEvidenceIds }] : []),
+      ...(proposal.exceptions ?? []).map((text) => ({ text: `Exception: ${text}`, evidenceIds: proposal.selectedEvidenceIds })),
       ...proposal.limits.map((text) => ({ text: `Limit: ${text}`, evidenceIds: proposal.selectedEvidenceIds })),
       ...proposal.counterevidence.map((item) => ({ text: `Counterevidence to assess: ${item.text}`, evidenceIds: item.evidenceIds.length ? item.evidenceIds : proposal.selectedEvidenceIds })),
       ...(proposal.valueAssumptions ?? []).map((text) => ({ text: `Value assumption (caller-authored; cited sources locate the context considered and do not establish this value): ${text}`, evidenceIds: proposal.selectedEvidenceIds })),
       { text: qualification, evidenceIds: proposal.selectedEvidenceIds },
     ]
-    const applicability = caveats.map((item) => `${markdownText(item.text)} ${runFor(item.evidenceIds)}`).join('\n\n')
+    const applicabilityText = applicability.map((item) => `${markdownText(item.text)} ${runFor(item.evidenceIds)}`).join('\n\n')
     const referenceList = mapped.orderedSources.map((sourceId, index) => {
       const source = state.sourceById.get(sourceId).value
       return `${index + 1}. [${source.title}][${index + 1}] — \`${sourceId}\``
     }).join('\n')
     const definitions = mapped.orderedSources.map((sourceId, index) => `[${index + 1}]: ${state.sourceById.get(sourceId).value.canonical_url}`).join('\n')
-    const entry = `### PRN-AUTO — ${markdownText(proposal.title)}\n\n${markdownText(proposal.assertion)} ${runFor()}\n\n#### Why\n\n${why}\n\n#### Practices\n\n${practices}\n\n#### Applicability\n\n${applicability}`
+    const entry = `### PRN-AUTO — ${markdownText(proposal.title)}\n\n${markdownText(proposal.assertion)} ${runFor()}\n\n#### Why\n\n${why}\n\n#### Practices\n\n${practices}${applicabilityText ? `\n\n#### Applicability\n\n${applicabilityText}` : ''}`
     const content = frontmatter
       .replace(/^<Editorial .*?>$/m, `Human-reviewed proposal adopted from frozen Research artifact ${version.research.answer.studyId}, question ${version.research.answer.questionId}. Qualification is retained below; canonical activation remains a separate explicit action.`)
       .replace(/^<Editorial subdomain boundary\..*?>$/m, `Human-reviewed proposal adopted from frozen Research artifact ${version.research.answer.studyId}, question ${version.research.answer.questionId}. Qualification is retained below; canonical activation remains a separate explicit action.`)
@@ -407,16 +421,28 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
   }
 
   const service = {
-    async propose({ proposal, research, requestId = undefined, dossierId = undefined }) {
+    async propose({ proposal, research, supersedes = undefined, requestId = undefined, dossierId = undefined }) {
       const evidenceIds = verifyResearchShape(research)
       const normalized = validateCandidate(repository, proposal, evidenceIds)
       const snapshot = await researchSnapshot(research)
+      let predecessor
+      if (supersedes !== undefined) {
+        exactObject(supersedes, ['id', 'version', 'versionSha256'], 'Proposal predecessor')
+        const prior = readRecord(required(supersedes.id, 'Predecessor dossier ID', 80))
+        const priorVersion = prior.versions[supersedes.version - 1]
+        if (!Number.isSafeInteger(supersedes.version) || !priorVersion || priorVersion.version_sha256 !== supersedes.versionSha256)
+          throw new Error('Proposal predecessor must identify one exact retained dossier version')
+        if (prior.id === dossierId || digest(priorVersion.research.answer) === digest(snapshot.answer))
+          throw new Error('A successor proposal requires a distinct retained Research answer or source revision')
+        predecessor = { id: prior.id, version: priorVersion.version, versionSha256: priorVersion.version_sha256 }
+      }
       const id = dossierId ?? (requestId || idFactory())
       if (!UUID.test(id)) throw new Error('Dossier ID generator must return a UUID')
-      const version = { version: 1, proposal: normalized, research: snapshot, created_at: clock() }
-      version.version_sha256 = digest({ proposal: version.proposal, research: version.research })
+      if (predecessor?.id === id) throw new Error('A proposal cannot supersede itself')
+      const version = { version: 1, proposal: normalized, research: snapshot, ...(predecessor ? { supersedes: predecessor } : {}), created_at: clock() }
+      version.version_sha256 = digest(versionIdentity(version))
       const record = { schema: STORE_SCHEMA, id, created_at: version.created_at, versions: [version], events: [] }
-      append(record, 'proposed', 1, { source_verification: snapshot.verification.status, ...(requestId ? { request_id: requestId } : {}) })
+      append(record, 'proposed', 1, { source_verification: snapshot.verification.status, ...(predecessor ? { supersedes: predecessor } : {}), ...(requestId ? { request_id: requestId } : {}) })
       save(record)
       return view(record)
     },
@@ -428,7 +454,7 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       const citationIds = new Set(evidence.answer.citations.map((citation) => citation.id))
       const normalized = validateCandidate(repository, proposal, citationIds)
       const version = { version: record.versions.length + 1, proposal: normalized, research: evidence, created_at: clock() }
-      version.version_sha256 = digest({ proposal: version.proposal, research: version.research })
+      version.version_sha256 = digest(versionIdentity(version))
       record.versions.push(version)
       append(record, 'revised', version.version, requestId ? { request_id: requestId } : {})
       save(record, record.events.at(-2)?.event_sha256)

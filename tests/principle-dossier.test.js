@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import test from 'node:test'
+import canonicalize from 'canonicalize'
 import { createPrincipleDossierService } from '../src/principle-dossier.js'
 import { applyPrincipleEntryRetirement, planPrincipleEntryRetirement } from '../src/mutation.js'
 import { validateRepository } from '../src/validator.js'
@@ -12,6 +13,7 @@ import { fileSha256 } from '../src/transaction.js'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const hash = (value) => createHash('sha256').update(value).digest('hex')
+const canonicalHash = (value) => createHash('sha256').update(canonicalize(value)).digest('hex')
 
 function researchAnswer() {
   return {
@@ -35,6 +37,8 @@ function proposal() {
     title: 'Make feedback actionable',
     assertion: 'Give learners feedback that identifies a concrete next step.',
     rationale: 'Specific next steps make the intended adjustment understandable.',
+    applicability: 'Use when learners can act on feedback through a subsequent revision.',
+    exceptions: ['Do not require an immediate revision when safety or access needs make that impractical.'],
     examples: ['Name the next revision to try.'],
     limits: ['This does not establish long-term learning transfer.'],
     valueAssumptions: ['Learners should have a meaningful opportunity to revise their work.'],
@@ -72,6 +76,42 @@ test('proposal review adopts and activates only through canonical corpus owners;
   assert.equal(created.status, 'proposed')
   assert.equal(created.research.verification.status, 'caller_asserted')
   assert.deepEqual(created.proposal.valueAssumptions, proposal().valueAssumptions)
+  assert.equal(created.proposal.applicability, proposal().applicability)
+  assert.deepEqual(created.proposal.exceptions, proposal().exceptions)
+  const legacyId = '99999999-9999-4999-8999-999999999999'
+  await service.propose({ proposal: proposal(), research: researchAnswer(), dossierId: legacyId })
+  const legacyPath = join(store, `${legacyId}.json`)
+  const legacyRecord = JSON.parse(readFileSync(legacyPath, 'utf8'))
+  delete legacyRecord.versions[0].proposal.applicability
+  delete legacyRecord.versions[0].proposal.exceptions
+  legacyRecord.versions[0].version_sha256 = canonicalHash({ proposal: legacyRecord.versions[0].proposal, research: legacyRecord.versions[0].research })
+  legacyRecord.events[0].version_sha256 = legacyRecord.versions[0].version_sha256
+  const { event_sha256: _oldEventDigest, ...legacyEventPayload } = legacyRecord.events[0]
+  legacyRecord.events[0].event_sha256 = canonicalHash(legacyEventPayload)
+  writeFileSync(legacyPath, JSON.stringify(legacyRecord))
+  const reopenedLegacy = service.read(legacyId)
+  assert.equal(Object.hasOwn(reopenedLegacy.proposal, 'applicability'), false)
+  assert.equal(Object.hasOwn(reopenedLegacy.proposal, 'exceptions'), false)
+  const freshResearch = researchAnswer()
+  freshResearch.studyId = '55555555-5555-4555-8555-555555555555'
+  freshResearch.studySha256 = hash('fresh-study')
+  freshResearch.questionId = 'study-question:66666666-6666-4666-8666-666666666666'
+  freshResearch.questionSha256 = hash('fresh-question')
+  freshResearch.citations[0].sourceDigest = hash('fresh-source-revision')
+  freshResearch.provenance = { planDigest: hash('fresh-plan'), resultContentSha256: hash('fresh-result') }
+  await assert.rejects(
+    service.propose({ proposal: proposal(), research: researchAnswer(), supersedes: { id: created.id, version: created.version, versionSha256: created.versionSha256 }, dossierId: '77777777-7777-4777-8777-777777777777' }),
+    /distinct retained Research answer or source revision/u,
+  )
+  const successor = await service.propose({
+    proposal: { ...proposal(), rationale: created.proposal.rationale },
+    research: freshResearch,
+    supersedes: { id: created.id, version: created.version, versionSha256: created.versionSha256 },
+    dossierId: '88888888-8888-4888-8888-888888888888',
+  })
+  assert.deepEqual(successor.supersedes, { id: created.id, version: created.version, versionSha256: created.versionSha256 })
+  assert.equal(successor.proposal.rationale, created.proposal.rationale)
+  assert.equal(service.read(created.id).proposal.rationale, created.proposal.rationale)
   assert.throws(() => service.review({ id: created.id, version: created.version, versionSha256: created.versionSha256, disposition: 'accept', reviewer: 'Synthetic human reviewer', reviewerKind: 'human', supportOutcome: 'strong', counterevidenceReviewed: true, limitsReviewed: true }), /value assumptions/u)
   const review = service.review({ id: created.id, version: created.version, versionSha256: created.versionSha256, disposition: 'accept', reviewer: 'Synthetic human reviewer', reviewerKind: 'human', supportOutcome: 'strong', counterevidenceReviewed: true, limitsReviewed: true, valueAssumptionsReviewed: true })
   const reviewedEvent = review.events.find((event) => event.kind === 'reviewed')
@@ -83,6 +123,8 @@ test('proposal review adopts and activates only through canonical corpus owners;
   const adoptedText = readFileSync(join(syntheticRoot, adopted.canonical.path), 'utf8')
   assert.match(adoptedText, /caller asserted[\s\S]*not evidence of truth/u)
   assert.match(adoptedText, /Value assumption/u)
+  assert.match(adoptedText, /Use when learners can act on feedback/u)
+  assert.match(adoptedText, /Exception: Do not require an immediate revision/u)
   assert.match(adoptedText, /SRC-000001/u)
   assert.match(adoptedText, /PRN-\d{6} — Make feedback actionable/u)
   assert.equal(validateRepository(syntheticRoot).bag.errorCount, 0)
