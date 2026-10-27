@@ -39,8 +39,11 @@ function exactObject(value, keys, label) {
 
 function verifyResearchShape(value) {
   exactObject(value, ['studyId', 'studySha256', 'revision', 'questionId', 'questionSha256', 'resultStatus', 'coverage', 'answer', 'gaps', 'citations', 'provenance'], 'Research answer')
-  if (!UUID.test(value.studyId ?? '') || !HASH.test(value.studySha256 ?? '') || !HASH.test(value.questionSha256 ?? '') || !/^study-question:[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value.questionId ?? '')) throw new Error('Research answer needs exact retained study and question identities')
-  required(value.revision, 'Research revision', 160)
+  if (!/^(?:study:)?[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value.studyId ?? '') || !HASH.test(value.studySha256 ?? '') || !HASH.test(value.questionSha256 ?? '') || !/^study-question:[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value.questionId ?? '')) throw new Error('Research answer needs exact retained study and question identities')
+  const validRevision = (revision) => typeof revision === 'string'
+    ? Boolean(revision.trim()) && revision.length <= 160
+    : Number.isSafeInteger(revision) && revision > 0
+  if (!validRevision(value.revision)) throw new Error('Research revision must retain its string or positive integer owner value')
   required(value.resultStatus, 'Research result status', 80)
   required(value.coverage, 'Research coverage', 80)
   exactObject(value.provenance, ['planDigest', 'resultContentSha256'], 'Research provenance')
@@ -55,7 +58,7 @@ function verifyResearchShape(value) {
     required(citation.documentId, 'Research document ID', 300)
     required(citation.notebookId, 'Research notebook ID', 160)
     required(citation.recordId, 'Research source record ID', 160)
-    required(citation.version, 'Research source version', 160)
+    if (!(citation.version === null || validRevision(citation.version))) throw new Error('Research source version must retain its null, string, or positive integer owner value')
     required(citation.sourceTitle, 'Research source title', 500)
     if (!HASH.test(citation.sourceDigest ?? '') || typeof citation.quote !== 'string' || citation.quote.length > 1200 || typeof citation.quoteTruncated !== 'boolean') throw new Error('Research citation quote or source digest is invalid')
     if (citation.page !== null && (!Number.isSafeInteger(citation.page) || citation.page < 1)) throw new Error('Research citation page is invalid')
