@@ -8,7 +8,8 @@
   },
   "bin": {
     "principles": "./bin/principles.js",
-    "principle-dossier": "./bin/principle-dossier.js"
+    "principle-dossier": "./bin/principle-dossier.js",
+    "principle-atlas": "./bin/principle-atlas.js"
   },
   "scripts": {
     "build": "node scripts/build.mjs",

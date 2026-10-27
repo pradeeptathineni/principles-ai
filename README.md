@@ -19,7 +19,7 @@ npm test
 npm run validate
 ```
 
-Use `node bin/principles.js --help` for taxonomy generation, normalized parsing, optional explicit-selection context export, trusted-merge-base validation, JSON diagnostics, and isolated operational link checks. External network checks never run as part of ordinary validation.
+Use `node bin/principles.js --help` for taxonomy generation, normalized parsing, optional explicit-selection context export, trusted-merge-base validation, JSON diagnostics, and isolated operational link checks. `node bin/principle-atlas.js --help` exposes the derived domain atlas and private contextual-review lifecycle. External network checks never run as part of ordinary validation.
 
 Tooling does not accept principles or prove semantic quality. Users request outcomes; agents orchestrate prerequisites. An unchanged proposed registered target named by the user needs no separate taxonomy ceremony after independent fit research; additions, definition changes, deprecations, reactivations, and exact principle activation remain human-governed.
 
