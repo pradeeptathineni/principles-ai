@@ -342,7 +342,7 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
         context: normalized.context, applicability: normalized.applicability, exceptions: normalized.exceptions,
         valueAssumptions: normalized.valueAssumptions, tradeoffs: normalized.tradeoffs, judgment: normalized.judgment,
         principleIds: normalized.principleIds, basis, reviewedCorpusRevision: normalized.expectedCorpusRevision, comparisonSignals: comparison.structuralSignals,
-        ...(normalized.predecessor ? { predecessor: normalized.predecessor } : {}),
+        ...(normalized.predecessor ? { predecessor: normalized.predecessor, acknowledgedChangedBasis: normalized.acknowledgedChangedBasis } : {}),
         qualification: 'Human-authored contextual decision against exact retained Principles identities. This record is not evidence of truth, source entailment, independent support, corpus approval, or activation.',
         createdAt: clock()
       }
