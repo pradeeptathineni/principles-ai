@@ -37,6 +37,7 @@ function proposal() {
     rationale: 'Specific next steps make the intended adjustment understandable.',
     examples: ['Name the next revision to try.'],
     limits: ['This does not establish long-term learning transfer.'],
+    valueAssumptions: ['Learners should have a meaningful opportunity to revise their work.'],
     counterevidence: [{ text: 'Generic praise alone may not guide a revision.', evidenceIds: ['citation:synthetic-1'] }],
     selectedEvidenceIds: ['citation:synthetic-1'],
   }
@@ -70,7 +71,9 @@ test('proposal review adopts and activates only through canonical corpus owners;
   const created = await service.propose({ proposal: proposal(), research: researchAnswer() })
   assert.equal(created.status, 'proposed')
   assert.equal(created.research.verification.status, 'caller_asserted')
-  const review = service.review({ id: created.id, version: created.version, versionSha256: created.versionSha256, disposition: 'accept', reviewer: 'Synthetic human reviewer', reviewerKind: 'human', supportOutcome: 'strong', counterevidenceReviewed: true, limitsReviewed: true })
+  assert.deepEqual(created.proposal.valueAssumptions, proposal().valueAssumptions)
+  assert.throws(() => service.review({ id: created.id, version: created.version, versionSha256: created.versionSha256, disposition: 'accept', reviewer: 'Synthetic human reviewer', reviewerKind: 'human', supportOutcome: 'strong', counterevidenceReviewed: true, limitsReviewed: true }), /value assumptions/u)
+  const review = service.review({ id: created.id, version: created.version, versionSha256: created.versionSha256, disposition: 'accept', reviewer: 'Synthetic human reviewer', reviewerKind: 'human', supportOutcome: 'strong', counterevidenceReviewed: true, limitsReviewed: true, valueAssumptionsReviewed: true })
   const reviewedEvent = review.events.find((event) => event.kind === 'reviewed')
   assert.ok(reviewedEvent)
 
@@ -79,6 +82,7 @@ test('proposal review adopts and activates only through canonical corpus owners;
   assert.equal(adopted.canonical.fileStatus, 'draft')
   const adoptedText = readFileSync(join(syntheticRoot, adopted.canonical.path), 'utf8')
   assert.match(adoptedText, /caller asserted[\s\S]*not evidence of truth/u)
+  assert.match(adoptedText, /Value assumption/u)
   assert.match(adoptedText, /SRC-000001/u)
   assert.match(adoptedText, /PRN-\d{6} — Make feedback actionable/u)
   assert.equal(validateRepository(syntheticRoot).bag.errorCount, 0)
@@ -168,6 +172,7 @@ test('owner mutation IDs survive cold replay and keep unprovable canonical crash
     supportOutcome: 'strong',
     counterevidenceReviewed: true,
     limitsReviewed: true,
+    valueAssumptionsReviewed: true,
   }
   const reviewed = await initial.mutate({ requestId: reviewRequest, operation: 'review', input: reviewInput })
   assert.equal(reviewed.status, 'confirmed')

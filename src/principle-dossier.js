@@ -77,7 +77,7 @@ function verifyResearchShape(value) {
 }
 
 function validateCandidate(root, candidate, evidenceIds) {
-  exactObject(candidate, ['placement', 'title', 'assertion', 'rationale', 'examples', 'limits', 'counterevidence', 'selectedEvidenceIds'], 'Principle proposal')
+  exactObject(candidate, ['placement', 'title', 'assertion', 'rationale', 'examples', 'limits', 'valueAssumptions', 'counterevidence', 'selectedEvidenceIds'], 'Principle proposal')
   exactObject(candidate.placement, ['domain', 'scope'], 'Principle placement')
   const validation = validateRepository(root)
   if (validation.bag.errorCount) throw new Error(`Principles repository does not currently validate: ${validation.bag.sorted().slice(0, 4).map((item) => `${item.path} ${item.code}`).join('; ')}`)
@@ -87,9 +87,11 @@ function validateCandidate(root, candidate, evidenceIds) {
   if (scope !== 'principles' && scope !== 'personal-growth' && !manifest.subdomains.some((item) => item.id === scope && item.status === 'accepted')) throw new Error('Proposal placement must use an accepted corpus scope')
   const examples = list(candidate.examples, 'Examples', 12)
   const limits = list(candidate.limits, 'Limits', 12)
+  const valueAssumptions = list(candidate.valueAssumptions ?? [], 'Value assumptions', 12)
   const counterevidence = list(candidate.counterevidence, 'Counterevidence', 20)
   examples.forEach((item) => required(item, 'Example', 1000))
   limits.forEach((item) => required(item, 'Limit', 1000))
+  valueAssumptions.forEach((item) => required(item, 'Value assumption', 1000))
   for (const item of counterevidence) {
     exactObject(item, ['text', 'evidenceIds'], 'Counterevidence item')
     required(item.text, 'Counterevidence description', 1000)
@@ -104,6 +106,7 @@ function validateCandidate(root, candidate, evidenceIds) {
     rationale: required(candidate.rationale, 'Rationale', 4000),
     examples: examples.map((item) => item.trim()),
     limits: limits.map((item) => item.trim()),
+    valueAssumptions: valueAssumptions.map((item) => item.trim()),
     counterevidence: counterevidence.map((item) => ({ text: item.text.trim(), evidenceIds: [...item.evidenceIds] })),
     selectedEvidenceIds: [...selectedEvidenceIds],
   }
@@ -142,7 +145,7 @@ function validateRecord(record, expectedId) {
   return status
 }
 
-export function createPrincipleDossierService({ root, store, adoptionTargets = [], researchOwnerReader = null, researchOwnerRevision = null, clock = () => new Date().toISOString(), idFactory = randomUUID }) {
+export function createPrincipleDossierService({ root, store, adoptionTargets = [], researchOwnerReader = null, researchOwnerOriginsReader = null, researchOwnerRevision = null, clock = () => new Date().toISOString(), idFactory = randomUUID }) {
   const repository = realpathSync(resolve(required(root, 'Principles repository root', 4096)))
   const directory = resolve(required(store, 'Explicit local dossier store', 4096))
   if (!directory.startsWith('/') || directory === repository || directory.startsWith(`${repository}/`)) throw new Error('Dossier store must be an absolute directory outside the Principles repository')
@@ -280,6 +283,59 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
     return { schema: STORE_SCHEMA, id: record.id, version, versionSha256: saved.version_sha256, status: canonicalStatus, canonical, proposal: structuredClone(saved.proposal), research: structuredClone(saved.research), events: structuredClone(record.events.filter((event) => event.version === version)) }
   }
 
+  function currentnessProjection(answer) {
+    // A change elsewhere in a Study must not invalidate this saved question.
+    return {
+      studyId: answer.studyId,
+      questionId: answer.questionId,
+      questionSha256: answer.questionSha256,
+      resultStatus: answer.resultStatus,
+      coverage: answer.coverage,
+      answer: answer.answer,
+      gaps: answer.gaps,
+      citations: answer.citations,
+      provenance: answer.provenance,
+    }
+  }
+
+  async function researchCurrentness(saved) {
+    if (saved.research.verification.status !== 'owner_verified')
+      return { status: 'caller_asserted', requiresReview: false }
+    if (!researchOwnerReader || !researchOwnerOriginsReader)
+      return { status: 'unknown', requiresReview: true, reason: 'The exact Research answer and source-origin readers are unavailable.' }
+    try {
+      const identity = { studyId: saved.research.answer.studyId, questionId: saved.research.answer.questionId }
+      const answer = await researchOwnerReader(identity)
+      verifyResearchShape(answer)
+      if (digest(currentnessProjection(answer)) !== digest(currentnessProjection(saved.research.answer)))
+        return { status: 'changed', requiresReview: true, sourceChecks: [], compared: 'exact-saved-question-and-source-bindings' }
+      const origins = await researchOwnerOriginsReader(identity)
+      if (origins?.studyId !== identity.studyId || origins?.questionId !== identity.questionId || origins?.questionSha256 !== answer.questionSha256 || !Array.isArray(origins.origins))
+        return { status: 'unknown', requiresReview: true, reason: 'Research origin check did not match the exact saved question.', sourceChecks: [] }
+      const sourceChecks = []
+      for (const citation of answer.citations) {
+        const matches = origins.origins.filter((origin) => origin.notebookId === citation.notebookId && origin.recordId === citation.recordId && origin.version === citation.version && origin.expectedSourceDigest === citation.sourceDigest)
+        if (matches.length !== 1)
+          return { status: 'unknown', requiresReview: true, reason: 'A saved citation could not be matched to one exact Research source origin.', sourceChecks }
+        const origin = matches[0]
+        sourceChecks.push({ notebookId: origin.notebookId, recordId: origin.recordId, version: origin.version, expectedSourceDigest: origin.expectedSourceDigest, currentSourceDigest: origin.currentSourceDigest, ownerStatus: origin.status, ownerDetail: origin.detail })
+        if (origin.status === 'missing')
+          return { status: 'missing', requiresReview: true, sourceChecks }
+        if (origin.status === 'changed')
+          return { status: 'changed', requiresReview: true, sourceChecks }
+        if (origin.status !== 'current' && origin.status !== 'changed')
+          return { status: 'unknown', requiresReview: true, reason: 'Research returned an unsupported source-origin status.', sourceChecks }
+        if (origin.expectedSourceDigest !== origin.currentSourceDigest)
+          return { status: 'unknown', requiresReview: true, reason: 'Research source-origin digests are inconsistent.', sourceChecks }
+      }
+      if (answer.citations.length && sourceChecks.length !== answer.citations.length)
+        return { status: 'unknown', requiresReview: true, reason: 'Not every saved citation received an exact source-origin check.', sourceChecks }
+      return { status: 'unchanged', requiresReview: false, sourceChecks, compared: 'exact-saved-question-and-current-source-bindings' }
+    } catch {
+      return { status: 'unknown', requiresReview: true, reason: 'The exact retained Research answer or its current source bindings could not be compared.', sourceChecks: [] }
+    }
+  }
+
   function canonicalCitationMap(research, selectedIds, sourceMap, state) {
     list(sourceMap, 'Research citation to Principles source mapping', 48, { allowEmpty: false })
     const allowed = new Set(selectedIds)
@@ -330,6 +386,7 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
     const caveats = [
       ...proposal.limits.map((text) => ({ text: `Limit: ${text}`, evidenceIds: proposal.selectedEvidenceIds })),
       ...proposal.counterevidence.map((item) => ({ text: `Counterevidence to assess: ${item.text}`, evidenceIds: item.evidenceIds.length ? item.evidenceIds : proposal.selectedEvidenceIds })),
+      ...(proposal.valueAssumptions ?? []).map((text) => ({ text: `Value assumption (caller-authored; cited sources locate the context considered and do not establish this value): ${text}`, evidenceIds: proposal.selectedEvidenceIds })),
       { text: qualification, evidenceIds: proposal.selectedEvidenceIds },
     ]
     const applicability = caveats.map((item) => `${markdownText(item.text)} ${runFor(item.evidenceIds)}`).join('\n\n')
@@ -377,7 +434,7 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       save(record, record.events.at(-2)?.event_sha256)
       return view(record)
     },
-    review({ id, version, versionSha256, disposition, reviewer, reviewerKind, supportOutcome, counterevidenceReviewed, limitsReviewed, calibration = '', requestId = undefined }) {
+    review({ id, version, versionSha256, disposition, reviewer, reviewerKind, supportOutcome, counterevidenceReviewed, limitsReviewed, valueAssumptionsReviewed = false, researchCurrentnessStatus = 'not_checked', calibration = '', requestId = undefined }) {
       const record = readRecord(id)
       const saved = record.versions.at(-1)
       if (version !== saved.version || versionSha256 !== saved.version_sha256) throw new Error('Review must bind the exact latest proposal revision')
@@ -385,10 +442,11 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       if (!['accept', 'revise', 'reject'].includes(disposition) || !['human', 'agent'].includes(reviewerKind)) throw new Error('Choose an explicit review disposition and reviewer kind')
       required(reviewer, 'Reviewer identity', 160)
       if (typeof counterevidenceReviewed !== 'boolean' || typeof limitsReviewed !== 'boolean' || !counterevidenceReviewed || !limitsReviewed) throw new Error('Review must explicitly assess counterevidence and limits')
+      if ((saved.proposal.valueAssumptions ?? []).length && valueAssumptionsReviewed !== true) throw new Error('Review must explicitly assess the caller-authored value assumptions')
       if (!['strong', 'partial', 'unsupported', 'disputed'].includes(supportOutcome)) throw new Error('Choose an explicit evidence outcome')
       if (disposition === 'accept' && !['strong', 'disputed'].includes(supportOutcome)) throw new Error('Partial or unsupported claims cannot be accepted')
       if (supportOutcome === 'disputed' && !required(calibration, 'Disagreement calibration', 2000)) throw new Error('Disputed evidence requires visible calibration')
-      append(record, 'reviewed', version, { disposition, reviewer: reviewer.trim(), reviewer_kind: reviewerKind, reviewer_identity: 'caller_asserted', support_outcome: supportOutcome, counterevidence_reviewed: true, limits_reviewed: true, calibration: calibration.trim(), ...(requestId ? { request_id: requestId } : {}) })
+      append(record, 'reviewed', version, { disposition, reviewer: reviewer.trim(), reviewer_kind: reviewerKind, reviewer_identity: 'caller_asserted', support_outcome: supportOutcome, counterevidence_reviewed: true, limits_reviewed: true, value_assumptions_reviewed: valueAssumptionsReviewed === true, research_currentness: researchCurrentnessStatus, calibration: calibration.trim(), ...(requestId ? { request_id: requestId } : {}) })
       save(record, record.events.at(-2)?.event_sha256)
       return view(record)
     },
@@ -462,6 +520,15 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
     },
     read(id, version = undefined) {
       return view(readRecord(id), version ?? undefined)
+    },
+    async evidenceStatus({ id, version = undefined }) {
+      const record = readRecord(id)
+      const selected = version ?? record.versions.length
+      const result = view(record, selected)
+      return {
+        ...result,
+        researchCurrentness: await researchCurrentness(record.versions[selected - 1]),
+      }
     },
     export({ id, version = undefined }) {
       const value = this.read(id, version)
@@ -575,6 +642,19 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
     }
 
     try {
+      if (['review', 'adopt', 'activate'].includes(operation)) {
+        const exactState = await service.evidenceStatus({ id: recordId, version: input.version })
+        const currentness = exactState.researchCurrentness
+        if (['changed', 'missing'].includes(currentness.status)) {
+          const message = currentness.status === 'changed'
+            ? 'The exact saved Research answer or source bindings changed. Preserve this version and create a revised proposal from current Research evidence before review or activation.'
+            : 'A source binding for the exact saved Research answer is missing. Preserve this version and review fresh evidence before continuing.'
+          writeRequest({ ...pending, status: 'not_seen', message })
+          return { status: 'rejected', requestId, message }
+        }
+        if (operation === 'review' && currentness.status === 'unknown')
+          input = { ...input, researchCurrentnessStatus: 'unknown' }
+      }
       let nativeResult
       if (operation === 'propose') {
         let proposalInput = input
