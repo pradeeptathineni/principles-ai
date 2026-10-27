@@ -77,7 +77,7 @@ function verifyResearchShape(value) {
 }
 
 function validateCandidate(root, candidate, evidenceIds) {
-  exactObject(candidate, ['placement', 'title', 'assertion', 'rationale', 'applicability', 'exceptions', 'examples', 'limits', 'valueAssumptions', 'counterevidence', 'selectedEvidenceIds'], 'Principle proposal')
+  exactObject(candidate, ['placement', 'title', 'assertion', 'rationale', 'applicability', 'exceptions', 'examples', 'limits', 'valueAssumptions', 'counterevidence', 'selectedEvidenceIds', 'contextualCritiqueRefs'], 'Principle proposal')
   exactObject(candidate.placement, ['domain', 'scope'], 'Principle placement')
   const validation = validateRepository(root)
   if (validation.bag.errorCount) throw new Error(`Principles repository does not currently validate: ${validation.bag.sorted().slice(0, 4).map((item) => `${item.path} ${item.code}`).join('; ')}`)
@@ -101,7 +101,23 @@ function validateCandidate(root, candidate, evidenceIds) {
   }
   const selectedEvidenceIds = list(candidate.selectedEvidenceIds, 'Selected evidence IDs', 48, { allowEmpty: false })
   if (new Set(selectedEvidenceIds).size !== selectedEvidenceIds.length || selectedEvidenceIds.some((id) => !evidenceIds.has(id))) throw new Error('Select unique evidence IDs from the frozen Research answer')
-  return {
+  let contextualCritiqueRefs
+  if (Object.hasOwn(candidate, 'contextualCritiqueRefs')) {
+    contextualCritiqueRefs = list(candidate.contextualCritiqueRefs, 'Atlas critique references', 8)
+    const identities = new Set()
+    for (const reference of contextualCritiqueRefs) {
+      exactObject(reference, ['schema', 'decisionId', 'version', 'versionSha256', 'principleId', 'field', 'index', 'claimSha256', 'claimText', 'sourceIds', 'category', 'text', 'corpusRevision', 'ownerRevision', 'currentnessAtAppend', 'qualification'], 'Atlas critique reference')
+      const identity = `${reference.decisionId}:${reference.version}`
+      if (reference.schema !== 'principles.contextual-critique-reference/1' || !UUID.test(reference.decisionId ?? '') || !Number.isSafeInteger(reference.version) || reference.version < 1 || !HASH.test(reference.versionSha256 ?? '') || !/^PRN-[0-9]{6}$/.test(reference.principleId ?? '') || !['statement', 'why', 'practice', 'applicability', 'goal'].includes(reference.field) || !Number.isSafeInteger(reference.index) || reference.index < 0 || !HASH.test(reference.claimSha256 ?? '') || !['counterexample', 'exception', 'scope-critique', 'challenge'].includes(reference.category) || reference.currentnessAtAppend !== 'current' || !HASH.test(reference.corpusRevision ?? '') || !/^[a-f0-9]{40,64}$/.test(reference.ownerRevision ?? '') || identities.has(identity)) throw new Error('Atlas critique reference identity or qualification is invalid')
+      required(reference.claimText, 'Atlas authored claim', 2400)
+      required(reference.text, 'Human-authored Atlas critique', 2400)
+      required(reference.qualification, 'Atlas critique qualification', 1200)
+      const sourceIds = list(reference.sourceIds, 'Atlas source identities', 24)
+      if (sourceIds.some((id) => !/^SRC-[0-9]{6}$/.test(id)) || new Set(sourceIds).size !== sourceIds.length) throw new Error('Atlas source identities must be unique SRC IDs, not Research evidence IDs')
+      identities.add(identity)
+    }
+  }
+  const normalized = {
     placement: { domain: required(candidate.placement.domain, 'Domain ID', 80), scope: required(scope, 'Scope ID', 80) },
     title: required(candidate.title, 'Principle title', 160),
     assertion: required(candidate.assertion, 'Principle assertion', 2000),
@@ -114,6 +130,8 @@ function validateCandidate(root, candidate, evidenceIds) {
     counterevidence: counterevidence.map((item) => ({ text: item.text.trim(), evidenceIds: [...item.evidenceIds] })),
     selectedEvidenceIds: [...selectedEvidenceIds],
   }
+  if (contextualCritiqueRefs !== undefined) normalized.contextualCritiqueRefs = structuredClone(contextualCritiqueRefs)
+  return normalized
 }
 
 function versionIdentity(version) {

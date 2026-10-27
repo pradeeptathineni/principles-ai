@@ -47,6 +47,15 @@ function proposal() {
   }
 }
 
+function contextualCritiqueRef() {
+  return {
+    schema: 'principles.contextual-critique-reference/1', decisionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', version: 1, versionSha256: hash('atlas-version'),
+    principleId: 'PRN-000001', field: 'statement', index: 0, claimSha256: hash('authored-claim'), claimText: 'A synthetic authored claim.', sourceIds: ['SRC-000001'],
+    category: 'exception', text: 'A human-authored exception for one boundary case.', corpusRevision: hash('atlas-corpus'), ownerRevision: 'a'.repeat(40), currentnessAtAppend: 'current',
+    qualification: 'The exact canonical claim was current at append time; SRC IDs are registry metadata, not Research citations or proof of external content.'
+  }
+}
+
 function copySyntheticRepository(directory) {
   cpSync(root, directory, {
     recursive: true,
@@ -162,6 +171,35 @@ test('proposal review adopts and activates only through canonical corpus owners;
   assert.equal(afterDocument.entries.length, beforeDocument.entries.length - 1)
   assert.deepEqual(afterDocument.entries.map((entry) => entry.id), beforeDocument.entries.slice(1).map((entry) => entry.id))
   assert.throws(() => planPrincipleEntryRetirement(syntheticRoot, before, { path: retirementPath, entryId: targetEntry.id, expectedFileSha256: plan.prior_file_sha256, expectedSemanticSha256: beforeDocument.semanticSha256, demoteRemainingEntries: true }), /file changed since retirement review/u)
+})
+
+test('Atlas critique references are retained metadata and preserve absent-field dossier digests', async (t) => {
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'principle-atlas-dossier-ref-')))
+  t.after(() => rmSync(temporary, { recursive: true, force: true }))
+  const syntheticRoot = join(temporary, 'repo')
+  copySyntheticRepository(syntheticRoot)
+  const store = join(temporary, 'dossiers')
+  const service = createPrincipleDossierService({ root: syntheticRoot, store, adoptionTargets: [{ id: 'teaching-classroom', path: 'domains/teaching/classroom.md' }] })
+  const ref = contextualCritiqueRef()
+  const withRef = await service.propose({ proposal: { ...proposal(), contextualCritiqueRefs: [ref] }, research: researchAnswer(), dossierId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' })
+  assert.deepEqual(withRef.proposal.contextualCritiqueRefs, [ref])
+  const cold = service.read(withRef.id)
+  assert.deepEqual(cold.proposal.contextualCritiqueRefs, [ref])
+  assert.match(cold.proposal.contextualCritiqueRefs[0].qualification, /registry metadata/)
+  const exported = service.export({ id: withRef.id })
+  assert.deepEqual(exported.dossier.proposal.contextualCritiqueRefs, [ref])
+  const reviewed = service.review({ id: withRef.id, version: withRef.version, versionSha256: withRef.versionSha256, disposition: 'accept', reviewer: 'Synthetic dossier reviewer', reviewerKind: 'human', supportOutcome: 'strong', counterevidenceReviewed: true, limitsReviewed: true, valueAssumptionsReviewed: true })
+  const adopted = service.adopt({ id: reviewed.id, version: reviewed.version, versionSha256: reviewed.versionSha256, targetId: 'teaching-classroom', sourceMap: [{ researchCitationId: 'citation:synthetic-1', sourceId: 'SRC-000001' }] })
+  const adoptedText = readFileSync(join(syntheticRoot, adopted.canonical.path), 'utf8')
+  assert.equal(adoptedText.includes(ref.text), false)
+  assert.equal(adoptedText.includes(ref.claimText), false)
+  await assert.rejects(service.propose({ proposal: { ...proposal(), contextualCritiqueRefs: [{ ...ref, sourceIds: ['citation:synthetic-1'] }] }, research: researchAnswer(), dossierId: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc' }), /SRC IDs/u)
+
+  const withoutRef = await service.propose({ proposal: proposal(), research: researchAnswer(), dossierId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd' })
+  const path = join(store, `${withoutRef.id}.json`)
+  const before = JSON.parse(readFileSync(path, 'utf8'))
+  assert.equal(Object.hasOwn(before.versions[0].proposal, 'contextualCritiqueRefs'), false)
+  assert.equal(service.read(withoutRef.id).versionSha256, before.versions[0].version_sha256)
 })
 
 test('owner mutation IDs survive cold replay and keep unprovable canonical crash windows unknown', async (t) => {
