@@ -259,10 +259,10 @@ export function materializeContent(root, validation, plan, validate) {
   return materializeContents(root, validation, plan, validate).materialized[0]
 }
 
-export function synchronizeCitations(root, validation, path, validate, { apply = false } = {}) {
+export function synchronizeCitations(root, validation, path, validate, { apply = false, content: suppliedContent = undefined } = {}) {
   const document = validation.state.corpus.documents.find((item) => item.path === path)
   if (!document) throw new Error(`No corpus document exists at ${path}`)
-  const original = readFileSync(safeResolve(root, path), 'utf8')
+  const original = suppliedContent ?? readFileSync(safeResolve(root, path), 'utf8')
   const marker = '\n## References\n'
   const boundary = original.indexOf(marker)
   if (boundary < 0) throw new Error(`${path} has no References boundary`)
@@ -288,6 +288,74 @@ export function synchronizeCitations(root, validation, path, validate, { apply =
   const changed = content !== original
   if (apply && changed) applyRepositoryTransaction(root, [{ path, expected_sha256: fileSha256(root, path), content }], validate)
   return { path, changed, source_order: orderedSources, content_sha256: createHash('sha256').update(content).digest('hex'), ...(apply ? {} : { content }) }
+}
+
+// Build a compare-and-swap retirement plan for one exact corpus entry. The
+// caller owns the human decision and archival record; this helper owns only
+// canonical file/identity mutation and keeps remaining citations synchronized.
+export function planPrincipleEntryRetirement(root, validation, { path, entryId, expectedFileSha256, expectedSemanticSha256, demoteRemainingEntries = false }) {
+  if (typeof path !== 'string' || !/^domains\/[a-z0-9-]+\/[a-z0-9-]+\.md$/.test(path)) throw new Error('Retirement requires an exact corpus path')
+  if (!/^PRN-[0-9]{6}$/.test(entryId ?? '')) throw new Error('Retirement requires an exact PRN identity')
+  if (!/^[a-f0-9]{64}$/.test(expectedFileSha256 ?? '') || !/^[a-f0-9]{64}$/.test(expectedSemanticSha256 ?? '')) throw new Error('Retirement requires exact file and semantic hashes')
+  const document = validation.state.corpus.documents.find((item) => item.path === path)
+  if (!document || document.semanticSha256 !== expectedSemanticSha256) throw new Error('Corpus document changed since retirement review')
+  if (!['draft', 'active'].includes(document.frontmatter.status)) throw new Error('Retirement requires an active or draft canonical corpus file')
+  if (document.frontmatter.status === 'active' && demoteRemainingEntries !== true) throw new Error('Retiring from an active file requires explicit agreement that remaining entries return to draft for a new whole-file review')
+  if (fileSha256(root, path) !== expectedFileSha256) throw new Error('Corpus file changed since retirement review')
+  const entry = document.entries.find((item) => item.id === entryId)
+  if (!entry) throw new Error(`${entryId} is not present in ${path}`)
+  if (validation.state.ledger.principles.retired.includes(entryId)) throw new Error(`${entryId} is already retired`)
+  if (!validation.state.ledger.principles.allocated.includes(entryId)) throw new Error(`${entryId} is not allocated in the identity ledger`)
+  if (document.entries.length < 2) throw new Error('The final entry in a corpus document cannot be retired without a separate scope decision')
+
+  const original = readFileSync(safeResolve(root, path), 'utf8')
+  const marker = `### ${entryId} — ${entry.title}`
+  const start = original.indexOf(marker)
+  if (start < 0 || original.indexOf(marker, start + marker.length) >= 0 || original.slice(0, start).split('\n').at(-1) !== '') throw new Error('Exact corpus heading cannot be uniquely located for retirement')
+  const nextHeading = original.indexOf('\n### PRN-', start + marker.length)
+  const references = original.indexOf('\n## References', start + marker.length)
+  const end = nextHeading >= 0 ? nextHeading : references
+  if (end < 0) throw new Error('Corpus entry has no following entry or References boundary')
+  let updatedContent = original.slice(0, start) + original.slice(end + 1)
+  if (document.frontmatter.status === 'active') {
+    updatedContent = updatedContent
+      .replace(/^status: active$/m, 'status: draft')
+      .replace(/^last_reviewed: .*$/m, 'last_reviewed: null')
+      .replace(/^reviewed_content_sha256: .*$/m, 'reviewed_content_sha256: null')
+  }
+  const synchronized = synchronizeCitations(root, validation, path, () => {}, { content: updatedContent })
+  const ledger = structuredClone(validation.state.ledger)
+  ledger.principles.retired.push(entryId)
+  const ledgerContent = yaml(ledger)
+  const plan = {
+    path,
+    entry_id: entryId,
+    entry_title: entry.title,
+    entry_content: original.slice(start, end),
+    prior_file_sha256: expectedFileSha256,
+    prior_semantic_sha256: expectedSemanticSha256,
+    prior_ledger_sha256: fileSha256(root, 'config/identity-ledger.yaml'),
+    demoted_active_file: document.frontmatter.status === 'active',
+    remaining_entries_status: 'draft',
+    corpus_content: synchronized.content,
+    ledger_content: ledgerContent,
+    corpus_expected_sha256: expectedFileSha256,
+    ledger_expected_sha256: fileSha256(root, 'config/identity-ledger.yaml'),
+  }
+  plan.plan_sha256 = createHash('sha256').update(canonicalize(plan), 'utf8').digest('hex')
+  return plan
+}
+
+export function applyPrincipleEntryRetirement(root, plan, validate) {
+  if (!plan || typeof plan.path !== 'string' || !/^PRN-[0-9]{6}$/.test(plan.entry_id ?? '')) throw new Error('Retirement plan is malformed')
+  const { plan_sha256: planSha256, ...payload } = plan
+  const actualPlanSha256 = createHash('sha256').update(canonicalize(payload), 'utf8').digest('hex')
+  if (!/^[a-f0-9]{64}$/.test(planSha256 ?? '') || actualPlanSha256 !== planSha256) throw new Error(`Retirement plan changed after review (${actualPlanSha256} != ${String(planSha256)})`)
+  applyRepositoryTransaction(root, [
+    { path: plan.path, expected_sha256: plan.corpus_expected_sha256, content: plan.corpus_content },
+    { path: 'config/identity-ledger.yaml', expected_sha256: plan.ledger_expected_sha256, content: plan.ledger_content },
+  ], validate)
+  return { path: plan.path, entry_id: plan.entry_id, retired: true }
 }
 
 export function synchronizeDomainCitations(root, validation, domain, validate, { apply = false } = {}) {
