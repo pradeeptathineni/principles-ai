@@ -76,6 +76,14 @@ test('atlas search, contextual decision, cold reopen, source-change revisit and 
   assert.equal(search.matchMethod, 'literal-substring')
   assert.match(search.qualification, /do not establish semantic applicability, conflict, truth, or entailment/)
 
+  const shown = service.show({ entryId: pair.ids[0] })
+  assert.equal(shown.entry.principleId, pair.ids[0])
+  assert.ok(shown.entry.why.length > 0 || shown.entry.practices.length > 0)
+  assert.ok([shown.entry.statement, ...shown.entry.why, ...shown.entry.practices, ...shown.entry.applicability, ...shown.entry.goals].some((claim) => claim?.sources.some((item) => item.sourceId === pair.sourceId)))
+  const sourceRecord = service.source({ sourceId: pair.sourceId })
+  assert.equal(sourceRecord.source.sourceId, pair.sourceId)
+  assert.match(sourceRecord.qualification, /No source was fetched/)
+
   const comparison = service.compare({ entryIds: pair.ids })
   assert.ok(comparison.structuralSignals.some((item) => item.kind === 'shared-source-identity' && item.sourceIds.includes(pair.sourceId)))
   assert.match(comparison.qualification, /No automatic semantic conflict/)
