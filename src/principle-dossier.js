@@ -1,19 +1,26 @@
 import { createHash, randomUUID } from 'node:crypto'
-import { closeSync, existsSync, lstatSync, mkdirSync, openSync, readFileSync, realpathSync, renameSync, unlinkSync, writeFileSync } from 'node:fs'
+import { closeSync, existsSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, realpathSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import canonicalize from 'canonicalize'
 import { validateRepository } from './validator.js'
-import { applyActivationManifest, applyPrincipleEntryRetirement, buildActivationManifest, buildActivationPackage, materializeContent, planPrincipleEntryRetirement, renderContentScaffold } from './mutation.js'
+import { applyActivationManifest, applyPrincipleEntryRetirement, buildActivationManifest, buildActivationPackage, buildActivationReview, materializeContent, planPrincipleEntryRetirement, renderContentScaffold } from './mutation.js'
 
 const STORE_SCHEMA = 'principles.research-dossier/1'
 const MAX_BYTES = 2_000_000
 const HASH = /^[a-f0-9]{64}$/
 const UUID = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/
+const MUTATION_OPERATIONS = new Set(['propose', 'revise', 'review', 'adopt', 'activate', 'retire'])
+const REQUEST_SCHEMA = 'principles.owner-mutation-request/1'
+const MAX_REQUESTS = 2000
 
 function digest(value) {
   const encoded = canonicalize(value)
   if (!encoded) throw new Error('Dossier state could not be encoded canonically')
   return createHash('sha256').update(encoded).digest('hex')
+}
+
+function textDigest(value) {
+  return createHash('sha256').update(value, 'utf8').digest('hex')
 }
 
 function required(value, label, limit) {
@@ -149,6 +156,50 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
     targets.set(id, path)
   }
   const recordPath = (id) => join(directory, `${id}.json`)
+  const requestsDirectory = join(directory, 'requests')
+  mkdirSync(requestsDirectory, { recursive: true, mode: 0o700 })
+  if (lstatSync(requestsDirectory).isSymbolicLink() || !lstatSync(requestsDirectory).isDirectory() || realpathSync(requestsDirectory) !== requestsDirectory) throw new Error('Owner request journal must be a private exact directory')
+  const requestPath = (id) => join(requestsDirectory, `${id}.json`)
+
+  function syncDirectory(path) {
+    const fd = openSync(path, 'r')
+    try { fsyncSync(fd) } finally { closeSync(fd) }
+  }
+
+  function readRequest(requestId) {
+    if (!UUID.test(requestId ?? '')) throw new Error('Choose an exact owner request ID')
+    const path = requestPath(requestId)
+    if (!existsSync(path)) return null
+    const stat = lstatSync(path)
+    if (stat.isSymbolicLink() || !stat.isFile() || stat.size > MAX_BYTES || realpathSync(path) !== path) throw new Error('Owner request journal record is unsafe or oversized')
+    const value = JSON.parse(readFileSync(path, 'utf8'))
+    if (value?.schema !== REQUEST_SCHEMA || value.requestId !== requestId || !['pending', 'unknown', 'confirmed', 'not_seen'].includes(value.status)) throw new Error('Owner request journal record is malformed')
+    if (value.status !== 'not_seen' && (!MUTATION_OPERATIONS.has(value.operation) || !HASH.test(value.inputSha256 ?? '') || !UUID.test(value.recordId ?? ''))) throw new Error('Owner request journal identity is malformed')
+    if (value.status === 'confirmed' && !('result' in value)) throw new Error('Confirmed owner request has no retained result')
+    return value
+  }
+
+  function writeRequest(value, { exclusive = false } = {}) {
+    const path = requestPath(value.requestId)
+    const bytes = `${JSON.stringify(value, null, 2)}\n`
+    if (Buffer.byteLength(bytes) > MAX_BYTES) throw new Error('Owner request journal record exceeds its size limit')
+    if (exclusive) {
+      const fd = openSync(path, 'wx', 0o600)
+      try { writeFileSync(fd, bytes); fsyncSync(fd) } finally { closeSync(fd) }
+      syncDirectory(requestsDirectory)
+      return value
+    }
+    const temporary = join(requestsDirectory, `.${value.requestId}.${randomUUID()}.tmp`)
+    try {
+      const fd = openSync(temporary, 'wx', 0o600)
+      try { writeFileSync(fd, bytes); fsyncSync(fd) } finally { closeSync(fd) }
+      renameSync(temporary, path)
+      syncDirectory(requestsDirectory)
+    } finally {
+      if (existsSync(temporary)) unlinkSync(temporary)
+    }
+    return value
+  }
 
   function withLock(operation) {
     const lock = join(directory, '.principle-dossier.lock')
@@ -295,21 +346,21 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
     return { content, sourceMap: sourceMap.map((item) => ({ ...item })) }
   }
 
-  return {
-    async propose({ proposal, research }) {
+  const service = {
+    async propose({ proposal, research, requestId = undefined, dossierId = undefined }) {
       const evidenceIds = verifyResearchShape(research)
       const normalized = validateCandidate(repository, proposal, evidenceIds)
       const snapshot = await researchSnapshot(research)
-      const id = idFactory()
+      const id = dossierId ?? (requestId || idFactory())
       if (!UUID.test(id)) throw new Error('Dossier ID generator must return a UUID')
       const version = { version: 1, proposal: normalized, research: snapshot, created_at: clock() }
       version.version_sha256 = digest({ proposal: version.proposal, research: version.research })
       const record = { schema: STORE_SCHEMA, id, created_at: version.created_at, versions: [version], events: [] }
-      append(record, 'proposed', 1, { source_verification: snapshot.verification.status })
+      append(record, 'proposed', 1, { source_verification: snapshot.verification.status, ...(requestId ? { request_id: requestId } : {}) })
       save(record)
       return view(record)
     },
-    async revise({ id, expectedVersion, proposal, research = undefined }) {
+    async revise({ id, expectedVersion, proposal, research = undefined, requestId = undefined }) {
       const record = readRecord(id)
       if (expectedVersion !== record.versions.length || ['canonical_draft', 'canonical_active', 'canonical_retired'].includes(statusFor(record))) throw new Error('Only the current proposal not yet adopted into the canonical corpus can be revised')
       const prior = record.versions.at(-1)
@@ -319,11 +370,11 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       const version = { version: record.versions.length + 1, proposal: normalized, research: evidence, created_at: clock() }
       version.version_sha256 = digest({ proposal: version.proposal, research: version.research })
       record.versions.push(version)
-      append(record, 'revised', version.version)
+      append(record, 'revised', version.version, requestId ? { request_id: requestId } : {})
       save(record, record.events.at(-2)?.event_sha256)
       return view(record)
     },
-    review({ id, version, versionSha256, disposition, reviewer, reviewerKind, supportOutcome, counterevidenceReviewed, limitsReviewed, calibration = '' }) {
+    review({ id, version, versionSha256, disposition, reviewer, reviewerKind, supportOutcome, counterevidenceReviewed, limitsReviewed, calibration = '', requestId = undefined }) {
       const record = readRecord(id)
       const saved = record.versions.at(-1)
       if (version !== saved.version || versionSha256 !== saved.version_sha256) throw new Error('Review must bind the exact latest proposal revision')
@@ -334,11 +385,11 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       if (!['strong', 'partial', 'unsupported', 'disputed'].includes(supportOutcome)) throw new Error('Choose an explicit evidence outcome')
       if (disposition === 'accept' && !['strong', 'disputed'].includes(supportOutcome)) throw new Error('Partial or unsupported claims cannot be accepted')
       if (supportOutcome === 'disputed' && !required(calibration, 'Disagreement calibration', 2000)) throw new Error('Disputed evidence requires visible calibration')
-      append(record, 'reviewed', version, { disposition, reviewer: reviewer.trim(), reviewer_kind: reviewerKind, reviewer_identity: 'caller_asserted', support_outcome: supportOutcome, counterevidence_reviewed: true, limits_reviewed: true, calibration: calibration.trim() })
+      append(record, 'reviewed', version, { disposition, reviewer: reviewer.trim(), reviewer_kind: reviewerKind, reviewer_identity: 'caller_asserted', support_outcome: supportOutcome, counterevidence_reviewed: true, limits_reviewed: true, calibration: calibration.trim(), ...(requestId ? { request_id: requestId } : {}) })
       save(record, record.events.at(-2)?.event_sha256)
       return view(record)
     },
-    adopt({ id, version, versionSha256, targetId, sourceMap }) {
+    adopt({ id, version, versionSha256, targetId, sourceMap, requestId = undefined }) {
       const record = readRecord(id)
       const latest = record.versions.at(-1)
       if (version !== latest.version || versionSha256 !== latest.version_sha256 || statusFor(record) !== 'accepted') throw new Error('Adoption requires explicit acceptance of the exact latest proposal')
@@ -350,17 +401,17 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       if (validation.bag.errorCount) throw new Error('Principles repository does not currently validate')
       if (existsSync(join(repository, targetPath))) throw new Error('Configured adoption target already exists; adoption only creates an absent host-approved target')
       const draft = corpusDraft(record, latest, targetPath, sourceMap, validation.state)
-      append(record, 'adoption_prepared', version, { target_id: targetId, path: targetPath, source_mapping: draft.sourceMap, qualification: latest.research.verification.status === 'owner_verified' ? 'owner_verified_artifact_caller_mapped_sources' : 'caller_asserted_artifact_and_source_mapping' })
+      append(record, 'adoption_prepared', version, { target_id: targetId, path: targetPath, source_mapping: draft.sourceMap, qualification: latest.research.verification.status === 'owner_verified' ? 'owner_verified_artifact_caller_mapped_sources' : 'caller_asserted_artifact_and_source_mapping', content_template: draft.content, placeholder_count: [...draft.content.matchAll(/PRN-AUTO/g)].length, ...(requestId ? { request_id: requestId } : {}) })
       save(record, record.events.at(-2)?.event_sha256)
       const result = materializeContent(repository, validation, { version: 1, target: targetPath, content: draft.content }, () => validateRepository(repository))
       const after = validateRepository(repository)
       const document = after.state.corpus.documents.find((item) => item.path === targetPath)
       if (!document || document.frontmatter.status !== 'draft' || result.allocated.length !== 1) throw new Error('Canonical adoption did not produce exactly one valid draft principle')
-      append(record, 'adopted', version, { target_id: targetId, path: targetPath, entry_id: result.allocated[0], semantic_sha256: document.semanticSha256, source_mapping: draft.sourceMap, qualification: latest.research.verification.status === 'owner_verified' ? 'owner_verified_artifact_caller_mapped_sources' : 'caller_asserted_artifact_and_source_mapping' })
+      append(record, 'adopted', version, { target_id: targetId, path: targetPath, entry_id: result.allocated[0], semantic_sha256: document.semanticSha256, source_mapping: draft.sourceMap, qualification: latest.research.verification.status === 'owner_verified' ? 'owner_verified_artifact_caller_mapped_sources' : 'caller_asserted_artifact_and_source_mapping', ...(requestId ? { request_id: requestId } : {}) })
       save(record, record.events.at(-2)?.event_sha256)
       return view(record)
     },
-    activate({ id, version, versionSha256, reviewEventSha256, reviewedAt }) {
+    activate({ id, version, versionSha256, reviewEventSha256, reviewedAt, requestId = undefined, activationPackageSha256 = undefined, expectedSemanticSha256 = undefined }) {
       const record = readRecord(id)
       const latest = record.versions.at(-1)
       const review = record.events.find((event) => event.event_sha256 === reviewEventSha256)
@@ -372,17 +423,23 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       const current = validation.state.corpus.documents.find((item) => item.path === adoption.path)
       if (!current || current.frontmatter.status !== 'draft' || !current.entries.some((entry) => entry.id === adoption.entry_id)) throw new Error('Canonical draft changed or disappeared; prepare a new review')
       const activationPackage = buildActivationPackage(validation, latest.proposal.placement.domain)
-      if (!activationPackage.artifacts.some((item) => item.path === adoption.path)) throw new Error('Canonical activation package no longer includes the adopted draft')
+      const activationReview = buildActivationReview(activationPackage)
+      const packageArtifact = activationPackage.artifacts.find((item) => item.path === adoption.path)
+      if (!packageArtifact) throw new Error('Canonical activation package no longer includes the adopted draft')
+      if (activationPackageSha256 !== undefined && activationReview.machine_binding_sha256 !== activationPackageSha256) throw new Error('Activation package changed after its exact review')
+      if (expectedSemanticSha256 !== undefined && packageArtifact.diagnostics.semantic_sha256 !== expectedSemanticSha256) throw new Error('Canonical semantic digest changed after its exact review')
       const at = required(reviewedAt, 'Activation date', 40)
       if (!/^\d{4}-\d{2}-\d{2}$/.test(at) || Number.isNaN(Date.parse(`${at}T00:00:00Z`))) throw new Error('Activation date must use YYYY-MM-DD')
       const manifest = buildActivationManifest(activationPackage, at, [adoption.path])
+      const prepared = append(record, 'activation_prepared', version, { review_event_sha256: review.event_sha256, path: adoption.path, entry_id: adoption.entry_id, reviewed_at: at, activation_package_sha256: activationReview.machine_binding_sha256, expected_semantic_sha256: packageArtifact.diagnostics.semantic_sha256, ...(requestId ? { request_id: requestId } : {}) })
+      save(record, record.events.at(-2)?.event_sha256)
       const result = applyActivationManifest(repository, validation, manifest, () => validateRepository(repository))
-      append(record, 'activated', version, { review_event_sha256: review.event_sha256, disposition: 'human_accepted', path: adoption.path, entry_id: adoption.entry_id, reviewed_at: at, qualification: latest.research.verification.status === 'owner_verified' ? 'owner_verified_artifact_caller_mapped_sources' : 'caller_asserted_artifact_and_source_mapping' })
+      append(record, 'activated', version, { review_event_sha256: review.event_sha256, disposition: 'human_accepted', path: adoption.path, entry_id: adoption.entry_id, reviewed_at: at, qualification: latest.research.verification.status === 'owner_verified' ? 'owner_verified_artifact_caller_mapped_sources' : 'caller_asserted_artifact_and_source_mapping', ...(requestId ? { request_id: requestId, prepared_event_sha256: prepared.event_sha256 } : {}) })
       save(record, record.events.at(-2)?.event_sha256)
       const resultView = view(record)
       return { ...resultView, activation: result }
     },
-    retire({ id, version, versionSha256, reviewer, reason, retiredAt, expectedFileSha256, expectedSemanticSha256, demoteRemainingEntries = false }) {
+    retire({ id, version, versionSha256, reviewer, reason, retiredAt, expectedFileSha256, expectedSemanticSha256, expectedRetirementPlanSha256 = undefined, demoteRemainingEntries = false, requestId = undefined }) {
       const record = readRecord(id)
       const latest = record.versions.at(-1)
       const activeEvent = [...record.events].reverse().find((event) => event.kind === 'activated' && event.version === latest.version)
@@ -392,10 +449,11 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       const retiredAtValue = required(retiredAt, 'Retirement date', 40)
       const validation = validateRepository(repository)
       const plan = planPrincipleEntryRetirement(repository, validation, { path: activeEvent.path, entryId: activeEvent.entry_id, expectedFileSha256, expectedSemanticSha256, demoteRemainingEntries })
-      append(record, 'retirement_prepared', version, { reviewer: reviewerName, reviewer_identity: 'caller_asserted_human', reason: retirementReason, retired_at: retiredAtValue, path: plan.path, entry_id: plan.entry_id, prior_file_sha256: plan.prior_file_sha256, prior_semantic_sha256: plan.prior_semantic_sha256, prior_ledger_sha256: plan.prior_ledger_sha256, exact_prior_entry: plan.entry_content, demoted_active_file: plan.demoted_active_file, remaining_entries_status: plan.remaining_entries_status })
+      if (expectedRetirementPlanSha256 !== undefined && plan.plan_sha256 !== expectedRetirementPlanSha256) throw new Error('Retirement plan changed after its exact review')
+      append(record, 'retirement_prepared', version, { reviewer: reviewerName, reviewer_identity: 'caller_asserted_human', reason: retirementReason, retired_at: retiredAtValue, path: plan.path, entry_id: plan.entry_id, prior_file_sha256: plan.prior_file_sha256, prior_semantic_sha256: plan.prior_semantic_sha256, prior_ledger_sha256: plan.prior_ledger_sha256, expected_post_file_sha256: textDigest(plan.corpus_content), expected_post_ledger_sha256: textDigest(plan.ledger_content), exact_prior_entry: plan.entry_content, demoted_active_file: plan.demoted_active_file, remaining_entries_status: plan.remaining_entries_status, ...(requestId ? { request_id: requestId } : {}) })
       save(record, record.events.at(-2)?.event_sha256)
       const result = applyPrincipleEntryRetirement(repository, plan, () => validateRepository(repository))
-      append(record, 'retired', version, { reviewer: reviewerName, reviewer_identity: 'caller_asserted_human', reason: retirementReason, retired_at: retiredAtValue, path: result.path, entry_id: result.entry_id, canonical_retirement: true })
+      append(record, 'retired', version, { reviewer: reviewerName, reviewer_identity: 'caller_asserted_human', reason: retirementReason, retired_at: retiredAtValue, path: result.path, entry_id: result.entry_id, canonical_retirement: true, ...(requestId ? { request_id: requestId } : {}) })
       save(record, record.events.at(-2)?.event_sha256)
       return { ...view(record), retirement: result }
     },
@@ -421,4 +479,145 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       }
     },
   }
+
+  function confirmedRequest(request, result) {
+    const saved = {
+      ...request,
+      status: 'confirmed',
+      result: structuredClone(result),
+      message: undefined,
+      completed_at: clock(),
+    }
+    writeRequest(saved)
+    return { status: 'confirmed', requestId: saved.requestId, operation: saved.operation, inputSha256: saved.inputSha256, result: structuredClone(saved.result) }
+  }
+
+  function unknownRequest(request, message = 'Owner state does not prove whether this mutation completed; it was not replayed.') {
+    // Leave the exclusive intent intact. This avoids a stale recovery reader
+    // overwriting a concurrent confirmed receipt with an older unknown state.
+    return { status: 'unknown', requestId: request.requestId, operation: request.operation, inputSha256: request.inputSha256, message }
+  }
+
+  function recoveryFromRecord(request) {
+    const record = readRecord(request.recordId)
+    const events = record.events
+    const completeKind = {
+      propose: 'proposed', revise: 'revised', review: 'reviewed',
+      adopt: 'adopted', activate: 'activated', retire: 'retired',
+    }[request.operation]
+    const completed = [...events].reverse().find((event) => event.kind === completeKind && event.request_id === request.requestId)
+    if (completed) return service.read(request.recordId, completed.version)
+
+    // Prepared events bind intent, while canonical file/ledger digests prove
+    // only that the intended state is present. Without a request marker in
+    // the same corpus transaction they cannot prove which actor caused it.
+    // Keep this crash window unknown rather than manufacture a completion
+    // event from matching state.
+    return null
+  }
+
+  function reconcileRequest(request) {
+    if (request.status === 'confirmed')
+      return { status: 'confirmed', requestId: request.requestId, operation: request.operation, inputSha256: request.inputSha256, result: structuredClone(request.result) }
+    if (request.status === 'not_seen')
+      return { status: 'not_seen', requestId: request.requestId, message: 'This request ID was fenced before any mutation was dispatched. Use a new ID only after reviewing the still-unconfirmed action.' }
+    try {
+      const result = recoveryFromRecord(request)
+      if (result) return confirmedRequest(request, result)
+    } catch {
+      // Invalid, unavailable, or partial owner state is not proof of completion.
+    }
+    return unknownRequest(request)
+  }
+
+  service.mutate = async ({ requestId, operation, input }) => {
+    if (!UUID.test(requestId ?? '') || !MUTATION_OPERATIONS.has(operation))
+      return { status: 'rejected', message: 'Choose an exact request ID and supported owner mutation.' }
+    let inputSha256
+    let recordId
+    try {
+      const encoded = canonicalize(input)
+      if (!encoded || Buffer.byteLength(encoded) > MAX_BYTES) throw new Error('Mutation input is missing or oversized.')
+      inputSha256 = textDigest(encoded)
+      recordId = operation === 'propose' ? requestId : required(input?.id, 'Proposal ID', 80)
+      if (!UUID.test(recordId)) throw new Error('Choose an exact proposal ID.')
+    } catch (error) {
+      return { status: 'rejected', message: error.message }
+    }
+
+    let existing
+    try { existing = readRequest(requestId) } catch (error) {
+      return { status: 'rejected', message: error.message }
+    }
+    if (existing?.status === 'not_seen')
+      return { status: 'not_seen', requestId, message: 'This request ID was fenced before dispatch and will not be reused.' }
+    if (existing) {
+      if (existing.operation !== operation || existing.recordId !== recordId || existing.inputSha256 !== inputSha256)
+        return { status: 'rejected', message: 'Request ID is already bound to a different operation or input digest.' }
+      return reconcileRequest(existing)
+    }
+    try {
+      const files = readdirSync(requestsDirectory).filter((name) => /^[a-f0-9-]{36}\.json$/.test(name))
+      if (files.length >= MAX_REQUESTS) return { status: 'rejected', message: 'Owner request journal is full; preserve and inspect it explicitly.' }
+    } catch (error) {
+      return { status: 'rejected', message: error.message }
+    }
+    const pending = { schema: REQUEST_SCHEMA, requestId, operation, recordId, inputSha256, status: 'pending', created_at: clock() }
+    try { writeRequest(pending, { exclusive: true }) } catch (error) {
+      if (error.code !== 'EEXIST') return { status: 'rejected', message: 'Owner could not durably reserve this request ID; no mutation was dispatched.' }
+      try { existing = readRequest(requestId) } catch (readError) { return { status: 'unknown', requestId, operation, inputSha256, message: readError.message } }
+      if (!existing || existing.status === 'not_seen' || existing.operation !== operation || existing.recordId !== recordId || existing.inputSha256 !== inputSha256)
+        return { status: 'rejected', message: 'Request ID is already reserved or fenced and cannot be dispatched.' }
+      return reconcileRequest(existing)
+    }
+
+    try {
+      let nativeResult
+      if (operation === 'propose') {
+        let proposalInput = input
+        if (!proposalInput?.research) {
+          exactObject(proposalInput, ['studyId', 'questionId', 'proposal'], 'Principle proposal request')
+          if (!researchOwnerReader) throw new Error('Configure the accepted Research study reader first.')
+          const research = await researchOwnerReader({
+            studyId: required(proposalInput.studyId, 'Research study ID', 120),
+            questionId: required(proposalInput.questionId, 'Research question ID', 180),
+          })
+          proposalInput = { proposal: proposalInput.proposal, research }
+        }
+        nativeResult = await service.propose({ ...proposalInput, requestId, dossierId: requestId })
+      } else nativeResult = await service[operation]({
+        ...input,
+        ...(operation === 'review' ? { reviewerKind: 'human' } : {}),
+        requestId,
+      })
+      const result = service.read(recordId, operation === 'propose' ? 1 : input.version)
+      return confirmedRequest(pending, result)
+    } catch (error) {
+      return unknownRequest(pending, 'The owner mutation was dispatched but did not confirm. Recover this exact request; it will not be executed again.')
+    }
+  }
+
+  service.recoverMutation = ({ requestId }) => {
+    if (!UUID.test(requestId ?? '')) return { status: 'rejected', message: 'Choose an exact owner request ID.' }
+    let existing
+    try { existing = readRequest(requestId) } catch (error) {
+      return { status: 'unknown', requestId, message: error.message }
+    }
+    if (existing) return reconcileRequest(existing)
+    const fenced = { schema: REQUEST_SCHEMA, requestId, status: 'not_seen', created_at: clock() }
+    try {
+      writeRequest(fenced, { exclusive: true })
+      return reconcileRequest(fenced)
+    } catch (error) {
+      if (error.code !== 'EEXIST') return { status: 'unknown', requestId, message: 'Owner could not durably fence the absent request ID.' }
+      try {
+        existing = readRequest(requestId)
+        return existing ? reconcileRequest(existing) : { status: 'unknown', requestId, message: 'Owner request state remains unavailable.' }
+      } catch (readError) {
+        return { status: 'unknown', requestId, message: readError.message }
+      }
+    }
+  }
+
+  return service
 }
