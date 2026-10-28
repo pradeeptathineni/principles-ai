@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import test from 'node:test'
 import { createPrincipleAtlasService } from '../src/principle-atlas.js'
@@ -127,6 +127,82 @@ test('atlas search, contextual decision, cold reopen, source-change revisit and 
   assert.equal(successor.result.versions[0].payload.basis.sources.find((source) => source.sourceId === pair.sourceId).status, 'withdrawn')
   assert.equal(coldService.readDecision({ decisionId: successorId }).currentness.status, 'current')
   assert.equal(validateRepository(syntheticRoot).bag.errorCount, 0)
+})
+
+test('reviewed experience evidence is closed on a contextual successor and remains readable by the accepted prior owner', async (t) => {
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'principle-experience-evidence-')))
+  t.after(() => rmSync(temporary, { recursive: true, force: true }))
+  const syntheticRoot = join(temporary, 'corpus')
+  copySyntheticRepository(syntheticRoot)
+  const pair = choicePair(syntheticRoot)
+  const store = join(temporary, 'private-atlas')
+  const service = createPrincipleAtlasService({ root: syntheticRoot, store, ownerRevision: revision })
+  const compared = service.compare({ entryIds: pair.ids })
+  const predecessorId = '78787878-7878-4878-8878-787878787878'
+  const predecessor = service.createDecision({ requestId: predecessorId, input: decisionInput(pair.ids, compared.corpusRevision) })
+  assert.equal(predecessor.status, 'confirmed', predecessor.message)
+
+  const experienceEvidence = {
+    schema: 'principles.experience-guidance-evidence/1',
+    planningReflection: {
+      owner: 'planning-ai', ownerRevision: '8f1ccf3a79e1720c3714681438264f6d0db0821a',
+      kind: 'reflection', id: '89898989-8989-4898-8898-898989898989', revision: 1, sha256: 'a'.repeat(64)
+    },
+    sandboxComparison: {
+      owner: 'sandbox-ai', ownerRevision: '00daf57159c179a2c2d80b20541d8649e96526d4',
+      kind: 'paired-comparison', id: '90909090-9090-4909-8909-909090909090', revision: 'packet', sha256: 'b'.repeat(64),
+      pairedStatus: 'descriptive-only', pairCount: 1, denominator: 1, adoptionAuthority: 'no-authority-granted'
+    },
+    applicationScope: 'case-specific', trialEvidenceStatus: 'descriptive-only', generalizationStatus: 'not-established',
+    causalStatus: 'not-established', adoptionStatus: 'not-authorized',
+    qualification: 'One user-authored Planning reflection and one descriptive-only Sandbox paired-comparison packet are retained as case-specific references. They do not establish truth, entailment, causality, representativeness, generality, authority, adoption, or activation.'
+  }
+  const invalidFirstDecision = service.createDecision({
+    requestId: '91919191-9191-4919-8919-919191919191',
+    input: decisionInput(pair.ids, compared.corpusRevision, { experienceEvidence })
+  })
+  assert.equal(invalidFirstDecision.status, 'rejected')
+  assert.match(invalidFirstDecision.message, /explicit contextual decision successor/)
+  const invalidEvidence = structuredClone(experienceEvidence)
+  invalidEvidence.generalizationStatus = 'established'
+  const invalidSuccessor = service.createSuccessor({
+    requestId: '92929292-9292-4929-8929-929292929292',
+    input: decisionInput(pair.ids, compared.corpusRevision, {
+      predecessorDecisionId: predecessorId, acknowledgedChangedBasis: false, experienceEvidence: invalidEvidence
+    })
+  })
+  assert.equal(invalidSuccessor.status, 'rejected')
+  assert.match(invalidSuccessor.message, /case-specific/)
+
+  const successorId = '93939393-9393-4939-8939-939393939393'
+  const successor = service.createSuccessor({
+    requestId: successorId,
+    input: decisionInput(pair.ids, compared.corpusRevision, {
+      predecessorDecisionId: predecessorId, acknowledgedChangedBasis: false,
+      judgment: 'For this reviewed case, keep the lesson bounded to the observed conditions and reopen its evidence before reuse.',
+      experienceEvidence
+    })
+  })
+  assert.equal(successor.status, 'confirmed', successor.message)
+  const saved = successor.result.versions[0].payload
+  assert.deepEqual(saved.experienceEvidence, experienceEvidence)
+  assert.equal(saved.predecessor.decisionId, predecessorId)
+  assert.equal(saved.judgment.includes('For this reviewed case'), true)
+  const cold = createPrincipleAtlasService({ root: syntheticRoot, store, ownerRevision: revision })
+  const reopened = cold.readDecision({ decisionId: successorId })
+  assert.equal(reopened.currentness.status, 'current')
+  assert.deepEqual(reopened.decision.versions[0].payload.experienceEvidence, experienceEvidence)
+  assert.equal(cold.readDecision({ decisionId: predecessorId }).decision.versions[0].payload.experienceEvidence, undefined)
+  assert.equal(cold.listDecisions().decisions.find((item) => item.id === successorId).reviewKind, 'experience-guidance')
+
+  const legacyRoot = process.env.PRINCIPLES_ATLAS_LEGACY_SOURCE
+  if (legacyRoot) {
+    const legacy = await import(pathToFileURL(join(legacyRoot, 'src/principle-atlas.js')).href)
+    const oldReader = legacy.createPrincipleAtlasService({ root: syntheticRoot, store, ownerRevision: revision })
+    const oldColdRead = oldReader.readDecision({ decisionId: successorId })
+    assert.equal(oldColdRead.currentness.status, 'current')
+    assert.deepEqual(oldColdRead.decision.versions[0].payload.experienceEvidence, experienceEvidence)
+  }
 })
 
 test('standalone CLI can create and cold-read a contextual decision using the same canonical service', (t) => {

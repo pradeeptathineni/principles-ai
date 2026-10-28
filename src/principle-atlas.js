@@ -13,6 +13,7 @@ const MAX_RESULTS = 100
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 const MAX_RECORD_BYTES = 1_000_000
 const MAX_DECISIONS = 1000
+const EXPERIENCE_EVIDENCE_QUALIFICATION = 'One user-authored Planning reflection and one descriptive-only Sandbox paired-comparison packet are retained as case-specific references. They do not establish truth, entailment, causality, representativeness, generality, authority, adoption, or activation.'
 
 function digest(value) {
   return createHash('sha256').update(canonicalize(value), 'utf8').digest('hex')
@@ -149,6 +150,29 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
       qualification: 'Caller-authored critique bound to exact authored claim bytes and registry source identities. Source metadata is not external source text or evidence of entailment.'
     }
   }
+  function normalizeExperienceEvidence(candidate) {
+    const fields = ['schema', 'planningReflection', 'sandboxComparison', 'applicationScope', 'trialEvidenceStatus', 'generalizationStatus', 'causalStatus', 'adoptionStatus', 'qualification']
+    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) || Object.keys(candidate).some((key) => !fields.includes(key)) || fields.some((key) => !Object.hasOwn(candidate, key))) throw new Error('Experience evidence fields do not match the exact owner-reference contract.')
+    if (candidate.schema !== 'principles.experience-guidance-evidence/1') throw new Error('Choose the supported Principles experience-guidance evidence schema.')
+    const planningFields = ['owner', 'ownerRevision', 'kind', 'id', 'revision', 'sha256']
+    const planning = candidate.planningReflection
+    if (!planning || typeof planning !== 'object' || Array.isArray(planning) || Object.keys(planning).some((key) => !planningFields.includes(key)) || planningFields.some((key) => !Object.hasOwn(planning, key)) || planning.owner !== 'planning-ai' || !/^[a-f0-9]{40,64}$/.test(planning.ownerRevision ?? '') || planning.kind !== 'reflection' || !UUID.test(planning.id ?? '') || !Number.isSafeInteger(planning.revision) || planning.revision < 1 || planning.revision > 9999 || !SHA256.test(planning.sha256 ?? '')) throw new Error('Planning reflection must bind its exact owner revision, ID, record revision, and digest.')
+    const sandboxFields = ['owner', 'ownerRevision', 'kind', 'id', 'revision', 'sha256', 'pairedStatus', 'pairCount', 'denominator', 'adoptionAuthority']
+    const sandbox = candidate.sandboxComparison
+    if (!sandbox || typeof sandbox !== 'object' || Array.isArray(sandbox) || Object.keys(sandbox).some((key) => !sandboxFields.includes(key)) || sandboxFields.some((key) => !Object.hasOwn(sandbox, key)) || sandbox.owner !== 'sandbox-ai' || !/^[a-f0-9]{40,64}$/.test(sandbox.ownerRevision ?? '') || sandbox.kind !== 'paired-comparison' || !UUID.test(sandbox.id ?? '') || sandbox.revision !== 'packet' || !SHA256.test(sandbox.sha256 ?? '') || sandbox.pairedStatus !== 'descriptive-only' || !Number.isSafeInteger(sandbox.pairCount) || sandbox.pairCount < 1 || !Number.isSafeInteger(sandbox.denominator) || sandbox.denominator < sandbox.pairCount || sandbox.denominator > 1_000_000 || sandbox.adoptionAuthority !== 'no-authority-granted') throw new Error('Sandbox comparison must bind one exact descriptive paired-comparison packet with no adoption authority and bounded counts.')
+    if (candidate.applicationScope !== 'case-specific' || candidate.trialEvidenceStatus !== 'descriptive-only' || candidate.generalizationStatus !== 'not-established' || candidate.causalStatus !== 'not-established' || candidate.adoptionStatus !== 'not-authorized' || candidate.qualification !== EXPERIENCE_EVIDENCE_QUALIFICATION) throw new Error('Experience guidance must retain its case-specific, descriptive-only, non-causal and non-adoption qualification.')
+    return {
+      schema: 'principles.experience-guidance-evidence/1',
+      planningReflection: { owner: 'planning-ai', ownerRevision: planning.ownerRevision, kind: 'reflection', id: planning.id, revision: planning.revision, sha256: planning.sha256 },
+      sandboxComparison: { owner: 'sandbox-ai', ownerRevision: sandbox.ownerRevision, kind: 'paired-comparison', id: sandbox.id, revision: 'packet', sha256: sandbox.sha256, pairedStatus: 'descriptive-only', pairCount: sandbox.pairCount, denominator: sandbox.denominator, adoptionAuthority: sandbox.adoptionAuthority.trim() },
+      applicationScope: 'case-specific',
+      trialEvidenceStatus: 'descriptive-only',
+      generalizationStatus: 'not-established',
+      causalStatus: 'not-established',
+      adoptionStatus: 'not-authorized',
+      qualification: EXPERIENCE_EVIDENCE_QUALIFICATION
+    }
+  }
   function validateDecisionInput(input, { successor = false } = {}) {
     const shared = ['title', 'reviewer', 'context', 'principleIds', 'expectedCorpusRevision']
     const contextual = ['applicability', 'exceptions', 'valueAssumptions', 'tradeoffs', 'judgment']
@@ -156,13 +180,16 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Decision input fields do not match the operation contract.')
     const critique = input.claimReview !== undefined
     const required = [...shared, ...(critique ? [] : contextual), ...successorFields, ...(critique ? ['claimReview'] : [])]
-    const allowed = [...shared, ...contextual, ...successorFields, 'claimReview']
+    const allowed = [...shared, ...contextual, ...successorFields, 'claimReview', 'experienceEvidence']
     if (Object.keys(input).some((key) => !allowed.includes(key)) || required.some((key) => !Object.hasOwn(input, key)) || (critique && contextual.some((key) => Object.hasOwn(input, key)))) throw new Error('Decision input fields do not match the operation contract.')
     const list = (value, label, maximum, required = false) => {
       if (!Array.isArray(value) || value.length > maximum || (required && !value.length)) throw new Error(`${label} must contain ${required ? '1' : '0'} to ${maximum} entries.`)
       return value.map((item) => requiredText(item, label, 2000))
     }
     const hasClaimReview = critique
+    const experienceEvidence = input.experienceEvidence === undefined ? null : normalizeExperienceEvidence(input.experienceEvidence)
+    if (experienceEvidence && hasClaimReview) throw new Error('Experience guidance evidence belongs to a contextual decision, not a single-claim critique.')
+    if (experienceEvidence && !successor) throw new Error('Experience guidance evidence must be reviewed in an explicit contextual decision successor.')
     if (!Array.isArray(input.principleIds) || input.principleIds.length < (hasClaimReview ? 1 : 2) || input.principleIds.length > 8 || new Set(input.principleIds).size !== input.principleIds.length || input.principleIds.some((id) => typeof id !== 'string' || !PRINCIPLE_ID.test(id))) throw new Error(hasClaimReview ? 'A claim critique must select exactly its one bound principle.' : 'Choose 2 to 8 unique current principle IDs.')
     const claimReview = hasClaimReview ? normalizeClaimReview(input.claimReview, input.principleIds) : null
     const value = {
@@ -176,6 +203,7 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
       } : {})
     }
     if (claimReview) value.claimReview = claimReview
+    if (experienceEvidence) value.experienceEvidence = experienceEvidence
     if (!SHA256.test(value.expectedCorpusRevision)) throw new Error('Reviewed corpus revision must be a SHA-256 digest.')
     if (successor) {
       if (!UUID.test(input.predecessorDecisionId ?? '') || typeof input.acknowledgedChangedBasis !== 'boolean') throw new Error('Successor requires an exact predecessor and an explicit changed-basis acknowledgment.')
@@ -389,6 +417,7 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
         ...(!normalized.claimReview ? { applicability: normalized.applicability, exceptions: normalized.exceptions, valueAssumptions: normalized.valueAssumptions, tradeoffs: normalized.tradeoffs, judgment: normalized.judgment } : {}),
         principleIds: normalized.principleIds, basis, reviewedCorpusRevision: normalized.expectedCorpusRevision, comparisonSignals: comparison.structuralSignals,
         ...(normalized.claimReview ? { claimReview: normalized.claimReview } : {}),
+        ...(normalized.experienceEvidence ? { experienceEvidence: normalized.experienceEvidence } : {}),
         ...(normalized.predecessor ? { predecessor: normalized.predecessor, acknowledgedChangedBasis: normalized.acknowledgedChangedBasis } : {}),
         qualification: 'Human-authored contextual decision against exact retained Principles identities. This record is not evidence of truth, source entailment, independent support, corpus approval, or activation.',
         createdAt: clock()
@@ -409,7 +438,7 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
   function listDecisions() {
     requireStore()
     const files = readdirSync(decisionsDirectory).filter((name) => UUID.test(name.slice(0, -5)) && name.endsWith('.json')).sort().slice(0, 1000)
-    return envelope({ decisions: files.map((name) => readDecisionRecord(name.slice(0, -5))).map((record) => ({ id: record.id, version: record.versions.length, decisionSha256: record.versions.at(-1).sha256, title: record.versions.at(-1).payload.title, reviewer: record.versions.at(-1).payload.reviewer, createdAt: record.versions.at(-1).payload.createdAt, reviewKind: record.versions.at(-1).payload.claimReview ? 'claim-critique' : 'contextual-decision', principleId: record.versions.at(-1).payload.claimReview?.principleId ?? null, predecessor: record.versions.at(-1).payload.predecessor ?? null })) })
+    return envelope({ decisions: files.map((name) => readDecisionRecord(name.slice(0, -5))).map((record) => ({ id: record.id, version: record.versions.length, decisionSha256: record.versions.at(-1).sha256, title: record.versions.at(-1).payload.title, reviewer: record.versions.at(-1).payload.reviewer, createdAt: record.versions.at(-1).payload.createdAt, reviewKind: record.versions.at(-1).payload.claimReview ? 'claim-critique' : record.versions.at(-1).payload.experienceEvidence ? 'experience-guidance' : 'contextual-decision', principleId: record.versions.at(-1).payload.claimReview?.principleId ?? null, predecessor: record.versions.at(-1).payload.predecessor ?? null })) })
   }
 
   function readDecision({ decisionId } = {}) {
