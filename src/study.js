@@ -11,6 +11,10 @@ const MAX_BYTES = 16 * 1024 * 1024
 const MAX_PATH_STEPS = 32
 const MAX_PATH_REVISIONS = 32
 const QUALIFICATION = 'Personal practice notes and self-ratings; not measured mastery or empirical efficacy.'
+const SELF_RATINGS = ['again', 'partial', 'comfortable']
+const SELF_RATING_ORDER = { again: 0, partial: 1, comfortable: 2 }
+const CALIBRATION_QUALIFICATION = 'Compares the learner\'s prediction before source reveal with their own rating after review; it is not a correctness, mastery, or efficacy measure.'
+const APPLICATION_CALIBRATION_QUALIFICATION = 'Compares the learner\'s pre-application prediction with their own post-application rating; the linked case observation is learner-reported and not independently verified.'
 const digest = (value) => createHash('sha256').update(value, 'utf8').digest('hex')
 const copy = (value) => structuredClone(value)
 const ownKeys = (value, keys) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).every((key) => keys.includes(key))
@@ -21,6 +25,48 @@ function required(value, label, maximum = 20000) {
 function date(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value) || new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) !== value) throw new Error('Revisit date must be a valid YYYY-MM-DD date')
   return value
+}
+function selfPrediction(value) {
+  if (value !== null && !SELF_RATINGS.includes(value)) throw new Error('Prediction must be again, partial, comfortable, or omitted.')
+  return value
+}
+function selfCalibration(attempt) {
+  const prediction = attempt.pre_reveal_prediction ?? null
+  const rating = attempt.rating ?? null
+  const comparison = prediction === null || rating === null
+    ? null
+    : SELF_RATING_ORDER[prediction] === SELF_RATING_ORDER[rating]
+      ? 'aligned'
+      : SELF_RATING_ORDER[rating] > SELF_RATING_ORDER[prediction]
+        ? 'higher-after-review'
+        : 'lower-after-review'
+  return {
+    schema: 'principles.study-self-calibration/1',
+    status: prediction === null ? 'not-recorded' : rating === null ? 'awaiting-post-review' : 'compared',
+    pre_reveal_prediction: prediction,
+    post_review_rating: rating,
+    comparison,
+    qualification: CALIBRATION_QUALIFICATION
+  }
+}
+function applicationCalibration(completion, attempt) {
+  const prediction = attempt?.pre_reveal_prediction ?? null
+  const rating = completion?.application_self_rating ?? null
+  const comparison = prediction === null || rating === null
+    ? null
+    : SELF_RATING_ORDER[prediction] === SELF_RATING_ORDER[rating]
+      ? 'aligned'
+      : SELF_RATING_ORDER[rating] > SELF_RATING_ORDER[prediction]
+        ? 'higher-after-application'
+        : 'lower-after-application'
+  return {
+    schema: 'principles.study-application-calibration/1',
+    status: prediction === null ? (rating === null ? 'not-recorded' : 'not-comparable') : rating === null ? 'awaiting-application-review' : 'compared',
+    pre_application_prediction: prediction,
+    post_application_rating: rating,
+    comparison,
+    qualification: APPLICATION_CALIBRATION_QUALIFICATION
+  }
 }
 function inside(root, target) {
   const rel = relative(root, target)
@@ -99,8 +145,9 @@ function validStore(value) {
       const attempts = new Set()
       let unfinished = 0
       for (const attempt of card.attempts) {
-        if (!ownKeys(attempt, ['id', 'explanation', 'cue', 'source_index', 'created_at', 'revealed_at', 'rating', 'example', 'revisit_on', 'rated_at']) || typeof attempt.id !== 'string' || attempts.has(attempt.id) || typeof attempt.explanation !== 'string' || !attempt.explanation.trim() || typeof attempt.cue !== 'string' || !Number.isInteger(attempt.source_index) || !card.source_history[attempt.source_index] || typeof attempt.created_at !== 'string') fail()
+        if (!ownKeys(attempt, ['id', 'explanation', 'cue', 'source_index', 'created_at', 'revealed_at', 'rating', 'example', 'revisit_on', 'rated_at', 'pre_reveal_prediction']) || typeof attempt.id !== 'string' || attempts.has(attempt.id) || typeof attempt.explanation !== 'string' || !attempt.explanation.trim() || typeof attempt.cue !== 'string' || !Number.isInteger(attempt.source_index) || !card.source_history[attempt.source_index] || typeof attempt.created_at !== 'string') fail()
         attempts.add(attempt.id)
+        if (attempt.pre_reveal_prediction !== undefined && attempt.pre_reveal_prediction !== null && !SELF_RATINGS.includes(attempt.pre_reveal_prediction)) fail()
         if (attempt.revealed_at !== null && typeof attempt.revealed_at !== 'string') fail()
         if (attempt.rating !== null && (!['again', 'partial', 'comfortable'].includes(attempt.rating) || !attempt.revealed_at || typeof attempt.example !== 'string' || !attempt.example.trim() || !date(attempt.revisit_on) || typeof attempt.rated_at !== 'string')) fail()
         if (!attempt.rating) { unfinished++; if (attempt.example !== null || attempt.revisit_on !== null || attempt.rated_at !== null) fail() }
@@ -139,7 +186,8 @@ function validatePath(path, selected, session) {
   const evidenceIds = new Set()
   const previousEvidence = new Map()
   for (const record of path.completions) {
-    if (!ownKeys(record, ['id', 'step_id', 'definition_revision', 'step_sha256', 'source_sha256', 'source_index', 'attempt_id', 'observation', 'at', 'prerequisite_bindings']) || typeof record.id !== 'string' || typeof record.step_id !== 'string' || !Number.isInteger(record.definition_revision) || !Number.isInteger(record.source_index) || typeof record.step_sha256 !== 'string' || typeof record.source_sha256 !== 'string' || (record.attempt_id !== null && typeof record.attempt_id !== 'string') || typeof record.observation !== 'string' || typeof record.at !== 'string') throw new Error('Malformed learning path evidence history')
+    if (!ownKeys(record, ['id', 'step_id', 'definition_revision', 'step_sha256', 'source_sha256', 'source_index', 'attempt_id', 'observation', 'at', 'prerequisite_bindings', 'application_self_rating']) || typeof record.id !== 'string' || typeof record.step_id !== 'string' || !Number.isInteger(record.definition_revision) || !Number.isInteger(record.source_index) || typeof record.step_sha256 !== 'string' || typeof record.source_sha256 !== 'string' || (record.attempt_id !== null && typeof record.attempt_id !== 'string') || typeof record.observation !== 'string' || typeof record.at !== 'string') throw new Error('Malformed learning path evidence history')
+    if (record.application_self_rating !== undefined && record.application_self_rating !== null && !SELF_RATINGS.includes(record.application_self_rating)) throw new Error('Malformed application self-rating')
     if (evidenceIds.has(record.id)) throw new Error('Duplicate learning path evidence ID')
     evidenceIds.add(record.id)
     const definition = path.definitions.find((item) => item.revision === record.definition_revision)
@@ -147,6 +195,7 @@ function validatePath(path, selected, session) {
     const card = session.cards.find((item) => item.principle_id === step?.principle_id)
     if (!step || !card || stepDigest(step) !== record.step_sha256 || card.source_history[record.source_index]?.input_sha256 !== record.source_sha256) throw new Error('Learning path evidence does not match its saved definition and source')
     if (step.kind === 'explain' && !record.attempt_id || step.kind === 'apply' && !record.observation.trim()) throw new Error('Learning path evidence lacks its required attempt or observation')
+    if (record.application_self_rating !== undefined && record.application_self_rating !== null && (step.kind !== 'apply' || !record.attempt_id)) throw new Error('Application self-rating must be bound to an applied step and its finished attempt')
     if (record.attempt_id && !card.attempts.some((attempt) => attempt.id === record.attempt_id && attempt.rating && attempt.revealed_at && attempt.source_index === record.source_index)) throw new Error('Learning path evidence references no matching finished attempt')
     if (record.prerequisite_bindings !== undefined) {
       if (!Array.isArray(record.prerequisite_bindings) || record.prerequisite_bindings.length !== step.prerequisites.length) throw new Error('Learning path evidence has invalid prerequisite bindings')
@@ -194,7 +243,7 @@ export function createStudyService({ root, store = null, revision, clock = () =>
     const now = current()
     const result = { schema_version: 1, id: session.id, name: session.name, created_at: session.created_at, updated_at: session.updated_at, qualification: session.qualification, cards: session.cards.map((card) => {
       const saved = card.source_history[card.source_index]
-      return { principle_id: card.principle_id, title: saved.title, cue: card.cue, cue_history: copy(card.cue_history), revisit_on: card.revisit_on, revisit_history: copy(card.revisit_history), source_state: sourceState(card, now.catalog, now.error), saved_source: { id: saved.id, title: saved.title, source_revision: saved.source_revision, input_sha256: saved.input_sha256 }, ...(full ? { source_history: copy(card.source_history), source_index: card.source_index } : {}), attempts: card.attempts.map((attempt) => ({ ...copy(attempt), ...(full || attempt.revealed_at ? { source: copy(card.source_history[attempt.source_index]) } : {}) })) }
+      return { principle_id: card.principle_id, title: saved.title, cue: card.cue, cue_history: copy(card.cue_history), revisit_on: card.revisit_on, revisit_history: copy(card.revisit_history), source_state: sourceState(card, now.catalog, now.error), saved_source: { id: saved.id, title: saved.title, source_revision: saved.source_revision, input_sha256: saved.input_sha256 }, ...(full ? { source_history: copy(card.source_history), source_index: card.source_index } : {}), attempts: card.attempts.map((attempt) => ({ ...copy(attempt), self_calibration: selfCalibration(attempt), ...(full || attempt.revealed_at ? { source: copy(card.source_history[attempt.source_index]) } : {}) })) }
     }) }
     if (session.learning_path) result.learning_path = pathViewFor(session, now.catalog, now.error)
     return result
@@ -218,13 +267,14 @@ export function createStudyService({ root, store = null, revision, clock = () =>
         const boundPrerequisites = item.prerequisite_bindings ?? (step.prerequisites.length ? null : [])
         return prerequisitesRecorded && canonicalize(boundPrerequisites) === canonicalize(prerequisiteBindings) && (!item.attempt_id || attempt?.cue === step.prompt) && item.definition_revision <= path.revision
       })
+      const validAttempt = validRecord?.attempt_id ? card.attempts.find((attempt) => attempt.id === validRecord.attempt_id) : null
       const staleRecord = path.completions.some((item) => item.step_id === step.id)
       const blockedBy = step.prerequisites.filter((id) => statuses.get(id) !== 'recorded')
       const status = validRecord ? 'recorded' : blockedBy.length ? 'blocked' : sourceStatus.status !== 'current' ? 'unavailable' : staleRecord ? 'review' : 'available'
       statuses.set(step.id, status)
       if (validRecord) validEvidence.set(step.id, validRecord)
       const related = sourceStatus.status === 'current' ? card.attempts.filter((attempt) => attempt.rating && attempt.revealed_at && attempt.cue === step.prompt && attempt.source_index === card.source_index) : []
-      return { ...copy(step), status, ...(blockedBy.length ? { blocked_by: blockedBy } : {}), step_sha256: stepDigest(step), source_state: sourceStatus, evidence: validRecord ? { id: validRecord.id, at: validRecord.at, observation: validRecord.observation, attempt_id: validRecord.attempt_id, step_sha256: validRecord.step_sha256, source_sha256: validRecord.source_sha256 } : null, prior_evidence: staleRecord ? path.completions.filter((item) => item.step_id === step.id).map(copy) : [], available_attempt_ids: related.map((attempt) => attempt.id) }
+      return { ...copy(step), status, ...(blockedBy.length ? { blocked_by: blockedBy } : {}), step_sha256: stepDigest(step), source_state: sourceStatus, evidence: validRecord ? { id: validRecord.id, at: validRecord.at, observation: validRecord.observation, attempt_id: validRecord.attempt_id, step_sha256: validRecord.step_sha256, source_sha256: validRecord.source_sha256, ...(step.kind === 'apply' ? { application_self_rating: validRecord.application_self_rating ?? null, application_calibration: applicationCalibration(validRecord, validAttempt) } : {}) } : null, prior_evidence: staleRecord ? path.completions.filter((item) => item.step_id === step.id).map(copy) : [], available_attempt_ids: related.map((attempt) => attempt.id) }
     })
     const today = clock().slice(0, 10)
     const selectedPrinciples = new Set(definition.steps.map((step) => step.principle_id))
@@ -293,8 +343,9 @@ export function createStudyService({ root, store = null, revision, clock = () =>
       })
     },
     pathView(id) { const session = sessionIn(readStore(paths()), id); if (!session.learning_path) throw new Error('Study session has no learning path'); const source = current(); return pathViewFor(session, source.catalog, source.error) },
-    pathAttempt(id, stepId, { expected_revision, text }) {
+    pathAttempt(id, stepId, { expected_revision, text, pre_reveal_prediction = null }) {
       required(text, 'Explanation')
+      selfPrediction(pre_reveal_prediction)
       return mutate(id, (_, session, now) => {
         const path = session.learning_path
         if (!path) throw new Error('Study session has no learning path')
@@ -307,7 +358,7 @@ export function createStudyService({ root, store = null, revision, clock = () =>
         const card = cardIn(session, step.principle_id)
         if (card.attempts.some((attempt) => !attempt.rating)) throw new Error('Complete the pending attempt before starting another')
         if (state.source_state.status !== 'current') throw new Error('Saved source is changed, inactive, missing, or unavailable; explicitly refresh an eligible source before a new attempt')
-        card.attempts.push({ id: required(idFactory(), 'Attempt ID', 200), explanation: text.trim(), cue: step.prompt, source_index: card.source_index, created_at: now, revealed_at: null, rating: null, example: null, revisit_on: null, rated_at: null })
+        card.attempts.push({ id: required(idFactory(), 'Attempt ID', 200), explanation: text.trim(), cue: step.prompt, source_index: card.source_index, created_at: now, revealed_at: null, rating: null, example: null, revisit_on: null, rated_at: null, pre_reveal_prediction })
       })
     },
     revisePath(id, { expected_revision, goal, steps }) {
@@ -322,7 +373,8 @@ export function createStudyService({ root, store = null, revision, clock = () =>
         path.definitions.push({ revision: path.revision, goal: path.goal, steps: copy(steps), at: now })
       })
     },
-    recordPathStep(id, stepId, { expected_revision, attempt_id = null, observation = null }) {
+    recordPathStep(id, stepId, { expected_revision, attempt_id = null, observation = null, application_self_rating = null }) {
+      if (application_self_rating !== null && !SELF_RATINGS.includes(application_self_rating)) throw new Error('Application self-rating must be again, partial, or comfortable')
       return mutate(id, (_, session, now) => {
         const path = session.learning_path
         if (!path) throw new Error('Study session has no learning path')
@@ -335,6 +387,7 @@ export function createStudyService({ root, store = null, revision, clock = () =>
         const state = currentView.steps.find((item) => item.id === stepId)
         if (!['available', 'review'].includes(state.status)) throw new Error(`Learning step ${stepId} is ${state.status}${state.blocked_by ? `; blocked by ${state.blocked_by.join(', ')}` : ''}`)
         const card = cardIn(session, step.principle_id)
+        if (application_self_rating !== null && (step.kind !== 'apply' || !attempt_id)) throw new Error('Application self-rating needs a linked applied-step attempt')
         if (step.kind === 'explain') {
           if (!attempt_id) throw new Error('Explanation completion must reference a finished, revealed, and rated attempt for this principle')
           const attempt = attemptIn(card, attempt_id)
@@ -351,20 +404,21 @@ export function createStudyService({ root, store = null, revision, clock = () =>
           return { step_id: prior.step_id, completion_id: prior.id, step_sha256: prior.step_sha256, source_sha256: prior.source_sha256 }
         })
         const note = step.kind === 'apply' ? required(observation, 'Learner-reported observation', 4000) : ''
-        path.completions.push({ id: required(idFactory(), 'Evidence ID', 200), step_id: step.id, definition_revision: path.revision, step_sha256: stepDigest(step), source_sha256: card.source_history[card.source_index].input_sha256, source_index: card.source_index, prerequisite_bindings, attempt_id, observation: note, at: now })
+        path.completions.push({ id: required(idFactory(), 'Evidence ID', 200), step_id: step.id, definition_revision: path.revision, step_sha256: stepDigest(step), source_sha256: card.source_history[card.source_index].input_sha256, source_index: card.source_index, prerequisite_bindings, attempt_id, observation: note, ...(application_self_rating !== null ? { application_self_rating } : {}), at: now })
       })
     },
     sessions() { return { sessions: readStore(paths()).sessions.map((session) => view(session)) } },
     show(id) { return view(sessionIn(readStore(paths()), id)) },
     cue(id, principleId, text) { required(text, 'Recall cue', 4000); return mutate(id, (_, session, now) => { const card = cardIn(session, principleId); card.cue = text.trim(); card.cue_history.push({ text: card.cue, at: now }) }) },
-    attempt(id, principleId, text) {
+    attempt(id, principleId, text, { pre_reveal_prediction = null } = {}) {
       required(text, 'Explanation')
+      selfPrediction(pre_reveal_prediction)
       return mutate(id, (_, session, now) => {
         const card = cardIn(session, principleId)
         if (card.attempts.some((attempt) => !attempt.rating)) throw new Error('Complete the pending attempt before starting another')
         const source = current()
         if (sourceState(card, source.catalog, source.error).status !== 'current') throw new Error('Saved source is changed, inactive, missing, or unavailable; explicitly refresh an eligible source before a new attempt')
-        card.attempts.push({ id: required(idFactory(), 'Attempt ID', 200), explanation: text.trim(), cue: card.cue, source_index: card.source_index, created_at: now, revealed_at: null, rating: null, example: null, revisit_on: null, rated_at: null })
+        card.attempts.push({ id: required(idFactory(), 'Attempt ID', 200), explanation: text.trim(), cue: card.cue, source_index: card.source_index, created_at: now, revealed_at: null, rating: null, example: null, revisit_on: null, rated_at: null, pre_reveal_prediction })
       })
     },
     reveal(id, principleId, attemptId) { return mutate(id, (_, session, now) => { const attempt = attemptIn(cardIn(session, principleId), attemptId); if (!attempt.revealed_at) attempt.revealed_at = now }) },
@@ -416,7 +470,7 @@ export function renderStudyNotes(session) {
     lines.push('', `## ${card.principle_id} — ${card.title}`, '', `Cue: ${card.cue}`, `Source now: ${card.source_state.status}`, `Revisit: ${card.revisit_on ?? 'not chosen'}`, '', '### Cue history')
     for (const cue of card.cue_history) lines.push(`- ${cue.at}: ${cue.text}`)
     for (const [index, source] of card.source_history.entries()) lines.push('', `### Saved source ${index + 1}`, '', `Revision: ${source.source_revision}`, `Digest: ${source.input_sha256}`, `File: ${source.file_path}`, '', source.exact_entry_markdown, '', source.bibliography_markdown, '', 'Bound verification context:', '', JSON.stringify(source.context, null, 2))
-    for (const attempt of card.attempts) lines.push('', `### Attempt ${attempt.id}`, '', `Started: ${attempt.created_at}`, `Cue: ${attempt.cue}`, `Source snapshot: ${attempt.source_index + 1}`, `Explanation: ${attempt.explanation}`, `Revealed: ${attempt.revealed_at ?? 'not yet'}`, `Self-rating: ${attempt.rating ?? 'not yet'}`, `Own example: ${attempt.example ?? 'not yet'}`, `Revisit: ${attempt.revisit_on ?? 'not chosen'}`)
+    for (const attempt of card.attempts) lines.push('', `### Attempt ${attempt.id}`, '', `Started: ${attempt.created_at}`, `Cue: ${attempt.cue}`, `Source snapshot: ${attempt.source_index + 1}`, `Explanation: ${attempt.explanation}`, `Prediction before reveal: ${attempt.pre_reveal_prediction ?? 'not recorded'}`, `Revealed: ${attempt.revealed_at ?? 'not yet'}`, `Self-rating: ${attempt.rating ?? 'not yet'}`, `Calibration comparison: ${selfCalibration(attempt).comparison ?? 'not available'}`, `Own example: ${attempt.example ?? 'not yet'}`, `Revisit: ${attempt.revisit_on ?? 'not chosen'}`)
     lines.push('', '### Revisit history', ...card.revisit_history.map((visit) => `- ${visit.at}: ${visit.date}`))
   }
   return `${lines.join('\n')}\n`

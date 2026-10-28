@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, renameSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -130,6 +130,117 @@ test('dependent application evidence binds the exact prerequisite completion it 
   assert.equal(completed.steps[1].status, 'recorded')
   assert.equal(completed.steps[1].prior_evidence.length, 2)
   assert.equal(completed.completions.find((item) => item.id === completed.steps[1].evidence.id).prerequisite_bindings[0].completion_id, completed.steps[0].evidence.id)
+})
+
+test('applied practice preserves pre-reveal prediction, post-review self-calibration, chosen due date, and cold history', (t) => {
+  const f = fixture(t)
+  const path = f.service.createPath({
+    name: 'Calibrated synthetic practice',
+    goal: 'Explain, then apply a bounded decision',
+    principleIds: ['PRN-000001'],
+    steps: steps.slice(0, 2)
+  })
+  const finishAttempt = (stepId, text, prediction, rating, revisitOn) => {
+    const pending = f.service.pathAttempt(path.id, stepId, {
+      expected_revision: 1,
+      text,
+      pre_reveal_prediction: prediction
+    })
+    const attemptId = pending.cards[0].attempts.at(-1).id
+    assert.equal(pending.cards[0].attempts.at(-1).self_calibration.status, 'awaiting-post-review')
+    f.service.reveal(path.id, 'PRN-000001', attemptId)
+    f.service.rate(path.id, 'PRN-000001', attemptId, {
+      rating,
+      example: `Synthetic learner example for ${stepId}.`,
+      revisitOn
+    })
+    return attemptId
+  }
+
+  const explanationAttempt = finishAttempt(
+    'explain-one',
+    'I expect my explanation to be comfortable.',
+    'comfortable',
+    'partial',
+    '2026-10-30'
+  )
+  f.service.recordPathStep(path.id, 'explain-one', {
+    expected_revision: 1,
+    attempt_id: explanationAttempt
+  })
+
+  const applicationAttempt = finishAttempt(
+    'apply-one',
+    'I expect only a partial account of this application.',
+    'partial',
+    'comfortable',
+    '2026-10-31'
+  )
+  f.service.recordPathStep(path.id, 'apply-one', {
+    expected_revision: 1,
+    attempt_id: applicationAttempt,
+    observation: 'In a disposable case, I kept the unrelated change separate.',
+    application_self_rating: 'comfortable'
+  })
+
+  const cold = createStudyService(f.options)
+  const reopened = cold.show(path.id)
+  const attempts = reopened.cards[0].attempts
+  const applied = attempts.find((attempt) => attempt.id === applicationAttempt)
+  assert.deepEqual(applied.self_calibration, {
+    schema: 'principles.study-self-calibration/1',
+    status: 'compared',
+    pre_reveal_prediction: 'partial',
+    post_review_rating: 'comfortable',
+    comparison: 'higher-after-review',
+    qualification: 'Compares the learner\'s prediction before source reveal with their own rating after review; it is not a correctness, mastery, or efficacy measure.'
+  })
+  assert.equal(
+    attempts.find((attempt) => attempt.id === explanationAttempt).self_calibration.comparison,
+    'lower-after-review'
+  )
+  assert.match(applied.source.exact_entry_markdown, /Keep changes reviewable/)
+  assert.equal(reopened.learning_path.steps[1].status, 'recorded')
+  assert.equal(reopened.learning_path.steps[1].evidence.attempt_id, applicationAttempt)
+  assert.equal(reopened.learning_path.steps[1].evidence.application_self_rating, 'comfortable')
+  assert.deepEqual(reopened.learning_path.steps[1].evidence.application_calibration, {
+    schema: 'principles.study-application-calibration/1',
+    status: 'compared',
+    pre_application_prediction: 'partial',
+    post_application_rating: 'comfortable',
+    comparison: 'higher-after-application',
+    qualification: 'Compares the learner\'s pre-application prediction with their own post-application rating; the linked case observation is learner-reported and not independently verified.'
+  })
+  assert.equal(
+    reopened.learning_path.steps[1].evidence.observation,
+    'In a disposable case, I kept the unrelated change separate.'
+  )
+  assert.equal(reopened.learning_path.remaining_work.recorded_steps, 2)
+  assert.equal(reopened.learning_path.due_summary.next_due_date, '2026-10-31')
+  assert.match(reopened.learning_path.due_summary.policy, /No automatic interval/)
+  assert.match(reopened.learning_path.qualification, /not mastery/)
+
+  const stored = JSON.parse(readFileSync(join(f.store, 'sessions.json'), 'utf8'))
+  const savedApplication = stored.sessions[0].cards[0].attempts.find((attempt) => attempt.id === applicationAttempt)
+  assert.equal(savedApplication.self_calibration, undefined)
+  delete savedApplication.pre_reveal_prediction
+  writeFileSync(join(f.store, 'sessions.json'), JSON.stringify(stored))
+  const historical = createStudyService(f.options).show(path.id)
+  const oldAttempt = historical.cards[0].attempts.find((attempt) => attempt.id === applicationAttempt)
+  assert.equal(oldAttempt.self_calibration.status, 'not-recorded')
+  assert.equal(oldAttempt.self_calibration.comparison, null)
+  assert.equal(historical.learning_path.steps[1].status, 'recorded')
+  assert.equal(historical.learning_path.steps[1].evidence.application_self_rating, 'comfortable')
+  assert.equal(historical.learning_path.steps[1].evidence.application_calibration.status, 'not-comparable')
+  assert.equal(historical.learning_path.steps[1].evidence.application_calibration.comparison, null)
+  assert.throws(
+    () => f.service.pathAttempt(path.id, 'apply-one', {
+      expected_revision: 1,
+      text: 'Invalid prediction.',
+      pre_reveal_prediction: 'mastered'
+    }),
+    /Prediction must be/
+  )
 })
 
 test('changed source keeps path evidence historical until explicit source refresh and repetition', (t) => {
