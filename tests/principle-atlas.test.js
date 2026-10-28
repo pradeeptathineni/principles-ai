@@ -129,6 +129,49 @@ test('atlas search, contextual decision, cold reopen, source-change revisit and 
   assert.equal(validateRepository(syntheticRoot).bag.errorCount, 0)
 })
 
+test('domain atlas coverage follows comparison basis, separates structural status from semantic unknown, and cold rereads', (t) => {
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'principle-domain-coverage-')))
+  t.after(() => rmSync(temporary, { recursive: true, force: true }))
+  const syntheticRoot = join(temporary, 'corpus')
+  copySyntheticRepository(syntheticRoot)
+  const pair = choicePair(syntheticRoot)
+  const clock = () => '2026-10-28T12:00:00.000Z'
+  const service = createPrincipleAtlasService({ root: syntheticRoot, ownerRevision: revision, clock })
+
+  const search = service.search({ query: pair.document.frontmatter.domain, limit: 100 })
+  const withinDomain = search.matches.filter((item) => item.domain.id === pair.document.frontmatter.domain)
+  assert.ok(withinDomain.some((item) => item.principleId === pair.ids[0]))
+  assert.ok(withinDomain.some((item) => item.principleId === pair.ids[1]))
+  const comparison = service.compare({ entryIds: pair.ids })
+  assert.equal(comparison.corpusRevision, search.corpusRevision)
+
+  const report = service.domainCoverage({ domainId: pair.document.frontmatter.domain, expectedCorpusRevision: comparison.corpusRevision })
+  assert.equal(report.schema, 'principles.domain-coverage/1')
+  assert.equal(report.ownerRevision, revision)
+  assert.equal(report.basisStatus, 'current')
+  assert.equal(report.corpusRevision, comparison.corpusRevision)
+  assert.equal(report.domains.length, 1)
+  const domain = report.domains[0]
+  assert.equal(domain.domain.id, pair.document.frontmatter.domain)
+  assert.equal(domain.structuralCoverage.status, 'derived-file-presence-and-lifecycle')
+  assert.ok(domain.structuralCoverage.targets.length > 0)
+  assert.ok(domain.structuralCoverage.targets.every((target) => ['absent', 'draft', 'active'].includes(target.state)))
+  assert.equal(domain.semanticCoverage.status, 'unknown')
+  assert.equal(domain.reassessment.status, 'not-performed')
+  assert.equal(domain.reassessment.activeStatusProvesCoverage, false)
+
+  const inventory = service.domainCoverage()
+  assert.ok(inventory.domains.length > 0)
+  assert.ok(inventory.domains.every((item) => item.semanticCoverage.status === 'unknown'))
+  const changed = service.domainCoverage({ domainId: pair.document.frontmatter.domain, expectedCorpusRevision: '0'.repeat(64) })
+  assert.equal(changed.basisStatus, 'changed')
+  assert.equal(changed.corpusRevision, comparison.corpusRevision)
+  assert.equal(changed.domains[0].semanticCoverage.status, 'unknown')
+
+  const cold = createPrincipleAtlasService({ root: syntheticRoot, ownerRevision: revision, clock })
+  assert.deepEqual(cold.domainCoverage({ domainId: pair.document.frontmatter.domain, expectedCorpusRevision: comparison.corpusRevision }), report)
+})
+
 test('reviewed experience evidence is closed on a contextual successor and remains readable by the accepted prior owner', async (t) => {
   const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'principle-experience-evidence-')))
   t.after(() => rmSync(temporary, { recursive: true, force: true }))

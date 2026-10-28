@@ -4,6 +4,7 @@ import { dirname, join, resolve, sep, isAbsolute } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import canonicalize from 'canonicalize'
 import { validateRepository } from './validator.js'
+import { inspectDomainRefinementWorkflow } from './workflow.js'
 
 const SHA256 = /^[a-f0-9]{64}$/
 const PRINCIPLE_ID = /^PRN-[0-9]{6}$/
@@ -312,6 +313,70 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
     return envelope({ corpusRevision: snapshot.corpusRevision, query: q, matchMethod: 'literal-substring', matches: matches.slice(0, maximum), truncated: matches.length > maximum, qualification: 'Literal lexical lookup only. Match fields are discovery aids and do not establish semantic applicability, conflict, truth, or entailment.' })
   }
 
+  function domainCoverage({ domainId = null, expectedCorpusRevision = null } = {}) {
+    if (domainId !== null && (typeof domainId !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(domainId))) throw new Error('Choose an exact canonical domain ID.')
+    if (expectedCorpusRevision !== null && !SHA256.test(expectedCorpusRevision ?? '')) throw new Error('Expected corpus revision must be a SHA-256 digest.')
+    const snapshot = current()
+    const manifests = domainId
+      ? snapshot.state.manifests.filter((item) => item.value.id === domainId)
+      : snapshot.state.manifests
+    if (domainId && !manifests.length) throw new Error(`No current domain manifest exists for ${domainId}.`)
+    const domains = manifests.slice(0, MAX_RESULTS).map(({ path, value }) => {
+      const inspection = inspectDomainRefinementWorkflow(snapshot.state, value.id)
+      return {
+        domain: {
+          id: value.id,
+          code: value.code,
+          title: value.title,
+          description: value.description,
+          taxonomyStatus: value.taxonomy_status,
+          humanIntent: value.human_intent,
+          manifestPath: path,
+          subdomains: (value.subdomains ?? []).map(({ id, code, title, description, status }) => ({ id, code, title, description, status }))
+        },
+        structuralCoverage: {
+          status: 'derived-file-presence-and-lifecycle',
+          summary: inspection.content.summary,
+          targets: inspection.content.targets.map((target) => ({
+            path: target.path,
+            kind: target.kind,
+            scope: target.scope,
+            taxonomyStatus: target.taxonomy_status,
+            state: target.state,
+            semanticSha256: target.semantic_sha256
+          })),
+          proposedCandidates: inspection.taxonomy.proposed_candidates,
+          deprecatedScopes: inspection.taxonomy.deprecated_scopes
+        },
+        semanticCoverage: {
+          status: 'unknown',
+          qualification: 'File presence and active lifecycle do not establish semantic adequacy against protected intent, accepted scopes, current evidence, or the domain question.'
+        },
+        reassessment: {
+          status: 'not-performed',
+          outcome: inspection.outcome,
+          targetScope: inspection.selection_refresh.target_scope,
+          activeStatusProvesCoverage: inspection.selection_refresh.active_status_proves_coverage,
+          stages: inspection.selection_refresh.stages,
+          completionRecord: inspection.selection_refresh.completion_record,
+          nextAction: inspection.next_action,
+          humanGates: inspection.human_gates
+        }
+      }
+    })
+    return envelope({
+      schema: 'principles.domain-coverage/1',
+      corpusRevision: snapshot.corpusRevision,
+      expectedCorpusRevision,
+      basisStatus: expectedCorpusRevision === null ? 'unanchored' : expectedCorpusRevision === snapshot.corpusRevision ? 'current' : 'changed',
+      domainFilter: domainId,
+      totalDomains: manifests.length,
+      domains,
+      truncated: manifests.length > domains.length,
+      qualification: 'This is a read-only current-state inventory. Structural target states are exact; semantic coverage remains unknown until a separate evidence-led human review. No corpus content is created, changed, activated, or approved.'
+    })
+  }
+
   function show({ entryId } = {}) {
     const id = requiredText(entryId, 'Principle ID', 10)
     if (!PRINCIPLE_ID.test(id)) throw new Error('Choose a canonical PRN-...... identity.')
@@ -478,5 +543,5 @@ export function createPrincipleAtlasService({ root, store = null, sourceRoot = r
     }
   }
 
-  return { search, show, source, compare, createDecision: (input) => createOrSuccessor({ ...input, operation: 'decision.create' }), createSuccessor: (input) => createOrSuccessor({ ...input, operation: 'decision.successor' }), listDecisions, readDecision, revisit, recoverMutation }
+  return { search, show, source, compare, domainCoverage, createDecision: (input) => createOrSuccessor({ ...input, operation: 'decision.create' }), createSuccessor: (input) => createOrSuccessor({ ...input, operation: 'decision.successor' }), listDecisions, readDecision, revisit, recoverMutation }
 }

@@ -7,6 +7,7 @@ const optionSets = {
   show: ['--root', '--owner-revision', '--source-root', '--entry-id'],
   source: ['--root', '--owner-revision', '--source-root', '--source-id'],
   compare: ['--root', '--owner-revision', '--source-root', '--entry-ids'],
+  coverage: ['--root', '--owner-revision', '--source-root', '--domain', '--expected-corpus-revision'],
   'decision.create': ['--root', '--owner-revision', '--source-root', '--store', '--request-id', '--input'],
   'decision.successor': ['--root', '--owner-revision', '--source-root', '--store', '--request-id', '--input'],
   'decision.list': ['--root', '--owner-revision', '--source-root', '--store'],
@@ -42,6 +43,7 @@ Commands:
   show --entry-id PRN-......
   source --source-id SRC-......
   compare --entry-ids PRN-......,PRN-......
+  coverage [--domain ID] [--expected-corpus-revision SHA256]
   decision create --store STORE --request-id UUID --input FILE|-
   decision successor --store STORE --request-id UUID --input FILE|-
   decision list --store STORE
@@ -72,6 +74,7 @@ export async function main(args) {
     else if (command === 'show') result = service.show({ entryId: options['--entry-id'] })
     else if (command === 'source') result = service.source({ sourceId: options['--source-id'] })
     else if (command === 'compare') result = service.compare({ entryIds: options['--entry-ids']?.split(',') })
+    else if (command === 'coverage') result = service.domainCoverage({ domainId: options['--domain'] ?? null, expectedCorpusRevision: options['--expected-corpus-revision'] ?? null })
     else if (command === 'decision.create' || command === 'decision.successor') {
       const input = inputFile(options['--input'])
       result = command === 'decision.create' ? service.createDecision({ requestId: options['--request-id'], input }) : service.createSuccessor({ requestId: options['--request-id'], input })
