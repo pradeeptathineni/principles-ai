@@ -52,7 +52,8 @@ machine conflict verdict:
 The request contains `task`, `selectionRationale`, `principleIds`, `expectedCorpusRevision`,
 `conflictReview`, `conflicts`, `exceptionNotes`, and `coverageUnknowns`. Each conflict is caller-
 authored with selected principle IDs, a description, a status of `conditional`, `precedence-recorded`,
-or `unresolved`, precedence, rationale, and conditions. These
+or `unresolved`, precedence, rationale, and conditions. An unresolved conflict uses
+`null` precedence and retains the reason it remains unresolved. These
 fields are retained as caller assertions; Atlas reports structural comparison signals only and does
 not infer semantic conflicts, contradiction, or precedence. Canonical applicability claims and
 scoped caller exception notes remain visible. The guide reports domain file/lifecycle inventory,

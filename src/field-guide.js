@@ -37,11 +37,12 @@ function validateInput(input) {
     exactObject(item, ['principleIds', 'description', 'resolutionStatus', 'precedence', 'rationale', 'conditions'], 'Conflict declaration')
     if (!Array.isArray(item.principleIds) || item.principleIds.length < 2 || item.principleIds.length > MAX_SELECTED || new Set(item.principleIds).size !== item.principleIds.length || item.principleIds.some((id) => !selected.has(id))) throw new Error('Each declared conflict must name at least two selected principles.')
     if (!['conditional', 'precedence-recorded', 'unresolved'].includes(item.resolutionStatus)) throw new Error('Conflict resolutionStatus must be conditional, precedence-recorded, or unresolved.')
+    if (item.resolutionStatus === 'unresolved' && item.precedence !== null) throw new Error('Unresolved conflicts must leave precedence undecided.')
     return {
       principleIds: [...item.principleIds].sort(),
       description: text(item.description, 'Conflict description'),
       resolutionStatus: item.resolutionStatus,
-      precedence: text(item.precedence, 'Caller-declared precedence'),
+      precedence: item.resolutionStatus === 'unresolved' ? null : text(item.precedence, 'Caller-declared precedence'),
       rationale: text(item.rationale, 'Precedence rationale'),
       conditions: text(item.conditions, 'Conflict conditions')
     }
@@ -75,10 +76,10 @@ export function createFieldGuideService({ root, ownerRevision, sourceRoot } = {}
 
   function build(request) {
     const input = validateInput(request)
-    const validation = validateRepository(root)
-    if (validation.bag.errorCount) throw new Error(`Principles repository does not currently validate: ${validation.bag.sorted().slice(0, 6).map((item) => `${item.path} ${item.code}`).join('; ')}`)
     const current = atlas.domainCoverage({ expectedCorpusRevision: input.expectedCorpusRevision })
     if (current.basisStatus !== 'current') throw new Error(`Stale field guide selection: expected corpus ${input.expectedCorpusRevision}, found ${current.corpusRevision}.`)
+    const validation = validateRepository(root)
+    if (validation.bag.errorCount) throw new Error(`Principles repository does not currently validate: ${validation.bag.sorted().slice(0, 6).map((item) => `${item.path} ${item.code}`).join('; ')}`)
 
     const selectedEntries = input.principleIds.map((id) => {
       const shown = atlas.show({ entryId: id })

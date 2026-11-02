@@ -498,6 +498,8 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       const identity = { studyId: selected.research.answer.studyId, questionId: selected.research.answer.questionId }
       const currentAnswer = await researchOwnerReader(identity)
       verifyResearchShape(currentAnswer)
+      if (currentAnswer.studyId !== identity.studyId || currentAnswer.questionId !== identity.questionId)
+        throw new Error('Research successor answer does not match the predecessor study question')
       if (digest(currentnessProjection(currentAnswer)) === digest(currentnessProjection(selected.research.answer)))
         throw new Error('Research source currentness changed, but the owner has no new exact answer binding; rerun Research before preparing a successor')
       const origins = await researchOwnerOriginsReader(identity)
@@ -514,13 +516,23 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
           throw new Error('Research successor cannot be prepared because a citation source is changed or unknown')
         sourceChecks.push({ notebookId: origin.notebookId, recordId: origin.recordId, version: origin.version,
           expectedSourceDigest: origin.expectedSourceDigest, currentSourceDigest: origin.currentSourceDigest,
-          status: 'current', detail: origin.detail ?? null })
+          status: 'current' })
       }
       const repeatedAnswer = await researchOwnerReader(identity)
       const repeatedOrigins = await researchOwnerOriginsReader(identity)
-      if (digest(repeatedAnswer) !== digest(currentAnswer) || digest(repeatedOrigins) !== digest(origins))
+      const originBasis = (value) => ({
+        studyId: value?.studyId,
+        questionId: value?.questionId,
+        questionSha256: value?.questionSha256,
+        origins: value?.origins?.map(({ notebookId, recordId, version, expectedSourceDigest, currentSourceDigest, status }) =>
+          ({ notebookId, recordId, version, expectedSourceDigest, currentSourceDigest, status }))
+          .sort((left, right) => digest(left).localeCompare(digest(right))),
+      })
+      if (digest(repeatedAnswer) !== digest(currentAnswer) || digest(originBasis(repeatedOrigins)) !== digest(originBasis(origins)))
         throw new Error('Research answer or source origins changed during successor preparation; currentness is unknown')
       const research = await researchSnapshot(currentAnswer)
+      if (research.verification.status !== 'owner_verified' || digest(research.answer) !== digest(currentAnswer))
+        throw new Error('Research successor snapshot is not the exact owner-verified answer; currentness is unknown')
       const predecessor = { id, version, versionSha256 }
       const previousCitations = new Map(selected.research.answer.citations.map((citation) => [citation.id, citation]))
       const currentCitations = new Map(currentAnswer.citations.map((citation) => [citation.id, citation]))

@@ -211,6 +211,7 @@ test('owner-backed changed Research basis prepares a critique-anchored successor
   let current = researchAnswer()
   let originMode = 'current'
   let readerMode = 'normal'
+  let originDetailSerial = 0
   const originsFor = (answer) => ({
     studyId: answer.studyId,
     questionId: answer.questionId,
@@ -222,7 +223,7 @@ test('owner-backed changed Research basis prepares a critique-anchored successor
       expectedSourceDigest: citation.sourceDigest,
       currentSourceDigest: originMode === 'current' ? citation.sourceDigest : hash('different-origin'),
       status: originMode,
-      detail: `synthetic ${originMode} origin`,
+      detail: `synthetic ${originMode} origin check ${++originDetailSerial}`,
     })),
   })
   const settings = {
@@ -232,6 +233,7 @@ test('owner-backed changed Research basis prepares a critique-anchored successor
     researchOwnerRevision: 'a'.repeat(40),
     researchOwnerReader: async () => {
       if (readerMode === 'unknown') throw new Error('synthetic Research reader unavailable')
+      if (readerMode === 'wrong-question') return { ...structuredClone(current), questionId: 'study-question:dddddddd-dddd-4ddd-8ddd-dddddddddddd' }
       return structuredClone(current)
     },
     researchOwnerOriginsReader: async () => originsFor(current),
@@ -253,6 +255,14 @@ test('owner-backed changed Research basis prepares a critique-anchored successor
   current.citations[0].sourceDigest = hash('synthetic-source-2')
   current.citations[0].quote = 'Updated exact synthetic source quote.'
   current.provenance.resultContentSha256 = hash('synthetic-result-2')
+
+  readerMode = 'wrong-question'
+  await assert.rejects(service.prepareResearchSuccessor({
+    id: predecessor.id,
+    version: predecessor.version,
+    versionSha256: predecessor.versionSha256,
+  }), /does not match the predecessor study question/u)
+  readerMode = 'normal'
 
   const prepared = await service.prepareResearchSuccessor({
     id: predecessor.id,

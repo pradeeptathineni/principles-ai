@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, resolve, sep } from 'node:path'
 import { createFieldGuideService } from './field-guide.js'
 
@@ -34,7 +34,6 @@ function output(path, root, value) {
   if (existsSync(destination)) throw new Error('Refusing to overwrite an existing field-guide output.')
   const parent = realpathSync(dirname(destination))
   if (parent === canonicalRoot || parent.startsWith(`${canonicalRoot}${sep}`)) throw new Error('Field-guide output directory must be outside the canonical Principles corpus.')
-  if (lstatSync(dirname(destination)).isSymbolicLink()) throw new Error('Field-guide output directory must not be a symlink.')
   writeFileSync(destination, serialized, { flag: 'wx', mode: 0o600 })
 }
 

@@ -81,14 +81,27 @@ test('field guide is a cold-readable, source-bound standard export and refuses c
   assert.equal(coldRead.status, 0, coldRead.stderr)
   assert.equal(JSON.parse(coldRead.stdout).status, 'current')
 
+  const unresolved = request(selected)
+  unresolved.conflicts[0] = { ...unresolved.conflicts[0], resolutionStatus: 'unresolved', precedence: null }
+  const unresolvedPath = join(temporary, 'unresolved.json')
+  writeFileSync(unresolvedPath, JSON.stringify(unresolved))
+  const unresolvedCreate = spawnSync(process.execPath, [bin, 'create', ...common, '--input', unresolvedPath], { cwd: corpus, encoding: 'utf8' })
+  assert.equal(unresolvedCreate.status, 0, unresolvedCreate.stderr)
+  assert.equal(JSON.parse(unresolvedCreate.stdout).conflicts.declared[0].precedence, null)
+
   const sourcePath = join(corpus, 'sources', `${selected.sourceId}.yaml`)
   const source = readFileSync(sourcePath, 'utf8')
-  const changedSource = source.replace(/title: ([^\n]+)/, 'title: Synthetic updated source title')
-  assert.notEqual(changedSource, source, 'selected source record has a title to revise synthetically')
+  const changedSource = source.replace(/last_reviewed: '[^']+'/, "last_reviewed: '2026-11-02'")
+  assert.notEqual(changedSource, source, 'selected source record has a reviewed date to revise synthetically')
   writeFileSync(sourcePath, changedSource)
   const stale = spawnSync(process.execPath, [bin, 'read', ...common, '--input', guidePath], { cwd: corpus, encoding: 'utf8' })
   assert.equal(stale.status, 2)
-  // This title edit also breaks the corpus bibliography contract, so validation
-  // must refuse it before the revision comparison can report a stale selection.
-  assert.match(stale.stderr, /Principles repository does not currently validate/)
+  assert.match(stale.stderr, /Stale field guide selection/)
+
+  // A source-title edit breaks the bibliography contract. Validation must also
+  // refuse that invalid corpus without returning an apparently current guide.
+  writeFileSync(sourcePath, changedSource.replace(/title: ([^\n]+)/, 'title: Synthetic updated source title'))
+  const invalid = spawnSync(process.execPath, [bin, 'read', ...common, '--input', guidePath], { cwd: corpus, encoding: 'utf8' })
+  assert.equal(invalid.status, 2)
+  assert.match(invalid.stderr, /Principles repository does not currently validate/)
 })
