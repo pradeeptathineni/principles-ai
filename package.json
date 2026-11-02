@@ -9,7 +9,8 @@
   "bin": {
     "principles": "./bin/principles.js",
     "principle-dossier": "./bin/principle-dossier.js",
-    "principle-atlas": "./bin/principle-atlas.js"
+    "principle-atlas": "./bin/principle-atlas.js",
+    "field-guide": "./bin/field-guide.js"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
