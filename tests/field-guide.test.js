@@ -88,5 +88,7 @@ test('field guide is a cold-readable, source-bound standard export and refuses c
   writeFileSync(sourcePath, changedSource)
   const stale = spawnSync(process.execPath, [bin, 'read', ...common, '--input', guidePath], { cwd: corpus, encoding: 'utf8' })
   assert.equal(stale.status, 2)
-  assert.match(stale.stderr, /Stale field guide selection/)
+  // This title edit also breaks the corpus bibliography contract, so validation
+  // must refuse it before the revision comparison can report a stale selection.
+  assert.match(stale.stderr, /Principles repository does not currently validate/)
 })
