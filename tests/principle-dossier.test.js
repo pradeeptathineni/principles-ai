@@ -202,6 +202,141 @@ test('Atlas critique references are retained metadata and preserve absent-field 
   assert.equal(service.read(withoutRef.id).versionSha256, before.versions[0].version_sha256)
 })
 
+test('owner-backed changed Research basis prepares a critique-anchored successor for explicit proposal and cold review', async (t) => {
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'principle-research-successor-')))
+  t.after(() => rmSync(temporary, { recursive: true, force: true }))
+  const syntheticRoot = join(temporary, 'repo')
+  copySyntheticRepository(syntheticRoot)
+  const store = join(temporary, 'dossiers')
+  let current = researchAnswer()
+  let originMode = 'current'
+  let readerMode = 'normal'
+  const originsFor = (answer) => ({
+    studyId: answer.studyId,
+    questionId: answer.questionId,
+    questionSha256: answer.questionSha256,
+    origins: answer.citations.map((citation) => ({
+      notebookId: citation.notebookId,
+      recordId: citation.recordId,
+      version: citation.version,
+      expectedSourceDigest: citation.sourceDigest,
+      currentSourceDigest: originMode === 'current' ? citation.sourceDigest : hash('different-origin'),
+      status: originMode,
+      detail: `synthetic ${originMode} origin`,
+    })),
+  })
+  const settings = {
+    root: syntheticRoot,
+    store,
+    adoptionTargets: [],
+    researchOwnerRevision: 'a'.repeat(40),
+    researchOwnerReader: async () => {
+      if (readerMode === 'unknown') throw new Error('synthetic Research reader unavailable')
+      return structuredClone(current)
+    },
+    researchOwnerOriginsReader: async () => originsFor(current),
+    idFactory: () => 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+    clock: () => '2026-10-27T12:00:00.000Z',
+  }
+  const createService = () => createPrincipleDossierService(settings)
+  const service = createService()
+  const critique = contextualCritiqueRef()
+  const predecessor = await service.propose({
+    proposal: { ...proposal(), contextualCritiqueRefs: [critique] },
+    research: current,
+    dossierId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+  })
+  current = structuredClone(current)
+  current.revision = 'synthetic-revision-2'
+  current.answer = [{ text: 'A changed synthetic answer about specific feedback.', evidenceIds: ['citation:synthetic-1'] }]
+  current.citations[0].version = '2'
+  current.citations[0].sourceDigest = hash('synthetic-source-2')
+  current.citations[0].quote = 'Updated exact synthetic source quote.'
+  current.provenance.resultContentSha256 = hash('synthetic-result-2')
+
+  const prepared = await service.prepareResearchSuccessor({
+    id: predecessor.id,
+    version: predecessor.version,
+    versionSha256: predecessor.versionSha256,
+  })
+  assert.equal(prepared.state, 'awaiting_human_proposal_and_review')
+  assert.deepEqual(prepared.supersedes, {
+    id: predecessor.id,
+    version: predecessor.version,
+    versionSha256: predecessor.versionSha256,
+  })
+  assert.equal(prepared.research.verification.status, 'owner_verified')
+  assert.ok(prepared.basisChange.changedFields.includes('citations'))
+  assert.equal(prepared.basisChange.citationChanges.changed[0].current.version, '2')
+  assert.deepEqual(prepared.proposalDraft.contextualCritiqueRefs, [critique])
+  assert.match(prepared.critiqueAnchors[0].qualification, /Historical critique anchor/u)
+
+  const successorProposalId = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+  originMode = 'changed'
+  await assert.rejects(service.proposePreparedResearchSuccessor({
+    preparation: prepared,
+    proposal: prepared.proposalDraft,
+    requestId: successorProposalId,
+  }), /source is changed or unknown/u)
+  originMode = 'current'
+  const mutation = await service.proposePreparedResearchSuccessor({
+    preparation: prepared,
+    proposal: prepared.proposalDraft,
+    requestId: successorProposalId,
+  })
+  assert.equal(mutation.status, 'confirmed')
+  const successor = mutation.result
+  assert.equal(successor.status, 'proposed')
+  assert.deepEqual(successor.supersedes, prepared.supersedes)
+  assert.equal(successor.events.some((event) => event.kind === 'reviewed'), false)
+  originMode = 'missing'
+  readerMode = 'unknown'
+  const recovered = await service.proposePreparedResearchSuccessor({
+    preparation: prepared,
+    proposal: prepared.proposalDraft,
+    requestId: successorProposalId,
+  })
+  assert.equal(recovered.status, 'confirmed')
+  assert.deepEqual(recovered.result, successor)
+
+  const cold = createService()
+  originMode = 'current'
+  readerMode = 'normal'
+  const coldPredecessor = cold.read(predecessor.id, predecessor.version)
+  assert.equal(coldPredecessor.versionSha256, predecessor.versionSha256)
+  assert.equal(coldPredecessor.research.answer.citations[0].sourceDigest, hash('synthetic-source'))
+  const reopened = cold.read(successor.id, 1)
+  assert.deepEqual(reopened.supersedes, prepared.supersedes)
+  assert.equal(reopened.research.answer.citations[0].sourceDigest, hash('synthetic-source-2'))
+  assert.deepEqual(reopened.proposal.contextualCritiqueRefs, [critique])
+  const reviewed = cold.review({
+    id: successor.id,
+    version: reopened.version,
+    versionSha256: reopened.versionSha256,
+    disposition: 'revise',
+    reviewer: 'Synthetic human reviewer',
+    reviewerKind: 'human',
+    supportOutcome: 'partial',
+    counterevidenceReviewed: true,
+    limitsReviewed: true,
+    valueAssumptionsReviewed: true,
+  })
+  assert.equal(reviewed.status, 'revision_requested')
+
+  await assert.rejects(cold.prepareResearchSuccessor({
+    id: successor.id, version: reopened.version, versionSha256: reopened.versionSha256,
+  }), /Research basis is unchanged/u)
+  originMode = 'missing'
+  await assert.rejects(cold.prepareResearchSuccessor({
+    id: successor.id, version: reopened.version, versionSha256: reopened.versionSha256,
+  }), /source is missing/u)
+  originMode = 'current'
+  readerMode = 'unknown'
+  await assert.rejects(cold.prepareResearchSuccessor({
+    id: successor.id, version: reopened.version, versionSha256: reopened.versionSha256,
+  }), /currentness is unknown/u)
+})
+
 test('owner mutation IDs survive cold replay and keep unprovable canonical crash windows unknown', async (t) => {
   const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'principle-request-recovery-')))
   t.after(() => rmSync(temporary, { recursive: true, force: true }))

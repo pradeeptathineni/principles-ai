@@ -478,6 +478,103 @@ export function createPrincipleDossierService({ root, store, adoptionTargets = [
       save(record, record.events.at(-2)?.event_sha256)
       return view(record)
     },
+    async prepareResearchSuccessor({ id, version, versionSha256 }) {
+      if (!researchOwnerReader || !researchOwnerOriginsReader)
+        throw new Error('Preparing a Research successor requires exact Research answer and source-origin readers; currentness is unknown.')
+      const record = readRecord(id)
+      const selected = record.versions[version - 1]
+      if (!Number.isSafeInteger(version) || !selected || version !== record.versions.length || selected.version_sha256 !== versionSha256)
+        throw new Error('Successor preparation must bind the exact latest retained predecessor version')
+      if (selected.research.verification.status !== 'owner_verified')
+        throw new Error('Successor preparation requires an owner-verified predecessor Research answer')
+      const currentness = await researchCurrentness(selected)
+      if (currentness.status === 'missing') throw new Error('Research successor cannot be prepared because a predecessor source is missing')
+      if (currentness.status === 'unknown' || currentness.status === 'caller_asserted')
+        throw new Error('Research successor cannot be prepared while predecessor currentness is unknown')
+      if (currentness.status === 'unchanged')
+        throw new Error('Research basis is unchanged; no changed-basis successor is needed')
+      if (currentness.status !== 'changed') throw new Error('Research successor basis change is unsupported')
+
+      const identity = { studyId: selected.research.answer.studyId, questionId: selected.research.answer.questionId }
+      const currentAnswer = await researchOwnerReader(identity)
+      verifyResearchShape(currentAnswer)
+      if (digest(currentnessProjection(currentAnswer)) === digest(currentnessProjection(selected.research.answer)))
+        throw new Error('Research source currentness changed, but the owner has no new exact answer binding; rerun Research before preparing a successor')
+      const origins = await researchOwnerOriginsReader(identity)
+      if (origins?.studyId !== identity.studyId || origins?.questionId !== identity.questionId || origins?.questionSha256 !== currentAnswer.questionSha256 || !Array.isArray(origins.origins))
+        throw new Error('Research successor source origins are unknown or do not match the exact answer')
+      const sourceChecks = []
+      for (const citation of currentAnswer.citations) {
+        const matches = origins.origins.filter((origin) => origin.notebookId === citation.notebookId && origin.recordId === citation.recordId && origin.version === citation.version && origin.expectedSourceDigest === citation.sourceDigest)
+        if (matches.length !== 1)
+          throw new Error('Research successor cannot be prepared because a current citation origin is missing or ambiguous')
+        const origin = matches[0]
+        if (origin.status === 'missing') throw new Error('Research successor cannot be prepared because a current citation source is missing')
+        if (origin.status !== 'current' || origin.expectedSourceDigest !== origin.currentSourceDigest)
+          throw new Error('Research successor cannot be prepared because a citation source is changed or unknown')
+        sourceChecks.push({ notebookId: origin.notebookId, recordId: origin.recordId, version: origin.version,
+          expectedSourceDigest: origin.expectedSourceDigest, currentSourceDigest: origin.currentSourceDigest,
+          status: 'current', detail: origin.detail ?? null })
+      }
+      const repeatedAnswer = await researchOwnerReader(identity)
+      const repeatedOrigins = await researchOwnerOriginsReader(identity)
+      if (digest(repeatedAnswer) !== digest(currentAnswer) || digest(repeatedOrigins) !== digest(origins))
+        throw new Error('Research answer or source origins changed during successor preparation; currentness is unknown')
+      const research = await researchSnapshot(currentAnswer)
+      const predecessor = { id, version, versionSha256 }
+      const previousCitations = new Map(selected.research.answer.citations.map((citation) => [citation.id, citation]))
+      const currentCitations = new Map(currentAnswer.citations.map((citation) => [citation.id, citation]))
+      const citationChanges = {
+        added: [...currentCitations].filter(([citationId]) => !previousCitations.has(citationId)).map(([, citation]) => ({ id: citation.id, notebookId: citation.notebookId, recordId: citation.recordId, version: citation.version, sourceDigest: citation.sourceDigest })),
+        removed: [...previousCitations].filter(([citationId]) => !currentCitations.has(citationId)).map(([, citation]) => ({ id: citation.id, notebookId: citation.notebookId, recordId: citation.recordId, version: citation.version, sourceDigest: citation.sourceDigest })),
+        changed: [...currentCitations].filter(([citationId, citation]) => previousCitations.has(citationId) && digest(previousCitations.get(citationId)) !== digest(citation)).map(([citationId, citation]) => ({ id: citationId, previous: { notebookId: previousCitations.get(citationId).notebookId, recordId: previousCitations.get(citationId).recordId, version: previousCitations.get(citationId).version, sourceDigest: previousCitations.get(citationId).sourceDigest }, current: { notebookId: citation.notebookId, recordId: citation.recordId, version: citation.version, sourceDigest: citation.sourceDigest } })),
+      }
+      const critiqueAnchors = (selected.proposal.contextualCritiqueRefs ?? []).map((reference) => ({
+        reference: structuredClone(reference),
+        provenance: 'predecessor_proposal_contextual_critique',
+        qualification: 'Historical critique anchor retained from the exact predecessor. It is not re-reviewed, current for the changed Research basis, or proof of source entailment.',
+      }))
+      const prepared = {
+        schema: 'principles.changed-research-successor-preparation/1',
+        state: 'awaiting_human_proposal_and_review',
+        predecessor,
+        supersedes: predecessor,
+        basisChange: {
+          status: 'changed',
+          compared: 'exact-study-question-answer-citation-and-source-bindings',
+          previousResearchSha256: digest(currentnessProjection(selected.research.answer)),
+          currentResearchSha256: digest(currentnessProjection(currentAnswer)),
+          changedFields: ['studySha256', 'revision', 'questionSha256', 'resultStatus', 'coverage', 'answer', 'gaps', 'provenance', 'citations'].filter((field) => digest(selected.research.answer[field]) !== digest(currentAnswer[field])),
+          citationChanges,
+          currentSourceChecks: sourceChecks,
+          sourceChecksQualification: 'Exact retained Research citation identities were matched to current owner source origins; this is identity and currentness evidence, not entailment.',
+        },
+        research,
+        proposalDraft: structuredClone(selected.proposal),
+        critiqueAnchors,
+        qualification: 'This non-mutating preparation preserves an exact predecessor link and historical critique anchors. Reconcile the proposal against the new citations, then explicitly propose, review, and adopt or reject. No review, approval, activation, or canonical corpus change is performed.',
+      }
+      prepared.preparationSha256 = digest(prepared)
+      return prepared
+    },
+    async proposePreparedResearchSuccessor({ preparation, proposal, requestId }) {
+      exactObject(preparation, ['schema', 'state', 'predecessor', 'supersedes', 'basisChange', 'research', 'proposalDraft', 'critiqueAnchors', 'qualification', 'preparationSha256'], 'Prepared Research successor')
+      if (preparation.schema !== 'principles.changed-research-successor-preparation/1' || preparation.state !== 'awaiting_human_proposal_and_review' || !HASH.test(preparation.preparationSha256 ?? ''))
+        throw new Error('Prepared Research successor identity is invalid')
+      const { preparationSha256, ...unsignedPreparation } = preparation
+      if (digest(unsignedPreparation) !== preparationSha256) throw new Error('Prepared Research successor changed after review')
+      if (!UUID.test(requestId ?? '')) throw new Error('Prepared Research successor proposal requires an exact request UUID')
+      const input = { proposal: structuredClone(proposal), research: structuredClone(preparation.research.answer), supersedes: structuredClone(preparation.supersedes) }
+      // Recover a prior exact dispatch before rechecking live sources. This preserves
+      // the owner's lost-reply fence without replaying a mutation after later drift.
+      if (readRequest(requestId)) return service.mutate({ requestId, operation: 'propose', input })
+      const fresh = await service.prepareResearchSuccessor(preparation.predecessor)
+      if (fresh.preparationSha256 !== preparationSha256)
+        throw new Error('Research successor basis or source origins changed after preparation; prepare and review the current basis again')
+      input.research = structuredClone(fresh.research.answer)
+      input.supersedes = structuredClone(fresh.supersedes)
+      return service.mutate({ requestId, operation: 'propose', input })
+    },
     review({ id, version, versionSha256, disposition, reviewer, reviewerKind, supportOutcome, counterevidenceReviewed, limitsReviewed, valueAssumptionsReviewed = false, researchCurrentnessStatus = 'not_checked', calibration = '', requestId = undefined }) {
       const record = readRecord(id)
       const saved = record.versions.at(-1)
