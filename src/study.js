@@ -408,6 +408,25 @@ export function createStudyService({ root, store = null, revision, clock = () =>
       })
     },
     sessions() { return { sessions: readStore(paths()).sessions.map((session) => view(session)) } },
+    due({ through = clock().slice(0, 10) } = {}) {
+      const throughDate = date(through)
+      const saved = readStore(paths())
+      const source = current()
+      const reminders = saved.sessions.flatMap((session) => {
+        const steps = session.learning_path ? pathViewFor(session, source.catalog, source.error).steps : []
+        return session.cards.filter((card) => card.revisit_on && card.revisit_on <= throughDate).map((card) => ({
+          session_id: session.id,
+          session_name: session.name,
+          principle_id: card.principle_id,
+          title: card.source_history[card.source_index].title,
+          revisit_on: card.revisit_on,
+          source_state: sourceState(card, source.catalog, source.error),
+          pending_attempt: card.attempts.some((attempt) => !attempt.rating),
+          path_steps: steps.filter((step) => step.principle_id === card.principle_id).map(({ id, title, status }) => ({ id, title, status }))
+        }))
+      }).sort((a, b) => a.revisit_on.localeCompare(b.revisit_on) || a.session_id.localeCompare(b.session_id) || a.principle_id.localeCompare(b.principle_id))
+      return { schema_version: 1, through_date: throughDate, count: reminders.length, reminders, qualification: 'Dates are learner-chosen reminders, not an automatic interval, practice eligibility, mastery, or measured learning.' }
+    },
     show(id) { return view(sessionIn(readStore(paths()), id)) },
     cue(id, principleId, text) { required(text, 'Recall cue', 4000); return mutate(id, (_, session, now) => { const card = cardIn(session, principleId); card.cue = text.trim(); card.cue_history.push({ text: card.cue, at: now }) }) },
     attempt(id, principleId, text, { pre_reveal_prediction = null } = {}) {

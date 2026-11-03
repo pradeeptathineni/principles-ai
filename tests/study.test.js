@@ -61,6 +61,24 @@ test('practice completes explanation/reveal/self-report, reopens and exports exa
   assert.equal(statSync(f.store).mode & 0o777, 0o700)
 })
 
+test('learner-chosen due reminders cold-reopen without exposing private answers or hiding changed sources', (t) => {
+  const f = fixture(t)
+  const session = f.service.start({ name: 'Reminder practice', principleIds: ['PRN-000001'] })
+  assert.equal(f.service.due().count, 0)
+  f.service.revisit(session.id, 'PRN-000001', '2026-10-23')
+  f.service.attempt(session.id, 'PRN-000001', 'Private explanation')
+  const due = createStudyService(f.options).due()
+  assert.equal(due.count, 1)
+  assert.equal(due.reminders[0].revisit_on, '2026-10-23')
+  assert.equal(due.reminders[0].source_state.status, 'current')
+  assert.equal(due.reminders[0].pending_attempt, true)
+  assert.ok(!JSON.stringify(due).includes('Private explanation'))
+  assert.equal(f.service.due({ through: '2026-10-22' }).count, 0)
+  f.activate(baseFixture.replace('Prefer bounded changes', 'Prefer narrowly bounded changes'))
+  assert.equal(createStudyService(f.options).due().reminders[0].source_state.status, 'changed')
+  assert.throws(() => f.service.due({ through: 'not-a-date' }), /valid YYYY-MM-DD/)
+})
+
 test('source revisions and changed content require explicit refresh; old attempts retain bound source and cue', (t) => {
   const f = fixture(t)
   const session = f.service.start({ name: 'Source history', principleIds: ['PRN-000001'] })
