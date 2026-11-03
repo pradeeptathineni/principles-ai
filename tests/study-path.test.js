@@ -34,10 +34,17 @@ test('private learning path records rated explanation and learner-reported appli
   assert.equal(path.learning_path.remaining_work.remaining_steps, 3)
   assert.equal(path.learning_path.revision, 1)
   assert.deepEqual(path.learning_path.steps.map((step) => step.status), ['available', 'blocked', 'available'])
+  const queue = f.service.pathQueue()
+  assert.deepEqual(queue.ready.map((step) => step.step_id), ['explain-one', 'explain-two'])
+  assert.deepEqual(queue.held.map((step) => [step.step_id, step.blocked_by]), [['apply-one', ['explain-one']]])
   assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: 'fake' }), /Unknown attempt/)
   assert.throws(() => f.service.recordPathStep(path.id, 'apply-one', { expected_revision: 1, observation: 'did it' }), /blocked/)
   const generic = f.service.attempt(path.id, 'PRN-000001', 'Generic explanation before reveal.')
   const genericId = generic.cards[0].attempts[0].id
+  const pendingQueue = createStudyService(f.options).pathQueue()
+  assert.equal(pendingQueue.ready[0].pending_attempt_id, genericId)
+  assert.equal(pendingQueue.ready[0].pending_attempt_for_step, false)
+  assert.equal(JSON.stringify(pendingQueue).includes('Generic explanation before reveal.'), false)
   assert.throws(() => f.service.recordPathStep(path.id, 'explain-one', { expected_revision: 1, attempt_id: genericId }), /finished attempt/)
   f.service.reveal(path.id, 'PRN-000001', genericId)
   f.service.rate(path.id, 'PRN-000001', genericId, { rating: 'partial', example: 'My generic practice example.', revisitOn: '2026-10-30' })
@@ -256,8 +263,10 @@ test('changed source keeps path evidence historical until explicit source refres
   assert.equal(changed.status, 'unavailable')
   assert.equal(changed.source_state.status, 'changed')
   assert.equal(changed.prior_evidence.length, 1)
+  assert.deepEqual(f.service.pathQueue().held.map((step) => [step.step_id, step.source_status]), [['explain-one', 'changed']])
   f.service.refresh(path.id, 'PRN-000001')
   assert.equal(f.service.pathView(path.id).steps[0].status, 'review')
+  assert.deepEqual(f.service.pathQueue().ready.map((step) => [step.step_id, step.status]), [['explain-one', 'review']])
 })
 
 test('unavailable source preserves already recorded progress but refuses new path actions', (t) => {
@@ -292,6 +301,7 @@ test('standalone CLI creates, reads, and reopens a path in separate processes', 
   const reopened = run('path-view', ['--session', created.id])
   assert.equal(reopened.goal, 'Explain and apply a principle')
   assert.equal(reopened.steps[0].status, 'available')
+  assert.deepEqual(run('path-queue').ready.map((step) => step.step_id), ['explain-one'])
   const args = ['--session', created.id, '--principle', 'PRN-000001']
   const attempt = run('path-attempt', ['--session', created.id, '--step', 'explain-one', '--expected-revision', '1', '--text', 'CLI explanation before reveal.'])
   const attemptId = attempt.cards[0].attempts[0].id
@@ -301,6 +311,7 @@ test('standalone CLI creates, reads, and reopens a path in separate processes', 
   const afterRestart = run('path-view', ['--session', created.id])
   assert.equal(afterRestart.steps[0].status, 'recorded')
   assert.equal(afterRestart.steps[1].status, 'available')
+  assert.deepEqual(run('path-queue').ready.map((step) => step.step_id), ['apply-one'])
   run('path-record', ['--session', created.id, '--step', 'apply-one', '--expected-revision', '1', '--observation', 'CLI learner reported a result in a disposable example.'])
   assert.equal(run('path-view', ['--session', created.id]).steps[1].evidence.observation, 'CLI learner reported a result in a disposable example.')
   const exported = run('export', ['--session', created.id])

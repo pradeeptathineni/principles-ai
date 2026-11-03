@@ -408,6 +408,33 @@ export function createStudyService({ root, store = null, revision, clock = () =>
       })
     },
     sessions() { return { sessions: readStore(paths()).sessions.map((session) => view(session)) } },
+    pathQueue() {
+      const saved = readStore(paths())
+      const source = current()
+      const ready = []
+      const held = []
+      for (const session of saved.sessions) {
+        if (!session.learning_path) continue
+        const path = pathViewFor(session, source.catalog, source.error)
+        for (const step of path.steps) {
+          if (step.status === 'recorded') continue
+          const card = cardIn(session, step.principle_id)
+          const pending = card.attempts.find((attempt) => !attempt.rating)
+          const item = {
+            session_id: session.id, session_name: session.name, path_revision: path.revision,
+            step_id: step.id, title: step.title, kind: step.kind, principle_id: step.principle_id,
+            status: step.status, source_status: step.source_state.status,
+            ...(step.blocked_by ? { blocked_by: copy(step.blocked_by) } : {}),
+            pending_attempt_id: pending?.id ?? null,
+            pending_attempt_for_step: pending ? pending.cue === step.prompt : false,
+            pending_attempt_stage: pending ? pending.revealed_at ? 'awaiting-self-rating' : 'awaiting-source-reveal' : null
+          }
+          if (step.status === 'available' || step.status === 'review') ready.push(item)
+          else held.push(item)
+        }
+      }
+      return { schema_version: 1, ready_count: ready.length, held_count: held.length, ready, held, qualification: 'Private learning-path status from current saved sources. Ready steps still require learner action; finish a pending attempt before starting another. No automatic schedule, correctness, or mastery is inferred.' }
+    },
     due({ through = clock().slice(0, 10) } = {}) {
       const throughDate = date(through)
       const saved = readStore(paths())

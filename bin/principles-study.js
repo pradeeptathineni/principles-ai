@@ -3,7 +3,7 @@
 import { createStudyService } from '../src/study.js'
 
 const allowed = {
-  list: ['query'], start: ['name', 'principles'], sessions: [], due: ['through'], show: ['session'],
+  list: ['query'], start: ['name', 'principles'], sessions: [], due: ['through'], 'path-queue': [], show: ['session'],
   cue: ['session', 'principle', 'text'], attempt: ['session', 'principle', 'text', 'prediction'],
   reveal: ['session', 'principle', 'attempt'], rate: ['session', 'principle', 'attempt', 'rating', 'example', 'revisit'],
   revisit: ['session', 'principle', 'date'], refresh: ['session', 'principle'],
@@ -14,7 +14,7 @@ const allowed = {
 }
 const HELP = `Principles practice (Node 24). All state stays in an explicit external private store.
 Usage: node bin/principles-study.js COMMAND --root ROOT --revision REV [--store DIR] [flags]
-Commands: list [--query TEXT]; start --name TEXT --principles PRN-ID[,PRN-ID]; path-create/path-view/path-attempt/path-revise/path-record; sessions; due [--through YYYY-MM-DD];
+Commands: list [--query TEXT]; start --name TEXT --principles PRN-ID[,PRN-ID]; path-create/path-view/path-attempt/path-revise/path-record; sessions; due [--through YYYY-MM-DD]; path-queue;
 show --session ID; cue/attempt --session ID --principle PRN-ID --text TEXT;
 reveal --session ID --principle PRN-ID --attempt ID;
 rate --session ID --principle PRN-ID --attempt ID --rating again|partial|comfortable --example TEXT --revisit YYYY-MM-DD;
@@ -51,6 +51,7 @@ try {
       case 'path-record': result = service.recordPathStep(options.session, options.step, { expected_revision: Number(options['expected-revision']), attempt_id: options.attempt ?? null, observation: options.observation ?? null, application_self_rating: options['application-rating'] ?? null }); break
       case 'sessions': result = service.sessions(); break
       case 'due': result = service.due({ through: options.through }); break
+      case 'path-queue': result = service.pathQueue(); break
       case 'show': result = service.show(options.session); break
       case 'cue': result = service.cue(options.session, options.principle, options.text); break
       case 'attempt': result = service.attempt(options.session, options.principle, options.text, { pre_reveal_prediction: options.prediction ?? null }); break
